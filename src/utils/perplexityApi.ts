@@ -28,6 +28,8 @@ However, if the user specifically excludes components (e.g., 'burger without bun
 
 Calculate total calories by picking reasonable portions for the restaurant found, and adjust the calculation based on information about ingredients or portion sizes you can find. Give one specific number, not a range.
 
+IMPORTANT: Always end your response with exactly these words: "total calories" followed by your final calorie estimate number.
+
 Food description: "${mealDescription}"`;
 
   try {
@@ -61,17 +63,29 @@ Food description: "${mealDescription}"`;
       throw new Error('No response from Perplexity API');
     }
 
-    // Extract calorie number from response - look for any number followed by "calories"
-    const calorieMatch = responseText.match(/(\d+)\s*calories?/i);
+    // First try to extract from the required "total calories" ending format
+    const totalCaloriesMatch = responseText.match(/total calories\s+(\d+)/i);
     
-    if (!calorieMatch) {
-      throw new Error('Could not extract calorie estimate from Perplexity response');
+    let calories: number;
+    
+    if (totalCaloriesMatch) {
+      // Use the number after "total calories" as specified in the prompt
+      calories = parseInt(totalCaloriesMatch[1], 10);
+    } else {
+      // Fallback: look for any number followed by "calories" if the format wasn't followed
+      const calorieMatch = responseText.match(/(\d+)\s*calories?/i);
+      
+      if (!calorieMatch) {
+        throw new Error('Could not extract calorie estimate from Perplexity response');
+      }
+      
+      calories = parseInt(calorieMatch[1], 10);
     }
 
-    const calories = parseInt(calorieMatch[1], 10);
-
-    // Since the prompt is now very simple, just split the response into lines for breakdown
-    const lines = responseText.split('\n').filter(line => line.trim().length > 0);
+    // Split the response into lines for breakdown, excluding the final "total calories" line
+    const lines = responseText.split('\n').filter(line => 
+      line.trim().length > 0 && !line.toLowerCase().includes('total calories')
+    );
     const breakdown = lines.slice(0, 4); // Take first few lines as breakdown
 
     // Set confidence to medium by default since we're asking for specific calculations
