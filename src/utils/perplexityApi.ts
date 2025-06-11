@@ -20,29 +20,30 @@ export async function estimateCaloriesWithPerplexity(mealDescription: string): P
     throw new Error('Perplexity API key not configured');
   }
 
-  const prompt = `You are a restaurant calorie estimation expert. For each food description:
+  const prompt = `You are a restaurant research assistant. MANDATORY: You must search the web for information about the specific restaurant and menu item mentioned.
 
-1. FIRST identify the specific restaurant mentioned - search the web if needed to find the exact establishment
-2. Research typical portion sizes at that exact restaurant or restaurant type
-3. Consider restaurant category (fine dining = smaller elegant portions, casual = larger portions, street food = varies by location)
-4. Estimate calories based on realistic serving size for that specific restaurant, NOT per-100g nutritional data
-4a. If the user provides specific weight (like '48g' or 'mini'), prioritize this information over typical portions. Calculate calories based on the exact weight given combined with typical nutritional density for that food item.
+STAGE 1 - RESEARCH (REQUIRED):
+- Search the web for the exact restaurant name and location
+- Find menu descriptions, reviews, food photos, or blog posts about this specific dish
+- Look for actual portion sizes, ingredients, or preparation details mentioned online
+- Gather specific information about this exact restaurant and menu item
 
-Examples of portion context:
-- 'takoyaki at Jordnaer' (Michelin restaurant) = 1 small artistic ball ≈ 60 calories
-- 'takoyaki in Osaka street market' = 6 large traditional balls ≈ 400 calories  
-- 'croissant from Lagkagehuset' (Danish bakery chain) = 1 medium pastry ≈ 280 calories
-- 'mini croissant (48g) from Lagkagehuset' = Use 48g weight, not standard croissant size ≈ 190 calories
+STAGE 2 - ESTIMATION:
+Only after completing web research, estimate calories based on:
+- Specific details found about this dish at this restaurant
+- Restaurant category context (fine dining vs casual vs street food)
+- Realistic portion sizes for this establishment
+
+If you cannot find specific information about the restaurant or dish online, state clearly: "Unable to find specific information about [dish] at [restaurant]" and ask for more details.
 
 Always return this structure:
-- Restaurant: [name and type]
-- Location/Context: [city or restaurant category]  
+- Restaurant: [name, type, and any details found online]
+- Location/Context: [city and restaurant details from web search]
 - Menu Item: [what they ordered]
-- Portion Size: [realistic serving for this restaurant]
-- Calories: [estimate with brief reasoning]
-- Confidence: [High/Medium/Low based on available data]
-
-Be specific about the restaurant context and portion reasoning. If restaurant is unclear, ask for city or more details.
+- Research Found: [specific details discovered through web search]
+- Portion Size: [based on research or restaurant type]
+- Calories: [estimate with reasoning based on research]
+- Confidence: [High/Medium/Low based on actual data found]
 
 Food description: "${mealDescription}"`;
 
@@ -91,6 +92,7 @@ Food description: "${mealDescription}"`;
     const restaurantMatch = responseText.match(/Restaurant:\s*([^\n]+)/i);
     const locationMatch = responseText.match(/Location\/Context:\s*([^\n]+)/i);
     const menuItemMatch = responseText.match(/Menu Item:\s*([^\n]+)/i);
+    const researchMatch = responseText.match(/Research Found:\s*([^\n]+)/i);
     const portionMatch = responseText.match(/Portion Size:\s*([^\n]+)/i);
     
     if (restaurantMatch) {
@@ -101,6 +103,9 @@ Food description: "${mealDescription}"`;
     }
     if (menuItemMatch) {
       breakdown.push(`Menu Item: ${menuItemMatch[1].trim()}`);
+    }
+    if (researchMatch) {
+      breakdown.push(`Research Found: ${researchMatch[1].trim()}`);
     }
     if (portionMatch) {
       breakdown.push(`Portion: ${portionMatch[1].trim()}`);
