@@ -20,25 +20,13 @@ export async function estimateCaloriesWithPerplexity(mealDescription: string): P
     throw new Error('Perplexity API key not configured');
   }
 
-  // BACKUP PROMPT - Day 7 - Working version before WhatsApp optimization  
-  /*
-  MANDATORY: Search the web first for the specific restaurant and menu item mentioned.
+  const prompt = `Search for the word 'calories in' + ${mealDescription}. Find the restaurant and menu item. 
 
-  Step 1: Search for '[restaurant name] [location] [menu item]' to find actual menu descriptions, reviews, or food details.
+IMPORTANT: Remember that menu items include ALL standard components (e.g., burgers include buns, sandwiches include bread, pasta dishes include pasta, salads include base greens, etc.). Calculate calories for the complete dish as served, not just the toppings or special ingredients mentioned.
 
-  Step 2: If specific restaurant information found, base estimate on those details. If no specific information found, clearly state what was searched and what was missing.
+However, if the user specifically excludes components (e.g., 'burger without bun', 'pasta without cheese', 'salad no dressing'), respect those modifications and calculate accordingly.
 
-  Return:
-  - Restaurant: [name and details found online]  
-  - Menu Item: [specific dish]
-  - Research Found: [what was actually discovered through web search]
-  - Calories: [estimate based on research or clearly state if generic]
-  - Confidence: [High if specific details found, Low if generic estimate]
-
-  Be explicit about whether information came from actual restaurant research or generic food data.
-  */
-
-  const prompt = `Search for the word 'calories in' + ${mealDescription}. Find the restaurant and menu item. Calculate total calories by picking reasonable portions for the restaurant found, and adjust the calculation based on information about ingredients or portion sizes you can find. Give one specific number, not a range.
+Calculate total calories by picking reasonable portions for the restaurant found, and adjust the calculation based on information about ingredients or portion sizes you can find. Give one specific number, not a range.
 
 Food description: "${mealDescription}"`;
 
