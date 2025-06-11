@@ -44,7 +44,7 @@ Food description: "${mealDescription}"`;
           role: 'user',
           content: prompt
         }],
-        max_tokens: 150,
+        max_tokens: 750,
         temperature: 0.2
       })
     });
