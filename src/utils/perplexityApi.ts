@@ -20,30 +20,48 @@ export async function estimateCaloriesWithPerplexity(mealDescription: string): P
     throw new Error('Perplexity API key not configured');
   }
 
-  const prompt = `You are a restaurant research assistant. MANDATORY: You must search the web for information about the specific restaurant and menu item mentioned.
+  // BACKUP PROMPT - Day 7 - Working version before WhatsApp optimization  
+  /*
+  You are a restaurant research assistant. MANDATORY: You must search the web for information about the specific restaurant and menu item mentioned.
 
-STAGE 1 - RESEARCH (REQUIRED):
-- Search the web for the exact restaurant name and location
-- Find menu descriptions, reviews, food photos, or blog posts about this specific dish
-- Look for actual portion sizes, ingredients, or preparation details mentioned online
-- Gather specific information about this exact restaurant and menu item
+  STAGE 1 - RESEARCH (REQUIRED):
+  - Search the web for the exact restaurant name and location
+  - Find menu descriptions, reviews, food photos, or blog posts about this specific dish
+  - Look for actual portion sizes, ingredients, or preparation details mentioned online
+  - Gather specific information about this exact restaurant and menu item
 
-STAGE 2 - ESTIMATION:
-Only after completing web research, estimate calories based on:
-- Specific details found about this dish at this restaurant
-- Restaurant category context (fine dining vs casual vs street food)
-- Realistic portion sizes for this establishment
+  STAGE 2 - ESTIMATION:
+  Only after completing web research, estimate calories based on:
+  - Specific details found about this dish at this restaurant
+  - Restaurant category context (fine dining vs casual vs street food)
+  - Realistic portion sizes for this establishment
 
-If you cannot find specific information about the restaurant or dish online, state clearly: "Unable to find specific information about [dish] at [restaurant]" and ask for more details.
+  If you cannot find specific information about the restaurant or dish online, state clearly: "Unable to find specific information about [dish] at [restaurant]" and ask for more details.
 
-Always return this structure:
-- Restaurant: [name, type, and any details found online]
-- Location/Context: [city and restaurant details from web search]
-- Menu Item: [what they ordered]
-- Research Found: [specific details discovered through web search]
-- Portion Size: [based on research or restaurant type]
-- Calories: [estimate with reasoning based on research]
-- Confidence: [High/Medium/Low based on actual data found]
+  Always return this structure:
+  - Restaurant: [name, type, and any details found online]
+  - Location/Context: [city and restaurant details from web search]
+  - Menu Item: [what they ordered]
+  - Research Found: [specific details discovered through web search]
+  - Portion Size: [based on research or restaurant type]
+  - Calories: [estimate with reasoning based on research]
+  - Confidence: [High/Medium/Low based on actual data found]
+  */
+
+  const prompt = `MANDATORY: Search the web first for the specific restaurant and menu item mentioned.
+
+Step 1: Search for '[restaurant name] [location] [menu item]' to find actual menu descriptions, reviews, or food details.
+
+Step 2: If specific restaurant information found, base estimate on those details. If no specific information found, clearly state what was searched and what was missing.
+
+Return:
+- Restaurant: [name and details found online]  
+- Menu Item: [specific dish]
+- Research Found: [what was actually discovered through web search]
+- Calories: [estimate based on research or clearly state if generic]
+- Confidence: [High if specific details found, Low if generic estimate]
+
+Be explicit about whether information came from actual restaurant research or generic food data.
 
 Food description: "${mealDescription}"`;
 
