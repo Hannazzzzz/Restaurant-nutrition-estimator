@@ -38,14 +38,7 @@ export async function estimateCaloriesWithPerplexity(mealDescription: string): P
   Be explicit about whether information came from actual restaurant research or generic food data.
   */
 
-  const prompt = `Search the web for the specific restaurant and menu item. If you find ingredients, add up the calories for each ingredient. If you can't find specific information, say so clearly.
-
-Format:
-- Restaurant: [name and location found]
-- Menu Item: [dish name]  
-- Ingredients Found: [list from web search]
-- Calorie Calculation: [ingredient + calories = total] OR [state if no specific info found]
-- Total: [number] calories
+  const prompt = `Search for the restaurant and menu item. Find ingredients. Calculate total calories by picking reasonable restaurant portions for each ingredient and adding them up. Give one specific number, not a range.
 
 Food description: "${mealDescription}"`;
 
@@ -80,9 +73,8 @@ Food description: "${mealDescription}"`;
       throw new Error('No response from Perplexity API');
     }
 
-    // Extract calorie number from response - look for "Total:" first, then fallback patterns
-    const totalMatch = responseText.match(/Total:\s*(\d+)\s*calories?/i);
-    const calorieMatch = totalMatch || responseText.match(/Calories?:\s*(\d+)/i) || responseText.match(/(\d+)\s*calories?/i);
+    // Extract calorie number from response - look for any number followed by "calories"
+    const calorieMatch = responseText.match(/(\d+)\s*calories?/i);
     
     if (!calorieMatch) {
       throw new Error('Could not extract calorie estimate from Perplexity response');
@@ -90,34 +82,12 @@ Food description: "${mealDescription}"`;
 
     const calories = parseInt(calorieMatch[1], 10);
 
-    // Extract structured information for breakdown
-    const breakdown: string[] = [];
-    
-    const restaurantMatch = responseText.match(/Restaurant:\s*([^\n]+)/i);
-    const menuItemMatch = responseText.match(/Menu Item:\s*([^\n]+)/i);
-    const ingredientsMatch = responseText.match(/Ingredients Found:\s*([^\n]+)/i);
-    const calculationMatch = responseText.match(/Calorie Calculation:\s*([^\n]+)/i);
-    
-    if (restaurantMatch) {
-      breakdown.push(`Restaurant: ${restaurantMatch[1].trim()}`);
-    }
-    if (menuItemMatch) {
-      breakdown.push(`Menu Item: ${menuItemMatch[1].trim()}`);
-    }
-    if (ingredientsMatch) {
-      breakdown.push(`Ingredients: ${ingredientsMatch[1].trim()}`);
-    }
-    if (calculationMatch) {
-      breakdown.push(`Calculation: ${calculationMatch[1].trim()}`);
-    }
+    // Since the prompt is now very simple, just split the response into lines for breakdown
+    const lines = responseText.split('\n').filter(line => line.trim().length > 0);
+    const breakdown = lines.slice(0, 4); // Take first few lines as breakdown
 
-    // Determine confidence based on whether specific ingredients were found
-    let confidence: 'low' | 'medium' | 'high' = 'low';
-    if (ingredientsMatch && !ingredientsMatch[1].toLowerCase().includes('no specific')) {
-      confidence = 'high';
-    } else if (restaurantMatch) {
-      confidence = 'medium';
-    }
+    // Set confidence to medium by default since we're asking for specific calculations
+    const confidence: 'low' | 'medium' | 'high' = 'medium';
 
     return {
       calories,
