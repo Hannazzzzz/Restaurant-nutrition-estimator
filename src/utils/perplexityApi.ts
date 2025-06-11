@@ -72,14 +72,16 @@ Food description: "${mealDescription}"`;
       // Use the number after "total calories" as specified in the prompt
       calories = parseInt(totalCaloriesMatch[1], 10);
     } else {
-      // Fallback: look for any number followed by "calories" if the format wasn't followed
-      const calorieMatch = responseText.match(/(\d+)\s*calories?/i);
+      // Fallback: find ALL occurrences of number + "calories" and use the LAST one
+      const allCalorieMatches = [...responseText.matchAll(/(\d+)\s*calories?/gi)];
       
-      if (!calorieMatch) {
+      if (allCalorieMatches.length === 0) {
         throw new Error('Could not extract calorie estimate from Perplexity response');
       }
       
-      calories = parseInt(calorieMatch[1], 10);
+      // Use the last match (most recent/final calorie estimate)
+      const lastMatch = allCalorieMatches[allCalorieMatches.length - 1];
+      calories = parseInt(lastMatch[1], 10);
     }
 
     // Split the response into lines for breakdown, excluding the final "total calories" line
