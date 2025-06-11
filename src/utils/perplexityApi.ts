@@ -38,7 +38,7 @@ export async function estimateCaloriesWithPerplexity(mealDescription: string): P
   Be explicit about whether information came from actual restaurant research or generic food data.
   */
 
-  const prompt = `Search for the restaurant and menu item. Find ingredients. Calculate total calories by picking reasonable restaurant portions for each ingredient and adding them up. Give one specific number, not a range.
+  const prompt = `Search for the word 'calories in' + ${mealDescription}. Find the restaurant and menu item. Calculate total calories by picking reasonable portions for the restaurant found, and adjust the calculation based on information about ingredients or portion sizes you can find. Give one specific number, not a range.
 
 Food description: "${mealDescription}"`;
 
