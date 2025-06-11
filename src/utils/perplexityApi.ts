@@ -64,7 +64,8 @@ Food description: "${mealDescription}"`;
     }
 
     // First try to extract from the required "total calories" ending format
-    const totalCaloriesMatch = responseText.match(/total calories\s+(\d+)/i);
+    // Updated regex to handle formats like "Total Calories: 730" or "total calories 730"
+    const totalCaloriesMatch = responseText.match(/total calories[^0-9\n]*(\d+)/i);
     
     let calories: number;
     
