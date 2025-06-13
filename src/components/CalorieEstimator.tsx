@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { Calculator, Utensils, TrendingUp, AlertCircle, Wifi, WifiOff, Database, TestTube, MapPin, CheckCircle, XCircle } from 'lucide-react';
+import { Calculator, Utensils, TrendingUp, AlertCircle, Wifi, WifiOff, Database, TestTube, MapPin, CheckCircle, XCircle, Edit3 } from 'lucide-react';
 import { estimateCalories } from '../utils/calorieEstimator';
 import { testSupabaseConnection, supabase } from '../lib/supabase';
 import { RestaurantDiscoveryResult } from '../types';
@@ -127,7 +127,7 @@ export default function CalorieEstimator() {
     }
     
     try {
-      // Phase 1: Restaurant Discovery + Phase 2: Dish Analysis
+      // Three-phase analysis
       const result = await estimateCalories(userInput);
       setDiscoveryResult(result);
       
@@ -135,10 +135,15 @@ export default function CalorieEstimator() {
         setError(result.error);
       }
       
+      // Refresh food history if meal was saved
+      if (result.saved) {
+        setHistoryRefreshTrigger(prev => prev + 1);
+      }
+      
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
       setError(errorMessage);
-      console.error('Restaurant discovery error:', err);
+      console.error('Three-phase estimation error:', err);
     } finally {
       setIsLoading(false);
     }
@@ -170,7 +175,7 @@ export default function CalorieEstimator() {
             Restaurant Nutrition Estimator
           </h1>
           <p className="text-gray-600 text-sm leading-relaxed">
-            Phase 1 & 2: Restaurant discovery + complete dish analysis
+            Complete 3-phase analysis: Restaurant discovery + dish analysis + modifications
           </p>
         </div>
 
@@ -260,7 +265,8 @@ Examples:
 • Cortado from Baryl Frederiksberg
 • Avocado toast at Halifax Copenhagen  
 • Lasagna from Il Buco
-• Pad thai with chicken at Thai Kitchen Nørrebro"
+• Burger without bun from Halifax
+• Large cortado from Coffee Collective"
             className="meal-input"
             disabled={isLoading}
             rows={4}
@@ -270,7 +276,7 @@ Examples:
           <div className="format-help">
             <span className="format-icon">💡</span>
             <span className="format-text">
-              End with "from" or "at" [restaurant name, location] for best results
+              End with "from" or "at" [restaurant name, location] for best results. Include modifications like "without", "extra", "large"
             </span>
           </div>
           
@@ -282,12 +288,12 @@ Examples:
             {isLoading ? (
               <>
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                Analyzing dish...
+                Analyzing meal...
               </>
             ) : (
               <>
-                <MapPin className="w-4 h-4" />
-                Analyze Meal
+                <Calculator className="w-4 h-4" />
+                Analyze Complete Meal
               </>
             )}
           </button>
@@ -394,21 +400,67 @@ Examples:
 
                       {discoveryResult.standardCalories && (
                         <div className="bg-blue-50 rounded-xl p-4">
-                          <h4 className="text-sm font-medium text-blue-800 mb-2">Total Calories:</h4>
+                          <h4 className="text-sm font-medium text-blue-800 mb-2">Standard Calories:</h4>
                           <p className="calorie-number text-blue-700">{discoveryResult.standardCalories} calories</p>
                           {discoveryResult.confidence && (
                             <p className="text-xs text-blue-600 mt-1">Confidence: {discoveryResult.confidence}</p>
                           )}
                         </div>
                       )}
+                    </div>
+                  </div>
+                )}
 
-                      {discoveryResult.ready && (
-                        <div className="next-phase">
-                          <p className="text-green-700 text-sm font-medium">
-                            ✅ {discoveryResult.ready}
-                          </p>
-                        </div>
+                {/* Phase 3 Results */}
+                {discoveryResult.phase && discoveryResult.phase >= 3 && (
+                  <div className="phase-result phase-3 bg-white rounded-2xl shadow-lg p-6 mb-6 animate-in slide-in-from-bottom-4 duration-300">
+                    <div className="text-center mb-6">
+                      <div className="inline-flex items-center justify-center w-12 h-12 bg-orange-100 rounded-full mb-3">
+                        <Edit3 className="w-6 h-6 text-orange-600" />
+                      </div>
+                      <h2 className="text-lg font-semibold text-gray-900 mb-1">
+                        ✏️ Your Modifications (Phase 3)
+                      </h2>
+                    </div>
+
+                    <div className="space-y-4">
+                      <div className="bg-orange-50 rounded-xl p-4">
+                        <h4 className="text-sm font-medium text-orange-800 mb-2">Modifications Detected:</h4>
+                        <p className="text-orange-700 font-medium">{discoveryResult.modificationsDetected}</p>
+                      </div>
+
+                      {discoveryResult.modificationsDetected !== 'NONE' && (
+                        <>
+                          <div className="bg-yellow-50 rounded-xl p-4">
+                            <h4 className="text-sm font-medium text-yellow-800 mb-2">Calorie Adjustments:</h4>
+                            <pre className="adjustments-list text-yellow-700">{discoveryResult.calorieAdjustments}</pre>
+                          </div>
+
+                          <div className="bg-gray-50 rounded-xl p-4">
+                            <h4 className="text-sm font-medium text-gray-800 mb-2">Calculation:</h4>
+                            <p className="calculation text-gray-700">{discoveryResult.calculation}</p>
+                          </div>
+                        </>
                       )}
+
+                      <div className="final-result">
+                        <h4 className="text-sm font-medium text-blue-800 mb-2">Final Total:</h4>
+                        <p className="final-calories">{discoveryResult.finalCalories} calories</p>
+                        <p className="text-xs text-blue-600 mt-1">Confidence: {discoveryResult.confidence}</p>
+                      </div>
+                    </div>
+
+                    {/* Database Save Status */}
+                    <div className="mt-4">
+                      {discoveryResult.saved ? (
+                        <div className="save-success">
+                          <p className="text-sm font-medium">✅ Saved to your food log</p>
+                        </div>
+                      ) : discoveryResult.saveError ? (
+                        <div className="save-error">
+                          <p className="text-sm font-medium">❌ Save failed: {discoveryResult.saveError}</p>
+                        </div>
+                      ) : null}
                     </div>
                   </div>
                 )}
@@ -457,6 +509,14 @@ Examples:
                         {discoveryResult.rawResponses.phase2}
                       </pre>
                     </div>
+                    {discoveryResult.rawResponses.phase3 && (
+                      <div className="phase-response">
+                        <h4 className="text-sm font-medium text-gray-700 mb-2">Phase 3 (Modifications):</h4>
+                        <pre className="bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs text-gray-700 whitespace-pre-wrap overflow-x-auto">
+                          {discoveryResult.rawResponses.phase3}
+                        </pre>
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 max-h-40 overflow-y-auto">
@@ -481,7 +541,7 @@ Examples:
         {/* Footer */}
         <div className="text-center mt-8 pb-8">
           <p className="text-xs text-gray-500">
-            Phase 1 & 2: Restaurant Discovery + Dish Analysis • Phase 3 coming soon
+            Complete 3-phase analysis: Restaurant discovery + dish analysis + user modifications
           </p>
         </div>
       </div>

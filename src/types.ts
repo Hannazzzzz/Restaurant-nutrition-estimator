@@ -26,7 +26,18 @@ export interface RestaurantDiscoveryResult {
   rawResponses?: {
     phase1: string;
     phase2: string;
+    phase3?: string;
   };
   phase?: number;
   ready?: string;
+  
+  // Phase 3: User Modifications
+  modificationsDetected?: string;
+  calorieAdjustments?: string;
+  calculation?: string;
+  finalCalories?: number;
+  originalInput?: string;
+  timestamp?: string;
+  saved?: boolean;
+  saveError?: string;
 }

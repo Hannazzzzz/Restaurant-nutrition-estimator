@@ -1,5 +1,6 @@
 import { CalorieEstimate } from '../types';
 import { callPerplexityAPI } from './perplexityApi';
+import { supabase } from '../lib/supabase';
 
 interface FoodKeyword {
   keywords: string[];
@@ -28,9 +29,20 @@ interface RestaurantDiscoveryResult {
   rawResponses?: {
     phase1: string;
     phase2: string;
+    phase3?: string;
   };
   phase?: number;
   ready?: string;
+  
+  // Phase 3: User Modifications
+  modificationsDetected?: string;
+  calorieAdjustments?: string;
+  calculation?: string;
+  finalCalories?: number;
+  originalInput?: string;
+  timestamp?: string;
+  saved?: boolean;
+  saveError?: string;
 }
 
 const foodDatabase: FoodKeyword[] = [
@@ -112,6 +124,55 @@ function parseDishAnalysis(response: string) {
   };
 }
 
+function parseModificationAnalysis(response: string) {
+  // Extract modification details from Phase 3
+  const modificationsMatch = response.match(/MODIFICATIONS DETECTED: (.+)/);
+  const adjustmentsMatch = response.match(/CALORIE ADJUSTMENTS:(.*?)CALCULATION:/s);
+  const calculationMatch = response.match(/CALCULATION: (.+)/);
+  const finalCaloriesMatch = response.match(/FINAL CALORIES: (\d+)/);
+  
+  return {
+    modifications: modificationsMatch?.[1]?.trim() || 'NONE',
+    adjustments: adjustmentsMatch?.[1]?.trim() || 'No adjustments',
+    calculation: calculationMatch?.[1]?.trim() || 'No calculation shown',
+    finalCalories: finalCaloriesMatch?.[1]?.trim() || '0'
+  };
+}
+
+// Simple user ID generator for now
+function getUserId() {
+  let userId = localStorage.getItem('userId');
+  if (!userId) {
+    userId = 'user_' + Math.random().toString(36).substr(2, 9);
+    localStorage.setItem('userId', userId);
+  }
+  return userId;
+}
+
+// Database save function
+async function saveToDatabase(result: any) {
+  try {
+    const { data, error } = await supabase
+      .from('food_entries')
+      .insert([
+        {
+          user_id: getUserId(),
+          restaurant_name: result.restaurant,
+          food_description: result.originalInput,
+          estimated_calories: result.finalCalories || result.standardCalories || 0,
+          raw_ai_response: JSON.stringify(result.rawResponses),
+          created_at: new Date().toISOString()
+        }
+      ]);
+
+    if (error) throw error;
+    return { success: true, data };
+  } catch (error) {
+    console.error('Database save error:', error);
+    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
+  }
+}
+
 // Fallback function using the original rule-based approach
 function estimateCaloriesFallback(mealDescription: string): CalorieEstimate {
   const description = mealDescription.toLowerCase();
@@ -190,8 +251,7 @@ MENU DESCRIPTION: [complete ingredient list from menu, or "ITEM NOT ON MENU" or 
 INGREDIENT SOURCE: [where the ingredients were found - menu PDF, website, etc.]
 FOUND: YES/NO`
     );
-
-    // Parse restaurant discovery response
+    
     const restaurantFound = restaurantResponse.includes('FOUND: YES');
     const restaurantInfo = parseRestaurantInfo(restaurantResponse);
 
@@ -240,7 +300,40 @@ CONFIDENCE: [HIGH/MEDIUM/LOW based on ingredient detail available]`
     // Parse Phase 2 response
     const dishAnalysis = parseDishAnalysis(dishResponse);
 
-    return {
+    // PHASE 3: User Modification Analysis
+    const modificationResponse = await callPerplexityAPI(
+      `Analyze user modifications and calculate final calories:
+
+Original Input: "${userInput}"
+Restaurant: ${restaurantInfo.restaurant}
+Menu Item: ${restaurantInfo.menuItem}
+Standard Ingredients: ${dishAnalysis.completeList}
+Standard Calories: ${dishAnalysis.calories}
+
+Requirements:
+1. Check for modification keywords in the original input:
+   - Removals: "without", "no", "skip", "hold", "minus"
+   - Additions: "extra", "add", "with extra", "double", "plus"
+   - Size changes: "half", "small", "large", "double portion"
+   - Substitutions: "instead of", "swap", "replace with"
+2. Calculate calorie adjustments for each modification
+3. Provide final adjusted total
+4. If no modifications found, final calories = standard calories
+
+Format:
+MODIFICATIONS DETECTED: [list all modifications found, or "NONE"]
+CALORIE ADJUSTMENTS:
+- [modification 1]: [+/- calories with reasoning]
+- [modification 2]: [+/- calories with reasoning]
+CALCULATION: [standard calories] [adjustments] = [final total]
+FINAL CALORIES: [number only]`
+    );
+
+    // Parse Phase 3 response
+    const modificationAnalysis = parseModificationAnalysis(modificationResponse);
+
+    // Prepare complete result for database save
+    const finalResult = {
       // Phase 1 results
       restaurant: restaurantInfo.restaurant,
       menuItem: restaurantInfo.menuItem,
@@ -255,30 +348,43 @@ CONFIDENCE: [HIGH/MEDIUM/LOW based on ingredient detail available]`
       standardCalories: dishAnalysis.calories,
       confidence: dishAnalysis.confidence,
       
-      // Raw responses for debugging
+      // Phase 3 results
+      modificationsDetected: modificationAnalysis.modifications,
+      calorieAdjustments: modificationAnalysis.adjustments,
+      calculation: modificationAnalysis.calculation,
+      finalCalories: parseInt(modificationAnalysis.finalCalories) || parseInt(dishAnalysis.calories) || 0,
+      
+      // Metadata
+      originalInput: userInput,
+      phase: 3,
+      timestamp: new Date().toISOString(),
       rawResponses: {
         phase1: restaurantResponse,
-        phase2: dishResponse
+        phase2: dishResponse,
+        phase3: modificationResponse
       },
       rawResponse: restaurantResponse, // Keep for backward compatibility
-      
-      // Status
-      phase: 2,
-      ready: 'Phase 2 Complete - Ready for modification analysis',
-      estimatedCalories: `${dishAnalysis.calories} calories (standard menu version)`
+      estimatedCalories: `${modificationAnalysis.finalCalories || dishAnalysis.calories} calories (final estimate)`
     };
 
+    // Save to database
+    const saveResult = await saveToDatabase(finalResult);
+    finalResult.saved = saveResult.success;
+    finalResult.saveError = saveResult.error;
+
+    return finalResult;
+
   } catch (error) {
-    console.error('Restaurant discovery error:', error);
+    console.error('Three-phase estimation error:', error);
     return { 
       restaurant: 'Unknown',
       menuItem: 'Unknown',
       description: 'None listed',
       found: false,
-      error: 'Restaurant discovery failed', 
+      error: 'Estimation failed', 
       suggestion: error instanceof Error ? error.message : 'Unknown error occurred',
       rawResponse: '',
-      estimatedCalories: 'Discovery failed'
+      estimatedCalories: 'Estimation failed'
     };
   }
 }
