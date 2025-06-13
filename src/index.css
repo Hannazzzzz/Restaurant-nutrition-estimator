@@ -1,3 +1,76 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.input-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.input-label {
+  font-weight: 600;
+  color: #374151;
+  font-size: 16px;
+}
+
+.meal-input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 16px;
+  line-height: 1.5;
+  resize: vertical;
+  min-height: 100px;
+  transition: all 0.2s;
+}
+
+.meal-input:focus {
+  outline: none;
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.format-help {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background-color: #f3f4f6;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.format-icon {
+  font-size: 16px;
+}
+
+.input-format-error {
+  background-color: #fef3cd;
+  border: 1px solid #f59e0b;
+  border-radius: 8px;
+  padding: 16px;
+  color: #92400e;
+}
+
+.suggestion {
+  font-style: italic;
+  margin-top: 8px;
+  color: #6b7280;
+}
+
+.estimate-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.error-container {
+  margin-bottom: 24px;
+}
+
+.api-error {
+  /* Inherits styles from parent container */
+}

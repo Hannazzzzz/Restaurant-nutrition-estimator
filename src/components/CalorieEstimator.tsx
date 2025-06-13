@@ -7,7 +7,7 @@ import { RestaurantDiscoveryResult } from '../types';
 import FoodHistory from './FoodHistory';
 
 export default function CalorieEstimator() {
-  const [mealDescription, setMealDescription] = useState('');
+  const [userInput, setUserInput] = useState('');
   const [discoveryResult, setDiscoveryResult] = useState<RestaurantDiscoveryResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -34,6 +34,32 @@ export default function CalorieEstimator() {
       localStorage.setItem('userId', userId);
     }
     return userId;
+  }
+
+  // Input validation function
+  function validateMealInput(input: string) {
+    const trimmedInput = input.trim();
+    
+    // Check for 'from' or 'at' keyword
+    if (!trimmedInput.toLowerCase().includes(' from ') && 
+        !trimmedInput.toLowerCase().includes(' at ')) {
+      return {
+        valid: false,
+        error: "Please end your description with 'from' or 'at' [restaurant name]",
+        suggestion: "Example: 'Cortado from Baryl' or 'Pasta at Il Buco'"
+      };
+    }
+    
+    // Check minimum length
+    if (trimmedInput.length < 10) {
+      return {
+        valid: false,
+        error: "Please provide more details about your meal",
+        suggestion: "Include the food item and restaurant name"
+      };
+    }
+    
+    return { valid: true };
   }
 
   // Test function for food_entries table
@@ -75,15 +101,34 @@ export default function CalorieEstimator() {
   };
 
   const handleEstimate = async () => {
-    if (!mealDescription.trim()) return;
+    if (!userInput.trim()) return;
     
     setIsLoading(true);
     setError(null);
     setDiscoveryResult(null);
     
+    // Validate input format first
+    const validation = validateMealInput(userInput);
+    if (!validation.valid) {
+      setError(validation.error);
+      setDiscoveryResult({
+        restaurant: 'Unknown',
+        menuItem: 'Unknown',
+        description: 'None listed',
+        found: false,
+        error: validation.error,
+        suggestion: validation.suggestion,
+        rawResponse: '',
+        estimatedCalories: 'Input validation failed',
+        inputFormat: true
+      });
+      setIsLoading(false);
+      return;
+    }
+    
     try {
       // Phase 1: Restaurant Discovery
-      const result = await estimateCalories(mealDescription);
+      const result = await estimateCalories(userInput);
       setDiscoveryResult(result);
       
       if (result.error) {
@@ -201,23 +246,38 @@ export default function CalorieEstimator() {
         </div>
 
         {/* Input Section */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
-          <label htmlFor="meal-input" className="block text-sm font-medium text-gray-700 mb-3">
-            Describe your meal with restaurant details
+        <div className="input-section bg-white rounded-2xl shadow-lg p-6 mb-6">
+          <label htmlFor="meal-input" className="input-label">
+            Describe your meal
           </label>
           <textarea
             id="meal-input"
-            value={mealDescription}
-            onChange={(e) => setMealDescription(e.target.value)}
-            placeholder="e.g., cortado from Joe & The Juice Copenhagen, Liverpool burger from Halifax restaurant, pad thai at Nong's Khao Man Gai..."
-            className="w-full h-24 px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none text-gray-900 placeholder-gray-500 transition-all duration-200"
+            value={userInput}
+            onChange={(e) => setUserInput(e.target.value)}
+            placeholder="Describe your meal, ending with 'from' or 'at' [restaurant name]
+
+Examples:
+• Cortado from Baryl Frederiksberg
+• Avocado toast at Halifax Copenhagen  
+• Lasagna from Il Buco
+• Pad thai with chicken at Thai Kitchen Nørrebro"
+            className="meal-input"
             disabled={isLoading}
+            rows={4}
           />
+          
+          {/* Input format helper */}
+          <div className="format-help">
+            <span className="format-icon">💡</span>
+            <span className="format-text">
+              End with "from" or "at" [restaurant name] for best results
+            </span>
+          </div>
           
           <button
             onClick={handleEstimate}
-            disabled={!mealDescription.trim() || isLoading}
-            className="w-full mt-4 bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2"
+            disabled={!userInput.trim() || isLoading}
+            className="estimate-button w-full bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2"
           >
             {isLoading ? (
               <>
@@ -234,25 +294,38 @@ export default function CalorieEstimator() {
         </div>
 
         {/* Error Message */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 rounded-2xl p-4 mb-6">
-            <div className="flex items-center gap-2 text-red-700">
-              <AlertCircle className="w-4 h-4 flex-shrink-0" />
-              <div>
-                <p className="font-medium text-sm">Restaurant Discovery Failed</p>
-                <p className="text-xs mt-1">{error}</p>
-                {discoveryResult?.suggestion && (
-                  <p className="text-xs mt-2 text-red-600">
-                    💡 {discoveryResult.suggestion}
-                  </p>
+        {error && discoveryResult && (
+          <div className="error-container bg-red-50 border border-red-200 rounded-2xl p-4 mb-6">
+            {discoveryResult.inputFormat ? (
+              <div className="input-format-error">
+                <div className="flex items-center gap-2 text-red-700 mb-2">
+                  <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                  <h3 className="font-medium text-sm">📝 Input Format Issue</h3>
+                </div>
+                <p className="text-red-700 text-sm">{error}</p>
+                {discoveryResult.suggestion && (
+                  <p className="suggestion text-red-600 text-xs mt-2">💡 {discoveryResult.suggestion}</p>
                 )}
               </div>
-            </div>
+            ) : (
+              <div className="api-error">
+                <div className="flex items-center gap-2 text-red-700">
+                  <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                  <div>
+                    <h3 className="font-medium text-sm">❌ Restaurant Not Found</h3>
+                    <p className="text-xs mt-1">{error}</p>
+                    {discoveryResult.suggestion && (
+                      <p className="suggestion text-red-600 text-xs mt-2">💡 {discoveryResult.suggestion}</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
         {/* Restaurant Discovery Results */}
-        {discoveryResult && (
+        {discoveryResult && !discoveryResult.inputFormat && (
           <div className="bg-white rounded-2xl shadow-lg p-6 mb-6 animate-in slide-in-from-bottom-4 duration-300">
             {discoveryResult.found ? (
               <div className="restaurant-found">

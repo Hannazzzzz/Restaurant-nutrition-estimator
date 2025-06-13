@@ -16,6 +16,7 @@ interface RestaurantDiscoveryResult {
   estimatedCalories: string;
   error?: string;
   suggestion?: string;
+  inputFormat?: boolean;
 }
 
 const foodDatabase: FoodKeyword[] = [
@@ -137,10 +138,11 @@ export async function estimateCalories(userInput: string): Promise<RestaurantDis
       `Find the specific restaurant and menu item for: "${userInput}"
 
 Requirements:
-1. Identify exact restaurant name and location
-2. Find the specific menu item mentioned  
-3. Note any menu description or ingredients listed
-4. If restaurant not found, respond "RESTAURANT NOT FOUND"
+1. The input follows format: "[food description] from/at [restaurant name]"
+2. Extract the restaurant name after "from" or "at"
+3. Identify the food item before "from" or "at"
+4. Find the specific restaurant and verify it exists
+5. If restaurant not found, respond "RESTAURANT NOT FOUND"
 
 Format:
 RESTAURANT: [name and location]

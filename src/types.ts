@@ -14,4 +14,5 @@ export interface RestaurantDiscoveryResult {
   estimatedCalories: string;
   error?: string;
   suggestion?: string;
+  inputFormat?: boolean;
 }
