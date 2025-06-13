@@ -16,7 +16,7 @@ interface FoodEntry {
 interface WeeklyStats {
   totalMeals: number;
   totalCalories: number;
-  averageCalories: number;
+  averageCaloriesPerDay: number;
   mostFrequentRestaurant: string;
   mostFrequentRestaurantCount: number;
 }
@@ -88,7 +88,7 @@ export default function FoodHistory({ userId, refreshTrigger }: FoodHistoryProps
         setWeeklyStats({
           totalMeals: 0,
           totalCalories: 0,
-          averageCalories: 0,
+          averageCaloriesPerDay: 0,
           mostFrequentRestaurant: 'None',
           mostFrequentRestaurantCount: 0
         });
@@ -98,7 +98,7 @@ export default function FoodHistory({ userId, refreshTrigger }: FoodHistoryProps
       // Calculate stats
       const totalMeals = data.length;
       const totalCalories = data.reduce((sum, entry) => sum + entry.estimated_calories, 0);
-      const averageCalories = Math.round(totalCalories / totalMeals);
+      const averageCaloriesPerDay = Math.round(totalCalories / 7); // Average per day over 7 days
       
       // Find most frequent restaurant
       const restaurantCounts: { [key: string]: number } = {};
@@ -114,7 +114,7 @@ export default function FoodHistory({ userId, refreshTrigger }: FoodHistoryProps
       setWeeklyStats({
         totalMeals,
         totalCalories,
-        averageCalories,
+        averageCaloriesPerDay,
         mostFrequentRestaurant,
         mostFrequentRestaurantCount: restaurantCounts[mostFrequentRestaurant]
       });
@@ -178,16 +178,12 @@ export default function FoodHistory({ userId, refreshTrigger }: FoodHistoryProps
     }
   };
 
-  const getTotalCalories = () => {
-    return entries.reduce((total, entry) => total + entry.estimated_calories, 0);
-  };
-
   if (loading) {
     return (
       <div className="bg-white rounded-2xl shadow-lg p-6">
         <div className="flex items-center justify-center gap-2 text-gray-500">
           <RefreshCw className="w-4 h-4 animate-spin" />
-          <span className="text-sm">Loading your food history...</span>
+          <span className="text-sm">Loading your weekly insights...</span>
         </div>
       </div>
     );
@@ -198,14 +194,17 @@ export default function FoodHistory({ userId, refreshTrigger }: FoodHistoryProps
       <div className="bg-white rounded-2xl shadow-lg p-6">
         <div className="text-center">
           <div className="inline-flex items-center justify-center w-12 h-12 bg-red-100 rounded-full mb-3">
-            <History className="w-6 h-6 text-red-600" />
+            <TrendingUp className="w-6 h-6 text-red-600" />
           </div>
           <h3 className="text-sm font-medium text-gray-900 mb-2">
-            Failed to Load History
+            Failed to Load Weekly Insights
           </h3>
           <p className="text-xs text-red-600 mb-4">{error}</p>
           <button
-            onClick={loadEntries}
+            onClick={() => {
+              loadEntries();
+              loadWeeklyStats();
+            }}
             className="text-xs bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200"
           >
             Try Again
@@ -217,126 +216,94 @@ export default function FoodHistory({ userId, refreshTrigger }: FoodHistoryProps
 
   if (entries.length === 0) {
     return (
-      <div className="space-y-6">
-        {/* Weekly Analytics Card - Empty State */}
-        <div className="bg-white rounded-2xl shadow-lg p-6">
-          <div className="text-center">
-            <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full mb-3">
-              <TrendingUp className="w-6 h-6 text-blue-600" />
-            </div>
-            <h3 className="text-sm font-medium text-gray-900 mb-2">
-              Weekly Insights
-            </h3>
-            <p className="text-xs text-gray-500">
-              Start logging meals to see your weekly patterns and insights for the past 7 days.
-            </p>
+      <div className="bg-white rounded-2xl shadow-lg p-6">
+        <div className="text-center">
+          <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full mb-3">
+            <TrendingUp className="w-6 h-6 text-blue-600" />
           </div>
-        </div>
-
-        {/* Empty History Card */}
-        <div className="bg-white rounded-2xl shadow-lg p-6">
-          <div className="text-center">
-            <div className="inline-flex items-center justify-center w-12 h-12 bg-gray-100 rounded-full mb-3">
-              <History className="w-6 h-6 text-gray-400" />
-            </div>
-            <h3 className="text-sm font-medium text-gray-900 mb-2">
-              No Food History Yet
-            </h3>
-            <p className="text-xs text-gray-500">
-              Your estimated meals will appear here after you submit them.
-            </p>
-          </div>
+          <h3 className="text-sm font-medium text-gray-900 mb-2">
+            Weekly Insights
+          </h3>
+          <p className="text-xs text-gray-500">
+            Start logging meals to see your weekly patterns and insights for the past 7 days.
+          </p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      {/* Weekly Analytics Card */}
-      <div className="bg-white rounded-2xl shadow-lg p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <div className="inline-flex items-center justify-center w-8 h-8 bg-blue-100 rounded-full">
-              <TrendingUp className="w-4 h-4 text-blue-600" />
-            </div>
-            <h2 className="text-lg font-semibold text-gray-900">
-              Weekly Insights
-            </h2>
+    <div className="bg-white rounded-2xl shadow-lg p-6">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-2">
+          <div className="inline-flex items-center justify-center w-8 h-8 bg-blue-100 rounded-full">
+            <TrendingUp className="w-4 h-4 text-blue-600" />
           </div>
+          <h2 className="text-lg font-semibold text-gray-900">
+            Weekly Insights
+          </h2>
+        </div>
+        <div className="flex items-center gap-3">
           <div className="flex items-center gap-1 text-xs text-gray-500">
             <Calendar className="w-3 h-3" />
             <span>Past 7 days</span>
           </div>
-        </div>
-
-        {statsLoading ? (
-          <div className="flex items-center justify-center gap-2 text-gray-500 py-4">
-            <RefreshCw className="w-4 h-4 animate-spin" />
-            <span className="text-sm">Loading weekly insights...</span>
-          </div>
-        ) : weeklyStats ? (
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-emerald-50 rounded-xl p-3">
-              <div className="text-xs text-emerald-600 font-medium mb-1">Meals Logged</div>
-              <div className="text-lg font-bold text-emerald-700">{weeklyStats.totalMeals}</div>
-            </div>
-            <div className="bg-blue-50 rounded-xl p-3">
-              <div className="text-xs text-blue-600 font-medium mb-1">Avg Calories</div>
-              <div className="text-lg font-bold text-blue-700">
-                {weeklyStats.totalMeals > 0 ? weeklyStats.averageCalories : 0}
-              </div>
-            </div>
-            <div className="bg-purple-50 rounded-xl p-3 col-span-2">
-              <div className="text-xs text-purple-600 font-medium mb-1">Top Restaurant</div>
-              <div className="text-sm font-bold text-purple-700 truncate">
-                {weeklyStats.mostFrequentRestaurant}
-                {weeklyStats.mostFrequentRestaurantCount > 1 && (
-                  <span className="text-xs font-normal ml-1">
-                    ({weeklyStats.mostFrequentRestaurantCount} visits)
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="text-center py-4">
-            <p className="text-xs text-red-600">Failed to load weekly insights</p>
-          </div>
-        )}
-      </div>
-
-      {/* Food History Card */}
-      <div className="bg-white rounded-2xl shadow-lg p-6">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-2">
-            <div className="inline-flex items-center justify-center w-8 h-8 bg-emerald-100 rounded-full">
-              <History className="w-4 h-4 text-emerald-600" />
-            </div>
-            <h2 className="text-lg font-semibold text-gray-900">
-              Your Recent Meals
-            </h2>
-          </div>
           <button
-            onClick={loadEntries}
+            onClick={() => {
+              loadEntries();
+              loadWeeklyStats();
+            }}
             className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 font-medium py-1 px-3 rounded-lg transition-colors duration-200 flex items-center gap-1"
           >
             <RefreshCw className="w-3 h-3" />
             Refresh
           </button>
         </div>
+      </div>
 
-        {/* Summary Stats */}
+      {/* Weekly Analytics */}
+      {statsLoading ? (
+        <div className="flex items-center justify-center gap-2 text-gray-500 py-4 mb-6">
+          <RefreshCw className="w-4 h-4 animate-spin" />
+          <span className="text-sm">Loading weekly insights...</span>
+        </div>
+      ) : weeklyStats ? (
         <div className="grid grid-cols-2 gap-4 mb-6">
           <div className="bg-emerald-50 rounded-xl p-3">
-            <div className="text-xs text-emerald-600 font-medium mb-1">Total Entries</div>
-            <div className="text-lg font-bold text-emerald-700">{entries.length}</div>
+            <div className="text-xs text-emerald-600 font-medium mb-1">Meals Logged</div>
+            <div className="text-lg font-bold text-emerald-700">{weeklyStats.totalMeals}</div>
           </div>
           <div className="bg-blue-50 rounded-xl p-3">
-            <div className="text-xs text-blue-600 font-medium mb-1">Total Calories</div>
-            <div className="text-lg font-bold text-blue-700">{getTotalCalories().toLocaleString()}</div>
+            <div className="text-xs text-blue-600 font-medium mb-1">Avg Cal/Day</div>
+            <div className="text-lg font-bold text-blue-700">
+              {weeklyStats.averageCaloriesPerDay}
+            </div>
+          </div>
+          <div className="bg-purple-50 rounded-xl p-3 col-span-2">
+            <div className="text-xs text-purple-600 font-medium mb-1">Top Restaurant</div>
+            <div className="text-sm font-bold text-purple-700 truncate">
+              {weeklyStats.mostFrequentRestaurant}
+              {weeklyStats.mostFrequentRestaurantCount > 1 && (
+                <span className="text-xs font-normal ml-1">
+                  ({weeklyStats.mostFrequentRestaurantCount} visits)
+                </span>
+              )}
+            </div>
           </div>
         </div>
+      ) : (
+        <div className="text-center py-4 mb-6">
+          <p className="text-xs text-red-600">Failed to load weekly insights</p>
+        </div>
+      )}
+
+      {/* Recent Meals Section */}
+      <div className="border-t border-gray-100 pt-6">
+        <h3 className="text-sm font-medium text-gray-700 mb-4 flex items-center gap-2">
+          <History className="w-4 h-4 text-gray-500" />
+          Recent Meals
+        </h3>
 
         {/* Entries List */}
         <div className="space-y-3 max-h-80 overflow-y-auto">
