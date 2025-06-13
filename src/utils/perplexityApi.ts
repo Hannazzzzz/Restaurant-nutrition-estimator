@@ -20,7 +20,9 @@ export async function estimateCaloriesWithPerplexity(mealDescription: string): P
     throw new Error('Perplexity API key not configured');
   }
 
-  const prompt = `Search for the word 'calories in' + ${mealDescription}. Find the restaurant and menu item. 
+  const prompt = `Do not use any markdown, bolding, or special formatting. Provide only plain text.
+
+Search for the word 'calories in' + ${mealDescription}. Find the restaurant and menu item. 
 
 IMPORTANT: Remember that menu items include ALL standard components (e.g., burgers include buns, sandwiches include bread, pasta dishes include pasta, salads include base greens, etc.). Calculate calories for the complete dish as served, not just the toppings or special ingredients mentioned.
 
