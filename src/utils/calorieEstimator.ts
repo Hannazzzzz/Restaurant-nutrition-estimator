@@ -270,14 +270,20 @@ INGREDIENT SOURCE: [where the ingredients were found - menu PDF, website, etc.]
 FOUND: YES/NO`
     );
     
-    const restaurantFound = restaurantResponse.includes('FOUND: YES');
+    // NEW LOGIC: Check if restaurant was actually found by parsing the response
     const restaurantInfo = parseRestaurantInfo(restaurantResponse);
+    
+    // Determine if restaurant was found based on parsed content, not just "FOUND: YES"
+    const restaurantFound = restaurantInfo.restaurant !== 'Unknown' && 
+                           restaurantInfo.menuItem !== 'Unknown' &&
+                           !restaurantResponse.includes('RESTAURANT NOT FOUND') &&
+                           !restaurantResponse.includes('NOT FOUND');
 
     if (!restaurantFound) {
       return { 
-        restaurant: 'Unknown',
-        menuItem: 'Unknown',
-        description: 'None listed',
+        restaurant: restaurantInfo.restaurant,
+        menuItem: restaurantInfo.menuItem,
+        description: restaurantInfo.description,
         found: false,
         error: 'Restaurant not found', 
         suggestion: 'Try including restaurant name + location',
