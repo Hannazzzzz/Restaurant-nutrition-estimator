@@ -1,21 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { Calculator, Utensils, TrendingUp, AlertCircle, Wifi, WifiOff, Database, TestTube } from 'lucide-react';
+import { Calculator, Utensils, TrendingUp, AlertCircle, Wifi, WifiOff, Database, TestTube, MapPin, CheckCircle, XCircle } from 'lucide-react';
 import { estimateCalories } from '../utils/calorieEstimator';
 import { testSupabaseConnection, supabase } from '../lib/supabase';
-import { CalorieEstimate } from '../types';
+import { RestaurantDiscoveryResult } from '../types';
 import FoodHistory from './FoodHistory';
 
 export default function CalorieEstimator() {
   const [mealDescription, setMealDescription] = useState('');
-  const [estimate, setEstimate] = useState<CalorieEstimate | null>(null);
+  const [discoveryResult, setDiscoveryResult] = useState<RestaurantDiscoveryResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isUsingAI, setIsUsingAI] = useState(false);
   const [dbStatus, setDbStatus] = useState<{ success: boolean; message?: string; error?: string } | null>(null);
   const [foodEntriesTestResult, setFoodEntriesTestResult] = useState<{ success: boolean; message?: string; error?: string; data?: any } | null>(null);
   const [isTestingFoodEntries, setIsTestingFoodEntries] = useState(false);
-  const [savedEntryId, setSavedEntryId] = useState<string | null>(null);
   const [historyRefreshTrigger, setHistoryRefreshTrigger] = useState(0);
 
   // Test database connection on component mount
@@ -36,19 +34,6 @@ export default function CalorieEstimator() {
       localStorage.setItem('userId', userId);
     }
     return userId;
-  }
-
-  // Extract restaurant name from AI response breakdown
-  function extractRestaurantName(breakdown: string[]): string {
-    const restaurantEntry = breakdown.find(item => 
-      item.toLowerCase().includes('restaurant:')
-    );
-    
-    if (restaurantEntry) {
-      return restaurantEntry.replace(/restaurant:\s*/i, '').trim();
-    }
-    
-    return 'Unknown Restaurant';
   }
 
   // Test function for food_entries table
@@ -94,74 +79,23 @@ export default function CalorieEstimator() {
     
     setIsLoading(true);
     setError(null);
-    setIsUsingAI(false);
-    setSavedEntryId(null);
+    setDiscoveryResult(null);
     
     try {
-      // Get AI estimate (existing Perplexity call)
-      const aiResponse = await estimateCalories(mealDescription);
+      // Phase 1: Restaurant Discovery
+      const result = await estimateCalories(mealDescription);
+      setDiscoveryResult(result);
       
-      // Check if we're likely using Perplexity API (has raw response)
-      setIsUsingAI(!!aiResponse.rawApiResponse);
-      
-      // Save to database
-      try {
-        const restaurantName = extractRestaurantName(aiResponse.breakdown);
-        
-        const { data, error: saveError } = await supabase
-          .from('food_entries')
-          .insert({
-            user_id: getUserId(),
-            restaurant_name: restaurantName,
-            food_description: mealDescription,
-            estimated_calories: aiResponse.calories,
-            raw_ai_response: JSON.stringify(aiResponse)
-          })
-          .select();
-        
-        if (saveError) {
-          console.error('❌ Save failed:', saveError);
-          // Still show AI response even if save fails
-          setError(`Calorie estimate completed, but failed to save: ${saveError.message}`);
-        } else {
-          console.log('✅ Saved entry:', data[0]);
-          setSavedEntryId(data[0].id);
-          // Trigger history refresh
-          setHistoryRefreshTrigger(prev => prev + 1);
-        }
-      } catch (saveErr) {
-        console.error('❌ Save failed:', saveErr);
-        // Still show AI response even if save fails
-        setError(`Calorie estimate completed, but failed to save to database.`);
+      if (result.error) {
+        setError(result.error);
       }
-      
-      // Show success + AI response
-      setEstimate(aiResponse);
       
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
       setError(errorMessage);
-      console.error('Calorie estimation error:', err);
+      console.error('Restaurant discovery error:', err);
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const getConfidenceColor = (confidence: string) => {
-    switch (confidence) {
-      case 'high': return 'text-emerald-600';
-      case 'medium': return 'text-yellow-600';
-      case 'low': return 'text-red-600';
-      default: return 'text-gray-600';
-    }
-  };
-
-  const getConfidenceText = (confidence: string) => {
-    switch (confidence) {
-      case 'high': return 'High Confidence';
-      case 'medium': return 'Medium Confidence';
-      case 'low': return 'Low Confidence';
-      default: return 'Unknown';
     }
   };
 
@@ -188,10 +122,10 @@ export default function CalorieEstimator() {
             <Utensils className="w-8 h-8 text-emerald-600" />
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            Calorie Estimator
+            Restaurant Discovery
           </h1>
           <p className="text-gray-600 text-sm leading-relaxed">
-            Describe your restaurant meal and get an AI-powered calorie estimate
+            Phase 1: Find your restaurant and menu item
           </p>
         </div>
 
@@ -269,13 +203,13 @@ export default function CalorieEstimator() {
         {/* Input Section */}
         <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
           <label htmlFor="meal-input" className="block text-sm font-medium text-gray-700 mb-3">
-            Describe your meal
+            Describe your meal with restaurant details
           </label>
           <textarea
             id="meal-input"
             value={mealDescription}
             onChange={(e) => setMealDescription(e.target.value)}
-            placeholder="e.g., pad thai at local Thai restaurant, Large burger with fries and a coke, Grilled salmon with rice..."
+            placeholder="e.g., cortado from Joe & The Juice Copenhagen, Liverpool burger from Halifax restaurant, pad thai at Nong's Khao Man Gai..."
             className="w-full h-24 px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none text-gray-900 placeholder-gray-500 transition-all duration-200"
             disabled={isLoading}
           />
@@ -288,12 +222,12 @@ export default function CalorieEstimator() {
             {isLoading ? (
               <>
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                Analyzing with AI...
+                Finding restaurant...
               </>
             ) : (
               <>
-                <Calculator className="w-4 h-4" />
-                Estimate Calories
+                <MapPin className="w-4 h-4" />
+                Find Restaurant
               </>
             )}
           </button>
@@ -305,120 +239,95 @@ export default function CalorieEstimator() {
             <div className="flex items-center gap-2 text-red-700">
               <AlertCircle className="w-4 h-4 flex-shrink-0" />
               <div>
-                <p className="font-medium text-sm">Estimation Failed</p>
+                <p className="font-medium text-sm">Restaurant Discovery Failed</p>
                 <p className="text-xs mt-1">{error}</p>
-                <p className="text-xs mt-2 text-red-600">
-                  Make sure you have set your Perplexity API key in the environment variables.
-                </p>
+                {discoveryResult?.suggestion && (
+                  <p className="text-xs mt-2 text-red-600">
+                    💡 {discoveryResult.suggestion}
+                  </p>
+                )}
               </div>
             </div>
           </div>
         )}
 
-        {/* Results Section */}
-        {estimate && (
+        {/* Restaurant Discovery Results */}
+        {discoveryResult && (
           <div className="bg-white rounded-2xl shadow-lg p-6 mb-6 animate-in slide-in-from-bottom-4 duration-300">
-            <div className="text-center mb-6">
-              <div className="inline-flex items-center justify-center w-12 h-12 bg-emerald-100 rounded-full mb-3">
-                <TrendingUp className="w-6 h-6 text-emerald-600" />
-              </div>
-              <h2 className="text-lg font-semibold text-gray-900 mb-1">
-                Estimated Calories
-              </h2>
-              <div className="text-3xl font-bold text-emerald-600 mb-2">
-                {estimate.calories}
-              </div>
-            </div>
+            {discoveryResult.found ? (
+              <div className="restaurant-found">
+                <div className="text-center mb-6">
+                  <div className="inline-flex items-center justify-center w-12 h-12 bg-green-100 rounded-full mb-3">
+                    <CheckCircle className="w-6 h-6 text-green-600" />
+                  </div>
+                  <h2 className="text-lg font-semibold text-gray-900 mb-1">
+                    🏪 Restaurant Found
+                  </h2>
+                </div>
 
-            {/* Save Status Indicator */}
-            {savedEntryId && (
-              <div className="flex items-center justify-center gap-2 mb-4 p-2 bg-green-50 rounded-lg">
-                <Database className="w-4 h-4 text-green-600" />
-                <span className="text-xs font-medium text-green-700">
-                  Saved to Database (ID: {savedEntryId})
-                </span>
-              </div>
-            )}
+                <div className="space-y-4 mb-6">
+                  <div className="bg-emerald-50 rounded-xl p-4">
+                    <h3 className="text-sm font-medium text-emerald-800 mb-2">Restaurant</h3>
+                    <p className="text-emerald-700 font-semibold">{discoveryResult.restaurant}</p>
+                  </div>
 
-            {/* AI Indicator */}
-            <div className="flex items-center justify-center gap-2 mb-4 p-2 bg-blue-50 rounded-lg">
-              {isUsingAI ? (
-                <>
-                  <Wifi className="w-4 h-4 text-blue-600" />
-                  <span className="text-xs font-medium text-blue-700">
-                    AI-Powered Analysis
-                  </span>
-                </>
-              ) : (
-                <>
-                  <WifiOff className="w-4 h-4 text-gray-500" />
-                  <span className="text-xs font-medium text-gray-600">
-                    Rule-Based Estimation
-                  </span>
-                </>
-              )}
-            </div>
+                  <div className="bg-blue-50 rounded-xl p-4">
+                    <h3 className="text-sm font-medium text-blue-800 mb-2">Menu Item</h3>
+                    <p className="text-blue-700 font-semibold">{discoveryResult.menuItem}</p>
+                  </div>
 
-            {/* Confidence Indicator */}
-            <div className="flex items-center justify-center gap-2 mb-4 p-3 bg-gray-50 rounded-xl">
-              <AlertCircle className={`w-4 h-4 ${getConfidenceColor(estimate.confidence)}`} />
-              <span className={`text-sm font-medium ${getConfidenceColor(estimate.confidence)}`}>
-                {getConfidenceText(estimate.confidence)}
-              </span>
-            </div>
-
-            {/* Detailed Analysis with Markdown Rendering */}
-            {estimate.rawApiResponse && (
-              <div className="mb-6">
-                <h3 className="text-sm font-medium text-gray-700 mb-2">
-                  Detailed Analysis:
-                </h3>
-                <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 max-h-40 overflow-y-auto">
-                  <div className="text-xs text-gray-700 leading-relaxed prose prose-xs max-w-none">
-                    <ReactMarkdown
-                      components={{
-                        p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
-                        strong: ({ children }) => <strong className="font-semibold text-gray-900">{children}</strong>,
-                        ul: ({ children }) => <ul className="list-disc list-inside mb-2">{children}</ul>,
-                        li: ({ children }) => <li className="mb-1">{children}</li>,
-                        h1: ({ children }) => <h1 className="text-sm font-bold mb-2">{children}</h1>,
-                        h2: ({ children }) => <h2 className="text-sm font-semibold mb-2">{children}</h2>,
-                        h3: ({ children }) => <h3 className="text-xs font-semibold mb-1">{children}</h3>,
-                      }}
-                    >
-                      {estimate.rawApiResponse}
-                    </ReactMarkdown>
+                  <div className="bg-purple-50 rounded-xl p-4">
+                    <h3 className="text-sm font-medium text-purple-800 mb-2">Description</h3>
+                    <p className="text-purple-700">{discoveryResult.description}</p>
                   </div>
                 </div>
-              </div>
-            )}
 
-            {/* Breakdown */}
-            {estimate.breakdown.length > 0 && (
-              <div className="mb-6">
-                <h3 className="text-sm font-medium text-gray-700 mb-2">
-                  Details:
-                </h3>
-                <div className="space-y-2">
-                  {estimate.breakdown.map((item, index) => (
-                    <div
-                      key={index}
-                      className="bg-emerald-50 text-emerald-700 text-xs font-medium px-3 py-2 rounded-lg"
-                    >
-                      {item}
-                    </div>
-                  ))}
+                <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-4">
+                  <p className="text-green-700 text-sm font-medium">
+                    ✅ Phase 1 Complete - Ready for dish analysis
+                  </p>
+                  <p className="text-green-600 text-xs mt-1">
+                    {discoveryResult.estimatedCalories}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="restaurant-not-found">
+                <div className="text-center mb-6">
+                  <div className="inline-flex items-center justify-center w-12 h-12 bg-red-100 rounded-full mb-3">
+                    <XCircle className="w-6 h-6 text-red-600" />
+                  </div>
+                  <h2 className="text-lg font-semibold text-gray-900 mb-1">
+                    ❌ Restaurant Not Found
+                  </h2>
+                </div>
+
+                <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-4">
+                  <p className="text-yellow-800 text-sm font-medium mb-2">
+                    💡 Try being more specific:
+                  </p>
+                  <ul className="text-yellow-700 text-xs space-y-1">
+                    <li>• Include restaurant name: "burger from McDonald's"</li>
+                    <li>• Add location: "pizza from Tony's in Brooklyn"</li>
+                    <li>• Be specific: "cortado from Joe & The Juice Copenhagen"</li>
+                  </ul>
                 </div>
               </div>
             )}
 
-            {/* Disclaimer */}
-            <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-xl">
-              <p className="text-xs text-yellow-800 leading-relaxed">
-                <strong>Disclaimer:</strong> This is an estimate based on {isUsingAI ? 'AI analysis and' : ''} common nutritional values. 
-                Actual calories may vary significantly based on preparation methods, portion sizes, and ingredients.
-              </p>
-            </div>
+            {/* Raw AI Response for debugging */}
+            {discoveryResult.rawResponse && (
+              <details className="raw-response">
+                <summary className="text-xs text-gray-500 cursor-pointer hover:text-gray-700 mb-2">
+                  Show AI Response (Debug)
+                </summary>
+                <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 max-h-40 overflow-y-auto">
+                  <pre className="text-xs text-gray-700 whitespace-pre-wrap">
+                    {discoveryResult.rawResponse}
+                  </pre>
+                </div>
+              </details>
+            )}
           </div>
         )}
 
@@ -433,7 +342,7 @@ export default function CalorieEstimator() {
         {/* Footer */}
         <div className="text-center mt-8 pb-8">
           <p className="text-xs text-gray-500">
-            For accurate nutritional information, consult restaurant nutrition guides
+            Phase 1: Restaurant Discovery • Phase 2 & 3 coming soon
           </p>
         </div>
       </div>

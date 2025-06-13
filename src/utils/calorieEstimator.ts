@@ -1,10 +1,21 @@
 import { CalorieEstimate } from '../types';
-import { estimateCaloriesWithPerplexity } from './perplexityApi';
+import { callPerplexityAPI } from './perplexityApi';
 
 interface FoodKeyword {
   keywords: string[];
   baseCalories: number;
   category: string;
+}
+
+interface RestaurantDiscoveryResult {
+  restaurant: string;
+  menuItem: string;
+  description: string;
+  found: boolean;
+  rawResponse: string;
+  estimatedCalories: string;
+  error?: string;
+  suggestion?: string;
 }
 
 const foodDatabase: FoodKeyword[] = [
@@ -53,6 +64,19 @@ const preparationModifiers = {
   'with cheese': 1.3,
   'with butter': 1.4,
 };
+
+function parseRestaurantInfo(response: string) {
+  // Extract restaurant name, menu item, description from restaurant discovery
+  const restaurantMatch = response.match(/RESTAURANT: (.+)/);
+  const menuItemMatch = response.match(/MENU ITEM: (.+)/);
+  const descriptionMatch = response.match(/MENU DESCRIPTION: (.+)/);
+  
+  return {
+    restaurant: restaurantMatch?.[1]?.trim() || 'Unknown',
+    menuItem: menuItemMatch?.[1]?.trim() || 'Unknown',
+    description: descriptionMatch?.[1]?.trim() || 'None listed'
+  };
+}
 
 // Fallback function using the original rule-based approach
 function estimateCaloriesFallback(mealDescription: string): CalorieEstimate {
@@ -106,14 +130,63 @@ function estimateCaloriesFallback(mealDescription: string): CalorieEstimate {
   };
 }
 
-export async function estimateCalories(mealDescription: string): Promise<CalorieEstimate> {
+export async function estimateCalories(userInput: string): Promise<RestaurantDiscoveryResult> {
   try {
-    // Try Perplexity API first
-    const perplexityResult = await estimateCaloriesWithPerplexity(mealDescription);
-    return perplexityResult;
+    // Phase 1: Restaurant Discovery Only
+    const restaurantResponse = await callPerplexityAPI(
+      `Find the specific restaurant and menu item for: "${userInput}"
+
+Requirements:
+1. Identify exact restaurant name and location
+2. Find the specific menu item mentioned  
+3. Note any menu description or ingredients listed
+4. If restaurant not found, respond "RESTAURANT NOT FOUND"
+
+Format:
+RESTAURANT: [name and location]
+MENU ITEM: [exact item name]  
+MENU DESCRIPTION: [what restaurant lists]
+FOUND: YES/NO`
+    );
+
+    // Parse restaurant discovery response
+    const restaurantFound = restaurantResponse.includes('FOUND: YES');
+    const restaurantInfo = parseRestaurantInfo(restaurantResponse);
+
+    if (!restaurantFound) {
+      return { 
+        restaurant: 'Unknown',
+        menuItem: 'Unknown',
+        description: 'None listed',
+        found: false,
+        error: 'Restaurant not found', 
+        suggestion: 'Try including restaurant name or location',
+        rawResponse: restaurantResponse,
+        estimatedCalories: 'Restaurant discovery failed'
+      };
+    }
+
+    return {
+      restaurant: restaurantInfo.restaurant,
+      menuItem: restaurantInfo.menuItem,
+      description: restaurantInfo.description,
+      found: true,
+      rawResponse: restaurantResponse,
+      // Temporary placeholder until Phase 2
+      estimatedCalories: 'Restaurant found - dish analysis coming in Phase 2'
+    };
+
   } catch (error) {
-    console.warn('Perplexity API failed, falling back to rule-based estimation:', error);
-    // Fall back to rule-based estimation
-    return estimateCaloriesFallback(mealDescription);
+    console.error('Restaurant discovery error:', error);
+    return { 
+      restaurant: 'Unknown',
+      menuItem: 'Unknown',
+      description: 'None listed',
+      found: false,
+      error: 'Restaurant discovery failed', 
+      suggestion: error instanceof Error ? error.message : 'Unknown error occurred',
+      rawResponse: '',
+      estimatedCalories: 'Discovery failed'
+    };
   }
 }
