@@ -270,7 +270,7 @@ Examples:
           <div className="format-help">
             <span className="format-icon">💡</span>
             <span className="format-text">
-              End with "from" or "at" [restaurant name] for best results
+              End with "from" or "at" [restaurant name, location] for best results
             </span>
           </div>
           
