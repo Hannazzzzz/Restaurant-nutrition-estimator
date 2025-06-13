@@ -371,24 +371,34 @@ Examples:
                     </div>
 
                     <div className="space-y-4">
-                      {discoveryResult.dishComponents && (
-                        <div className="dish-components">
-                          <h4 className="text-sm font-medium text-gray-800 mb-2">Complete Ingredients:</h4>
-                          <pre className="components-list">{discoveryResult.dishComponents}</pre>
+                      {discoveryResult.foundIngredients && (
+                        <div className="bg-green-50 rounded-xl p-4">
+                          <h4 className="text-sm font-medium text-green-800 mb-2">Found in Menu:</h4>
+                          <p className="text-green-700 text-sm">{discoveryResult.foundIngredients}</p>
                         </div>
                       )}
 
-                      {discoveryResult.portionReasoning && (
-                        <div className="portion-reasoning">
-                          <h4 className="text-sm font-medium text-gray-800 mb-2">Portion Size Reasoning:</h4>
-                          <p className="text-gray-700 text-sm leading-relaxed">{discoveryResult.portionReasoning}</p>
+                      {discoveryResult.addedComponents && (
+                        <div className="bg-yellow-50 rounded-xl p-4">
+                          <h4 className="text-sm font-medium text-yellow-800 mb-2">Added Standard Components:</h4>
+                          <p className="text-yellow-700 text-sm">{discoveryResult.addedComponents}</p>
+                        </div>
+                      )}
+
+                      {discoveryResult.completeIngredients && (
+                        <div className="bg-gray-50 rounded-xl p-4">
+                          <h4 className="text-sm font-medium text-gray-800 mb-2">Complete Ingredient List:</h4>
+                          <pre className="components-list text-gray-700">{discoveryResult.completeIngredients}</pre>
                         </div>
                       )}
 
                       {discoveryResult.standardCalories && (
-                        <div className="calorie-total">
-                          <h4 className="text-sm font-medium text-gray-800 mb-2">Standard Menu Calories:</h4>
-                          <p className="calorie-number">{discoveryResult.standardCalories} calories</p>
+                        <div className="bg-blue-50 rounded-xl p-4">
+                          <h4 className="text-sm font-medium text-blue-800 mb-2">Total Calories:</h4>
+                          <p className="calorie-number text-blue-700">{discoveryResult.standardCalories} calories</p>
+                          {discoveryResult.confidence && (
+                            <p className="text-xs text-blue-600 mt-1">Confidence: {discoveryResult.confidence}</p>
+                          )}
                         </div>
                       )}
 

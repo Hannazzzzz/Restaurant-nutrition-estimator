@@ -16,10 +16,13 @@ export interface RestaurantDiscoveryResult {
   suggestion?: string;
   inputFormat?: boolean;
   
-  // Phase 2: Dish Analysis
-  dishComponents?: string;
-  portionReasoning?: string;
+  // Phase 2: Dish Analysis - Updated fields
+  ingredientSource?: string;
+  foundIngredients?: string;
+  addedComponents?: string;
+  completeIngredients?: string;
   standardCalories?: string;
+  confidence?: string;
   rawResponses?: {
     phase1: string;
     phase2: string;

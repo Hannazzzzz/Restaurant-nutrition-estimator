@@ -18,10 +18,13 @@ interface RestaurantDiscoveryResult {
   suggestion?: string;
   inputFormat?: boolean;
   
-  // Phase 2: Dish Analysis
-  dishComponents?: string;
-  portionReasoning?: string;
+  // Phase 2: Dish Analysis - Updated fields
+  ingredientSource?: string;
+  foundIngredients?: string;
+  addedComponents?: string;
+  completeIngredients?: string;
   standardCalories?: string;
+  confidence?: string;
   rawResponses?: {
     phase1: string;
     phase2: string;
@@ -78,28 +81,34 @@ const preparationModifiers = {
 };
 
 function parseRestaurantInfo(response: string) {
-  // Extract restaurant name, menu item, description from restaurant discovery
+  // Extract restaurant name, menu item, description, and ingredient source from restaurant discovery
   const restaurantMatch = response.match(/RESTAURANT: (.+)/);
   const menuItemMatch = response.match(/MENU ITEM: (.+)/);
   const descriptionMatch = response.match(/MENU DESCRIPTION: (.+)/);
+  const ingredientSourceMatch = response.match(/INGREDIENT SOURCE: (.+)/);
   
   return {
     restaurant: restaurantMatch?.[1]?.trim() || 'Unknown',
     menuItem: menuItemMatch?.[1]?.trim() || 'Unknown',
-    description: descriptionMatch?.[1]?.trim() || 'None listed'
+    description: descriptionMatch?.[1]?.trim() || 'None listed',
+    ingredientSource: ingredientSourceMatch?.[1]?.trim() || 'Not specified'
   };
 }
 
 function parseDishAnalysis(response: string) {
-  // Extract components section
-  const componentsMatch = response.match(/COMPLETE DISH COMPONENTS:(.*?)PORTION SIZE REASONING:/s);
-  const reasoningMatch = response.match(/PORTION SIZE REASONING: (.+)/);
+  // Extract components and calories from dish analysis
+  const foundIngredientsMatch = response.match(/FOUND INGREDIENTS: (.+)/);
+  const addedComponentsMatch = response.match(/ADDED STANDARD COMPONENTS: (.+)/);
+  const completeListMatch = response.match(/COMPLETE INGREDIENT LIST:(.*?)TOTAL CALORIES:/s);
   const caloriesMatch = response.match(/TOTAL CALORIES: (\d+)/);
+  const confidenceMatch = response.match(/CONFIDENCE: (.+)/);
   
   return {
-    components: componentsMatch?.[1]?.trim() || 'Components not specified',
-    reasoning: reasoningMatch?.[1]?.trim() || 'No reasoning provided',
-    calories: caloriesMatch?.[1]?.trim() || '0'
+    foundIngredients: foundIngredientsMatch?.[1]?.trim() || 'None found in menu',
+    addedComponents: addedComponentsMatch?.[1]?.trim() || 'None added',
+    completeList: completeListMatch?.[1]?.trim() || 'Components not specified',
+    calories: caloriesMatch?.[1]?.trim() || '0',
+    confidence: confidenceMatch?.[1]?.trim() || 'UNKNOWN'
   };
 }
 
@@ -157,21 +166,28 @@ function estimateCaloriesFallback(mealDescription: string): CalorieEstimate {
 
 export async function estimateCalories(userInput: string): Promise<RestaurantDiscoveryResult> {
   try {
-    // Phase 1: Restaurant Discovery Only
+    // Phase 1: Restaurant Discovery - Enhanced with direct menu search
     const restaurantResponse = await callPerplexityAPI(
-      `Find the specific restaurant and menu item for: "${userInput}"
+      `Find this specific menu item with complete ingredients: "${userInput}"
 
 Requirements:
-1. The input follows format: "[food description] from/at [restaurant name]"
-2. Extract the restaurant name after "from" or "at"
-3. Identify the food item before "from" or "at"
-4. Find the specific restaurant and verify it exists
-5. If restaurant not found, respond "RESTAURANT NOT FOUND"
+1. Extract restaurant name and food item from format: "[food] from/at [restaurant name]"
+2. Search for the restaurant's menu pages, PDF menus, or online ordering systems
+3. Find the EXACT menu item and its complete ingredient description
+4. If found, include the full ingredient list from the menu
+5. If restaurant found but item not on menu, note "ITEM NOT ON MENU"
+6. If restaurant not found, respond "RESTAURANT NOT FOUND"
+
+Search strategy:
+- Look for: "[restaurant name] menu", "[restaurant name] PDF menu", "[restaurant name] food"
+- Include: actual ingredient lists, not just item names
+- Prioritize: official restaurant websites and menu documents
 
 Format:
 RESTAURANT: [name and location]
-MENU ITEM: [exact item name]  
-MENU DESCRIPTION: [what restaurant lists]
+MENU ITEM: [exact item name from menu]  
+MENU DESCRIPTION: [complete ingredient list from menu, or "ITEM NOT ON MENU" or "INGREDIENTS NOT LISTED"]
+INGREDIENT SOURCE: [where the ingredients were found - menu PDF, website, etc.]
 FOUND: YES/NO`
     );
 
@@ -186,38 +202,39 @@ FOUND: YES/NO`
         description: 'None listed',
         found: false,
         error: 'Restaurant not found', 
-        suggestion: 'Try including restaurant name or location',
+        suggestion: 'Try including restaurant name + location',
         rawResponse: restaurantResponse,
         estimatedCalories: 'Restaurant discovery failed'
       };
     }
 
-    // PHASE 2: Complete Dish Analysis
+    // PHASE 2: Complete Dish Analysis - Adaptive based on ingredient detail level
     const dishResponse = await callPerplexityAPI(
-      `Analyze the complete composition of this dish:
+      `Analyze this dish and determine complete ingredients:
 
 Restaurant: ${restaurantInfo.restaurant}
 Menu Item: ${restaurantInfo.menuItem}
 Menu Description: ${restaurantInfo.description}
+Ingredient Source: ${restaurantInfo.ingredientSource}
 
 Requirements:
-1. List ALL components this dish type typically contains
-2. Include standard elements even if not mentioned in menu description
-   - Burgers include: bun + patty + typical toppings (lettuce, tomato, etc.)
-   - Lasagna includes: pasta + cheese + sauce + any listed ingredients
-   - Coffee drinks include: espresso base + milk/cream as specified
-   - Pasta dishes include: pasta + sauce + any listed ingredients
-3. Use realistic restaurant portion sizes for each component
-4. Research typical serving sizes for this specific type of restaurant
-5. Don't modify for user preferences - calculate the standard menu version
+1. If ingredients were found in Phase 1, use them as the base
+2. If ingredients NOT found or only basic info available, research what this dish type typically contains
+3. For missing components, add standard elements:
+   - Burgers: always include bun + patty + standard toppings
+   - Coffee drinks: espresso base + specified milk type and amount
+   - Sandwiches: bread + listed fillings + typical condiments
+4. Research typical restaurant portions for this establishment type
+5. Calculate complete calorie total
 
 Format:
-COMPLETE DISH COMPONENTS:
-- [component 1]: [typical amount/portion]
-- [component 2]: [typical amount/portion]
-- [component 3]: [typical amount/portion]
-PORTION SIZE REASONING: [why these portions for this restaurant type]
-TOTAL CALORIES: [calculated total]`
+FOUND INGREDIENTS: [what was listed in menu, if any]
+ADDED STANDARD COMPONENTS: [what you added based on dish type]
+COMPLETE INGREDIENT LIST:
+- [component 1]: [amount]
+- [component 2]: [amount]
+TOTAL CALORIES: [calculated total]
+CONFIDENCE: [HIGH/MEDIUM/LOW based on ingredient detail available]`
     );
 
     // Parse Phase 2 response
@@ -231,9 +248,12 @@ TOTAL CALORIES: [calculated total]`
       found: true,
       
       // Phase 2 results
-      dishComponents: dishAnalysis.components,
-      portionReasoning: dishAnalysis.reasoning,
+      ingredientSource: restaurantInfo.ingredientSource,
+      foundIngredients: dishAnalysis.foundIngredients,
+      addedComponents: dishAnalysis.addedComponents,
+      completeIngredients: dishAnalysis.completeList,
       standardCalories: dishAnalysis.calories,
+      confidence: dishAnalysis.confidence,
       
       // Raw responses for debugging
       rawResponses: {
