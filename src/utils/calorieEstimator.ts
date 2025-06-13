@@ -17,6 +17,17 @@ interface RestaurantDiscoveryResult {
   error?: string;
   suggestion?: string;
   inputFormat?: boolean;
+  
+  // Phase 2: Dish Analysis
+  dishComponents?: string;
+  portionReasoning?: string;
+  standardCalories?: string;
+  rawResponses?: {
+    phase1: string;
+    phase2: string;
+  };
+  phase?: number;
+  ready?: string;
 }
 
 const foodDatabase: FoodKeyword[] = [
@@ -76,6 +87,19 @@ function parseRestaurantInfo(response: string) {
     restaurant: restaurantMatch?.[1]?.trim() || 'Unknown',
     menuItem: menuItemMatch?.[1]?.trim() || 'Unknown',
     description: descriptionMatch?.[1]?.trim() || 'None listed'
+  };
+}
+
+function parseDishAnalysis(response: string) {
+  // Extract components section
+  const componentsMatch = response.match(/COMPLETE DISH COMPONENTS:(.*?)PORTION SIZE REASONING:/s);
+  const reasoningMatch = response.match(/PORTION SIZE REASONING: (.+)/);
+  const caloriesMatch = response.match(/TOTAL CALORIES: (\d+)/);
+  
+  return {
+    components: componentsMatch?.[1]?.trim() || 'Components not specified',
+    reasoning: reasoningMatch?.[1]?.trim() || 'No reasoning provided',
+    calories: caloriesMatch?.[1]?.trim() || '0'
   };
 }
 
@@ -168,14 +192,60 @@ FOUND: YES/NO`
       };
     }
 
+    // PHASE 2: Complete Dish Analysis
+    const dishResponse = await callPerplexityAPI(
+      `Analyze the complete composition of this dish:
+
+Restaurant: ${restaurantInfo.restaurant}
+Menu Item: ${restaurantInfo.menuItem}
+Menu Description: ${restaurantInfo.description}
+
+Requirements:
+1. List ALL components this dish type typically contains
+2. Include standard elements even if not mentioned in menu description
+   - Burgers include: bun + patty + typical toppings (lettuce, tomato, etc.)
+   - Lasagna includes: pasta + cheese + sauce + any listed ingredients
+   - Coffee drinks include: espresso base + milk/cream as specified
+   - Pasta dishes include: pasta + sauce + any listed ingredients
+3. Use realistic restaurant portion sizes for each component
+4. Research typical serving sizes for this specific type of restaurant
+5. Don't modify for user preferences - calculate the standard menu version
+
+Format:
+COMPLETE DISH COMPONENTS:
+- [component 1]: [typical amount/portion]
+- [component 2]: [typical amount/portion]
+- [component 3]: [typical amount/portion]
+PORTION SIZE REASONING: [why these portions for this restaurant type]
+TOTAL CALORIES: [calculated total]`
+    );
+
+    // Parse Phase 2 response
+    const dishAnalysis = parseDishAnalysis(dishResponse);
+
     return {
+      // Phase 1 results
       restaurant: restaurantInfo.restaurant,
       menuItem: restaurantInfo.menuItem,
       description: restaurantInfo.description,
       found: true,
-      rawResponse: restaurantResponse,
-      // Temporary placeholder until Phase 2
-      estimatedCalories: 'Restaurant found - dish analysis coming in Phase 2'
+      
+      // Phase 2 results
+      dishComponents: dishAnalysis.components,
+      portionReasoning: dishAnalysis.reasoning,
+      standardCalories: dishAnalysis.calories,
+      
+      // Raw responses for debugging
+      rawResponses: {
+        phase1: restaurantResponse,
+        phase2: dishResponse
+      },
+      rawResponse: restaurantResponse, // Keep for backward compatibility
+      
+      // Status
+      phase: 2,
+      ready: 'Phase 2 Complete - Ready for modification analysis',
+      estimatedCalories: `${dishAnalysis.calories} calories (standard menu version)`
     };
 
   } catch (error) {

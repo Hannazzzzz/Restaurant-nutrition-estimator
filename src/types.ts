@@ -15,4 +15,15 @@ export interface RestaurantDiscoveryResult {
   error?: string;
   suggestion?: string;
   inputFormat?: boolean;
+  
+  // Phase 2: Dish Analysis
+  dishComponents?: string;
+  portionReasoning?: string;
+  standardCalories?: string;
+  rawResponses?: {
+    phase1: string;
+    phase2: string;
+  };
+  phase?: number;
+  ready?: string;
 }

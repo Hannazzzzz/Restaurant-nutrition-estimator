@@ -127,7 +127,7 @@ export default function CalorieEstimator() {
     }
     
     try {
-      // Phase 1: Restaurant Discovery
+      // Phase 1: Restaurant Discovery + Phase 2: Dish Analysis
       const result = await estimateCalories(userInput);
       setDiscoveryResult(result);
       
@@ -167,10 +167,10 @@ export default function CalorieEstimator() {
             <Utensils className="w-8 h-8 text-emerald-600" />
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            Restaurant Discovery
+            Restaurant Nutrition Estimator
           </h1>
           <p className="text-gray-600 text-sm leading-relaxed">
-            Phase 1: Find your restaurant and menu item
+            Phase 1 & 2: Restaurant discovery + complete dish analysis
           </p>
         </div>
 
@@ -282,12 +282,12 @@ Examples:
             {isLoading ? (
               <>
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                Finding restaurant...
+                Analyzing dish...
               </>
             ) : (
               <>
                 <MapPin className="w-4 h-4" />
-                Find Restaurant
+                Analyze Meal
               </>
             )}
           </button>
@@ -326,46 +326,85 @@ Examples:
 
         {/* Restaurant Discovery Results */}
         {discoveryResult && !discoveryResult.inputFormat && (
-          <div className="bg-white rounded-2xl shadow-lg p-6 mb-6 animate-in slide-in-from-bottom-4 duration-300">
+          <div className="results-container">
             {discoveryResult.found ? (
-              <div className="restaurant-found">
-                <div className="text-center mb-6">
-                  <div className="inline-flex items-center justify-center w-12 h-12 bg-green-100 rounded-full mb-3">
-                    <CheckCircle className="w-6 h-6 text-green-600" />
+              <>
+                {/* Phase 1 Results */}
+                <div className="phase-result phase-1 bg-white rounded-2xl shadow-lg p-6 mb-6 animate-in slide-in-from-bottom-4 duration-300">
+                  <div className="text-center mb-6">
+                    <div className="inline-flex items-center justify-center w-12 h-12 bg-green-100 rounded-full mb-3">
+                      <CheckCircle className="w-6 h-6 text-green-600" />
+                    </div>
+                    <h2 className="text-lg font-semibold text-gray-900 mb-1">
+                      🏪 Restaurant Found (Phase 1)
+                    </h2>
                   </div>
-                  <h2 className="text-lg font-semibold text-gray-900 mb-1">
-                    🏪 Restaurant Found
-                  </h2>
+
+                  <div className="space-y-4">
+                    <div className="bg-emerald-50 rounded-xl p-4">
+                      <h3 className="text-sm font-medium text-emerald-800 mb-2">Restaurant</h3>
+                      <p className="text-emerald-700 font-semibold">{discoveryResult.restaurant}</p>
+                    </div>
+
+                    <div className="bg-blue-50 rounded-xl p-4">
+                      <h3 className="text-sm font-medium text-blue-800 mb-2">Menu Item</h3>
+                      <p className="text-blue-700 font-semibold">{discoveryResult.menuItem}</p>
+                    </div>
+
+                    <div className="bg-purple-50 rounded-xl p-4">
+                      <h3 className="text-sm font-medium text-purple-800 mb-2">Description</h3>
+                      <p className="text-purple-700">{discoveryResult.description}</p>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="space-y-4 mb-6">
-                  <div className="bg-emerald-50 rounded-xl p-4">
-                    <h3 className="text-sm font-medium text-emerald-800 mb-2">Restaurant</h3>
-                    <p className="text-emerald-700 font-semibold">{discoveryResult.restaurant}</p>
-                  </div>
+                {/* Phase 2 Results */}
+                {discoveryResult.phase && discoveryResult.phase >= 2 && (
+                  <div className="phase-result phase-2 bg-white rounded-2xl shadow-lg p-6 mb-6 animate-in slide-in-from-bottom-4 duration-300">
+                    <div className="text-center mb-6">
+                      <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full mb-3">
+                        <Utensils className="w-6 h-6 text-blue-600" />
+                      </div>
+                      <h2 className="text-lg font-semibold text-gray-900 mb-1">
+                        🍽️ Complete Dish Analysis (Phase 2)
+                      </h2>
+                    </div>
 
-                  <div className="bg-blue-50 rounded-xl p-4">
-                    <h3 className="text-sm font-medium text-blue-800 mb-2">Menu Item</h3>
-                    <p className="text-blue-700 font-semibold">{discoveryResult.menuItem}</p>
-                  </div>
+                    <div className="space-y-4">
+                      {discoveryResult.dishComponents && (
+                        <div className="dish-components">
+                          <h4 className="text-sm font-medium text-gray-800 mb-2">Complete Ingredients:</h4>
+                          <pre className="components-list">{discoveryResult.dishComponents}</pre>
+                        </div>
+                      )}
 
-                  <div className="bg-purple-50 rounded-xl p-4">
-                    <h3 className="text-sm font-medium text-purple-800 mb-2">Description</h3>
-                    <p className="text-purple-700">{discoveryResult.description}</p>
-                  </div>
-                </div>
+                      {discoveryResult.portionReasoning && (
+                        <div className="portion-reasoning">
+                          <h4 className="text-sm font-medium text-gray-800 mb-2">Portion Size Reasoning:</h4>
+                          <p className="text-gray-700 text-sm leading-relaxed">{discoveryResult.portionReasoning}</p>
+                        </div>
+                      )}
 
-                <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-4">
-                  <p className="text-green-700 text-sm font-medium">
-                    ✅ Phase 1 Complete - Ready for dish analysis
-                  </p>
-                  <p className="text-green-600 text-xs mt-1">
-                    {discoveryResult.estimatedCalories}
-                  </p>
-                </div>
-              </div>
+                      {discoveryResult.standardCalories && (
+                        <div className="calorie-total">
+                          <h4 className="text-sm font-medium text-gray-800 mb-2">Standard Menu Calories:</h4>
+                          <p className="calorie-number">{discoveryResult.standardCalories} calories</p>
+                        </div>
+                      )}
+
+                      {discoveryResult.ready && (
+                        <div className="next-phase">
+                          <p className="text-green-700 text-sm font-medium">
+                            ✅ {discoveryResult.ready}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </>
             ) : (
-              <div className="restaurant-not-found">
+              <div className="restaurant-not-found bg-white rounded-2xl shadow-lg p-6 mb-6 animate-in slide-in-from-bottom-4 duration-300">
                 <div className="text-center mb-6">
                   <div className="inline-flex items-center justify-center w-12 h-12 bg-red-100 rounded-full mb-3">
                     <XCircle className="w-6 h-6 text-red-600" />
@@ -388,17 +427,34 @@ Examples:
               </div>
             )}
 
-            {/* Raw AI Response for debugging */}
-            {discoveryResult.rawResponse && (
-              <details className="raw-response">
+            {/* Debug section */}
+            {(discoveryResult.rawResponse || discoveryResult.rawResponses) && (
+              <details className="debug-section bg-white rounded-2xl shadow-lg p-6 mb-6">
                 <summary className="text-xs text-gray-500 cursor-pointer hover:text-gray-700 mb-2">
-                  Show AI Response (Debug)
+                  Show AI Responses (Debug)
                 </summary>
-                <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 max-h-40 overflow-y-auto">
-                  <pre className="text-xs text-gray-700 whitespace-pre-wrap">
-                    {discoveryResult.rawResponse}
-                  </pre>
-                </div>
+                {discoveryResult.rawResponses ? (
+                  <div className="raw-responses space-y-4">
+                    <div className="phase-response">
+                      <h4 className="text-sm font-medium text-gray-700 mb-2">Phase 1 (Restaurant Discovery):</h4>
+                      <pre className="bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs text-gray-700 whitespace-pre-wrap overflow-x-auto">
+                        {discoveryResult.rawResponses.phase1}
+                      </pre>
+                    </div>
+                    <div className="phase-response">
+                      <h4 className="text-sm font-medium text-gray-700 mb-2">Phase 2 (Dish Analysis):</h4>
+                      <pre className="bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs text-gray-700 whitespace-pre-wrap overflow-x-auto">
+                        {discoveryResult.rawResponses.phase2}
+                      </pre>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 max-h-40 overflow-y-auto">
+                    <pre className="text-xs text-gray-700 whitespace-pre-wrap">
+                      {discoveryResult.rawResponse}
+                    </pre>
+                  </div>
+                )}
               </details>
             )}
           </div>
@@ -415,7 +471,7 @@ Examples:
         {/* Footer */}
         <div className="text-center mt-8 pb-8">
           <p className="text-xs text-gray-500">
-            Phase 1: Restaurant Discovery • Phase 2 & 3 coming soon
+            Phase 1 & 2: Restaurant Discovery + Dish Analysis • Phase 3 coming soon
           </p>
         </div>
       </div>
