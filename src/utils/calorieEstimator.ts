@@ -108,28 +108,46 @@ function parseRestaurantInfo(response: string) {
 }
 
 function parseDishAnalysis(response: string) {
-  // Extract components and calories from dish analysis
+  // Extract components and calories from dish analysis with improved parsing
   const foundIngredientsMatch = response.match(/FOUND INGREDIENTS: (.+)/);
   const addedComponentsMatch = response.match(/ADDED STANDARD COMPONENTS: (.+)/);
   const completeListMatch = response.match(/COMPLETE INGREDIENT LIST:(.*?)TOTAL CALORIES:/s);
-  const caloriesMatch = response.match(/TOTAL CALORIES: (\d+)/);
-  const confidenceMatch = response.match(/CONFIDENCE: (.+)/);
+  
+  // Improved calorie extraction - look for multiple patterns
+  let caloriesMatch = response.match(/TOTAL CALORIES: (\d+)/);
+  if (!caloriesMatch) {
+    // Try alternative patterns
+    caloriesMatch = response.match(/CALORIES: (\d+)/) || 
+                   response.match(/(\d+) calories/) ||
+                   response.match(/Total: (\d+)/);
+  }
+  
+  const confidenceMatch = response.match(/CONFIDENCE: (HIGH|MEDIUM|LOW)/i);
   
   return {
     foundIngredients: foundIngredientsMatch?.[1]?.trim() || 'None found in menu',
     addedComponents: addedComponentsMatch?.[1]?.trim() || 'None added',
     completeList: completeListMatch?.[1]?.trim() || 'Components not specified',
     calories: caloriesMatch?.[1]?.trim() || '0',
-    confidence: confidenceMatch?.[1]?.trim() || 'UNKNOWN'
+    confidence: confidenceMatch?.[1]?.trim().toUpperCase() || 'UNKNOWN'
   };
 }
 
 function parseModificationAnalysis(response: string) {
-  // Extract modification details from Phase 3
+  // Improved parsing for Phase 3 with multiple calorie extraction patterns
   const modificationsMatch = response.match(/MODIFICATIONS DETECTED: (.+)/);
   const adjustmentsMatch = response.match(/CALORIE ADJUSTMENTS:(.*?)CALCULATION:/s);
   const calculationMatch = response.match(/CALCULATION: (.+)/);
-  const finalCaloriesMatch = response.match(/FINAL CALORIES: (\d+)/);
+  
+  // Enhanced final calorie extraction
+  let finalCaloriesMatch = response.match(/FINAL CALORIES: (\d+)/);
+  if (!finalCaloriesMatch) {
+    // Try alternative patterns for final calories
+    finalCaloriesMatch = response.match(/FINAL: (\d+)/) ||
+                        response.match(/Final total: (\d+)/) ||
+                        response.match(/= (\d+) calories/) ||
+                        response.match(/= (\d+)$/m);
+  }
   
   return {
     modifications: modificationsMatch?.[1]?.trim() || 'NONE',
@@ -268,41 +286,46 @@ FOUND: YES/NO`
       };
     }
 
-    // PHASE 2: Complete Dish Analysis - Adaptive based on ingredient detail level
+    // PHASE 2: Complete Dish Analysis - Enhanced with strict calorie formatting
     const dishResponse = await callPerplexityAPI(
-      `Analyze this dish and determine complete ingredients:
+      `Analyze this dish and calculate total calories with precise formatting:
 
 Restaurant: ${restaurantInfo.restaurant}
 Menu Item: ${restaurantInfo.menuItem}
 Menu Description: ${restaurantInfo.description}
 Ingredient Source: ${restaurantInfo.ingredientSource}
 
-Requirements:
+CRITICAL REQUIREMENTS:
 1. If ingredients were found in Phase 1, use them as the base
-2. If ingredients NOT found or only basic info available, research what this dish type typically contains
-3. For missing components, add standard elements:
-   - Burgers: always include bun + patty + standard toppings
-   - Coffee drinks: espresso base + specified milk type and amount
-   - Sandwiches: bread + listed fillings + typical condiments
-4. Research typical restaurant portions for this establishment type
-5. Calculate complete calorie total
+2. If ingredients NOT found, research typical components for this dish type
+3. Add missing standard components:
+   - Burgers: bun (150 cal) + patty (250-400 cal) + cheese (100 cal) + vegetables (20 cal)
+   - Coffee drinks: espresso (5 cal) + milk amount and type (varies)
+   - Sandwiches: bread (160 cal) + fillings + condiments
+4. Calculate realistic restaurant portion sizes
+5. MUST provide exact calorie number in specified format
 
-Format:
-FOUND INGREDIENTS: [what was listed in menu, if any]
-ADDED STANDARD COMPONENTS: [what you added based on dish type]
+STRICT OUTPUT FORMAT (follow exactly):
+FOUND INGREDIENTS: [what was listed in menu, or "None found in menu"]
+ADDED STANDARD COMPONENTS: [what you added based on dish type, or "None added"]
 COMPLETE INGREDIENT LIST:
-- [component 1]: [amount]
-- [component 2]: [amount]
-TOTAL CALORIES: [calculated total]
-CONFIDENCE: [HIGH/MEDIUM/LOW based on ingredient detail available]`
+- [component 1]: [amount and calories]
+- [component 2]: [amount and calories]
+- [component 3]: [amount and calories]
+TOTAL CALORIES: [NUMBER ONLY - no text, just the number]
+CONFIDENCE: [HIGH/MEDIUM/LOW]
+
+Example format:
+TOTAL CALORIES: 650
+CONFIDENCE: HIGH`
     );
 
     // Parse Phase 2 response
     const dishAnalysis = parseDishAnalysis(dishResponse);
 
-    // PHASE 3: User Modification Analysis
+    // PHASE 3: User Modification Analysis - Enhanced with strict calculation format
     const modificationResponse = await callPerplexityAPI(
-      `Analyze user modifications and calculate final calories:
+      `Calculate final calories after user modifications with precise formatting:
 
 Original Input: "${userInput}"
 Restaurant: ${restaurantInfo.restaurant}
@@ -310,27 +333,40 @@ Menu Item: ${restaurantInfo.menuItem}
 Standard Ingredients: ${dishAnalysis.completeList}
 Standard Calories: ${dishAnalysis.calories}
 
-Requirements:
-1. Check for modification keywords in the original input:
-   - Removals: "without", "no", "skip", "hold", "minus"
-   - Additions: "extra", "add", "with extra", "double", "plus"
-   - Size changes: "half", "small", "large", "double portion"
+CRITICAL REQUIREMENTS:
+1. Analyze original input for modification keywords:
+   - Removals: "without", "no", "skip", "hold", "minus" (subtract calories)
+   - Additions: "extra", "add", "with extra", "double", "plus" (add calories)
+   - Size changes: "small" (-30%), "large" (+40%), "double portion" (+100%)
    - Substitutions: "instead of", "swap", "replace with"
-2. Calculate calorie adjustments for each modification
-3. Provide final adjusted total
-4. If no modifications found, final calories = standard calories
+2. Calculate specific calorie adjustments for each modification
+3. Show clear math calculation
+4. MUST provide exact final number in specified format
 
-Format:
-MODIFICATIONS DETECTED: [list all modifications found, or "NONE"]
+STRICT OUTPUT FORMAT (follow exactly):
+MODIFICATIONS DETECTED: [list all found, or "NONE"]
 CALORIE ADJUSTMENTS:
-- [modification 1]: [+/- calories with reasoning]
-- [modification 2]: [+/- calories with reasoning]
-CALCULATION: [standard calories] [adjustments] = [final total]
-FINAL CALORIES: [number only]`
+- [modification 1]: [+/- specific number] calories ([reasoning])
+- [modification 2]: [+/- specific number] calories ([reasoning])
+CALCULATION: [standard calories] [+/- adjustments] = [final total]
+FINAL CALORIES: [NUMBER ONLY - no text, just the number]
+
+Examples:
+CALCULATION: 650 - 150 + 50 = 550
+FINAL CALORIES: 550
+
+If no modifications:
+MODIFICATIONS DETECTED: NONE
+CALCULATION: ${dishAnalysis.calories} + 0 = ${dishAnalysis.calories}
+FINAL CALORIES: ${dishAnalysis.calories}`
     );
 
     // Parse Phase 3 response
     const modificationAnalysis = parseModificationAnalysis(modificationResponse);
+
+    // Ensure we have valid calorie numbers
+    const standardCalories = parseInt(dishAnalysis.calories) || 0;
+    const finalCalories = parseInt(modificationAnalysis.finalCalories) || standardCalories;
 
     // Prepare complete result for database save
     const finalResult = {
@@ -352,7 +388,7 @@ FINAL CALORIES: [number only]`
       modificationsDetected: modificationAnalysis.modifications,
       calorieAdjustments: modificationAnalysis.adjustments,
       calculation: modificationAnalysis.calculation,
-      finalCalories: parseInt(modificationAnalysis.finalCalories) || parseInt(dishAnalysis.calories) || 0,
+      finalCalories: finalCalories,
       
       // Metadata
       originalInput: userInput,
@@ -364,7 +400,7 @@ FINAL CALORIES: [number only]`
         phase3: modificationResponse
       },
       rawResponse: restaurantResponse, // Keep for backward compatibility
-      estimatedCalories: `${modificationAnalysis.finalCalories || dishAnalysis.calories} calories (final estimate)`
+      estimatedCalories: `${finalCalories} calories (final estimate)`
     };
 
     // Save to database
