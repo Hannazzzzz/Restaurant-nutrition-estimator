@@ -245,29 +245,33 @@ function estimateCaloriesFallback(mealDescription: string): CalorieEstimate {
 
 export async function estimateCalories(userInput: string): Promise<RestaurantDiscoveryResult> {
   try {
-    // Phase 1: Restaurant Discovery - Enhanced with direct menu search
+    // Phase 1: Restaurant Discovery - Enhanced with case-insensitive search
     const restaurantResponse = await callPerplexityAPI(
       `Find this specific menu item with complete ingredients: "${userInput}"
 
-Requirements:
+SEARCH REQUIREMENTS:
 1. Extract restaurant name and food item from format: "[food] from/at [restaurant name]"
-2. Search for the restaurant's menu pages, PDF menus, or online ordering systems
-3. Find the EXACT menu item and its complete ingredient description
-4. If found, include the full ingredient list from the menu
-5. If restaurant found but item not on menu, note "ITEM NOT ON MENU"
-6. If restaurant not found, respond "RESTAURANT NOT FOUND"
+2. Perform CASE-INSENSITIVE search for restaurant name (ignore capitalization differences)
+3. Search variations: exact name, partial matches, common abbreviations
+4. Look for restaurant's menu pages, PDF menus, online ordering systems
+5. Find the EXACT menu item and its complete ingredient description
+6. If found, include the full ingredient list from the menu
+7. If restaurant found but item not on menu, note "ITEM NOT ON MENU"
+8. If restaurant not found after trying variations, respond "RESTAURANT NOT FOUND"
 
-Search strategy:
-- Look for: "[restaurant name] menu", "[restaurant name] PDF menu", "[restaurant name] food"
+SEARCH STRATEGY:
+- Primary: "[restaurant name] menu", "[restaurant name] PDF menu"
+- Variations: try different capitalizations, abbreviations, common misspellings
 - Include: actual ingredient lists, not just item names
 - Prioritize: official restaurant websites and menu documents
+- Location context: if location mentioned, include in search
 
-Format:
-RESTAURANT: [name and location]
-MENU ITEM: [exact item name from menu]  
+STRICT OUTPUT FORMAT:
+RESTAURANT: [name and location if found, or "RESTAURANT NOT FOUND"]
+MENU ITEM: [exact item name from menu, or "ITEM NOT FOUND"]  
 MENU DESCRIPTION: [complete ingredient list from menu, or "ITEM NOT ON MENU" or "INGREDIENTS NOT LISTED"]
-INGREDIENT SOURCE: [where the ingredients were found - menu PDF, website, etc.]
-FOUND: YES/NO`
+INGREDIENT SOURCE: [where ingredients were found - menu PDF, website, etc., or "NOT FOUND"]
+FOUND: [YES if restaurant AND menu item found, NO otherwise]`
     );
     
     // NEW LOGIC: Check if restaurant was actually found by parsing the response
