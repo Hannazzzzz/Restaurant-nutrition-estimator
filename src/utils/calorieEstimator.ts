@@ -245,7 +245,7 @@ function estimateCaloriesFallback(mealDescription: string): CalorieEstimate {
 
 export async function estimateCalories(userInput: string): Promise<RestaurantDiscoveryResult> {
   try {
-    // Phase 1: Restaurant Discovery - Enhanced with case-insensitive search
+    // Phase 1: Restaurant Discovery - Enhanced with comprehensive search strategy
     const restaurantResponse = await callPerplexityAPI(
       `Find this specific menu item with complete ingredients: "${userInput}"
 
@@ -259,18 +259,22 @@ SEARCH REQUIREMENTS:
 7. If restaurant found but item not on menu, note "ITEM NOT ON MENU"
 8. If restaurant not found after trying variations, respond "RESTAURANT NOT FOUND"
 
-SEARCH STRATEGY:
-- Primary: "[restaurant name] menu", "[restaurant name] PDF menu"
-- Variations: try different capitalizations, abbreviations, common misspellings
-- Include: actual ingredient lists, not just item names
-- Prioritize: official restaurant websites and menu documents
-- Location context: if location mentioned, include in search
+COMPREHENSIVE SEARCH STRATEGY:
+- Primary sources: "[restaurant name] menu", "[restaurant name] PDF menu", "[restaurant name] online ordering"
+- PDF menu extraction: Look specifically for PDF menus on restaurant websites and extract text content
+- Review sites: Search Yelp, TripAdvisor, Google Maps reviews for dish descriptions and ingredients
+- Social media: Check Instagram, Facebook posts for menu photos and dish descriptions
+- Food blogs: Look for restaurant reviews mentioning specific dishes and their components
+- Delivery apps: Check UberEats, DoorDash, Grubhub for detailed menu descriptions
+- Search combinations: "[dish name] [restaurant name]", "[restaurant name] [dish name] ingredients"
+- Location context: if location mentioned, include in all searches for better accuracy
+- Variations: try different capitalizations, abbreviations, common misspellings of restaurant name
 
 STRICT OUTPUT FORMAT:
 RESTAURANT: [name and location if found, or "RESTAURANT NOT FOUND"]
 MENU ITEM: [exact item name from menu, or "ITEM NOT FOUND"]  
 MENU DESCRIPTION: [complete ingredient list from menu, or "ITEM NOT ON MENU" or "INGREDIENTS NOT LISTED"]
-INGREDIENT SOURCE: [where ingredients were found - menu PDF, website, etc., or "NOT FOUND"]
+INGREDIENT SOURCE: [where ingredients were found - menu PDF, website, review site, social media, etc., or "NOT FOUND"]
 FOUND: [YES if restaurant AND menu item found, NO otherwise]`
     );
     
