@@ -121,14 +121,14 @@ export default function CustomerFacingEstimator() {
         }}
       ></div>
 
-      {/* Additional Random Jungle Leaves - Different Sizes - Random rotation ±20° */}
-      {/* Top hanging leaves - avoid title area (center 40%) */}
+      {/* TOP CANOPY - Small leaves hanging from above (avoiding title area) */}
+      {/* Left side top leaves */}
       <div 
         className="leaf-decoration leaf-shape-1 leaf-color-2 leaf-size-small" 
         style={{ 
           position: 'fixed',
           top: '-20px',
-          left: '15%',
+          left: '5%',
           width: '70px',
           height: '50px',
           transform: 'rotate(-16deg)',
@@ -137,44 +137,256 @@ export default function CustomerFacingEstimator() {
       ></div>
 
       <div 
-        className="leaf-decoration leaf-shape-3 leaf-color-4 leaf-size-medium" 
+        className="leaf-decoration leaf-shape-3 leaf-color-4 leaf-size-tiny" 
         style={{ 
           position: 'fixed',
-          top: '-30px',
-          right: '15%',
-          width: '100px',
-          height: '70px',
-          transform: 'rotate(19deg)',
+          top: '-15px',
+          left: '12%',
+          width: '40px',
+          height: '28px',
+          transform: 'rotate(8deg)',
           zIndex: 1
         }}
       ></div>
 
       <div 
-        className="leaf-decoration leaf-shape-2 leaf-color-1 leaf-size-tiny" 
+        className="leaf-decoration leaf-shape-2 leaf-color-1 leaf-size-small" 
         style={{ 
           position: 'fixed',
-          top: '-15px',
-          left: '8%',
-          width: '40px',
-          height: '28px',
+          top: '-25px',
+          left: '18%',
+          width: '70px',
+          height: '50px',
           transform: 'rotate(-5deg)',
           zIndex: 1
         }}
       ></div>
 
       <div 
-        className="leaf-decoration leaf-shape-4 leaf-color-6 leaf-size-small" 
+        className="leaf-decoration leaf-shape-4 leaf-color-6 leaf-size-tiny" 
         style={{ 
           position: 'fixed',
-          top: '-25px',
-          right: '8%',
-          width: '70px',
-          height: '50px',
+          top: '-10px',
+          left: '25%',
+          width: '40px',
+          height: '28px',
           transform: 'rotate(13deg)',
           zIndex: 1
         }}
       ></div>
 
+      <div 
+        className="leaf-decoration leaf-shape-5 leaf-color-3 leaf-size-small" 
+        style={{ 
+          position: 'fixed',
+          top: '-30px',
+          left: '32%',
+          width: '70px',
+          height: '50px',
+          transform: 'rotate(-18deg)',
+          zIndex: 1
+        }}
+      ></div>
+
+      {/* Right side top leaves */}
+      <div 
+        className="leaf-decoration leaf-shape-6 leaf-color-7 leaf-size-small" 
+        style={{ 
+          position: 'fixed',
+          top: '-20px',
+          right: '5%',
+          width: '70px',
+          height: '50px',
+          transform: 'rotate(16deg)',
+          zIndex: 1
+        }}
+      ></div>
+
+      <div 
+        className="leaf-decoration leaf-shape-1 leaf-color-5 leaf-size-tiny" 
+        style={{ 
+          position: 'fixed',
+          top: '-15px',
+          right: '12%',
+          width: '40px',
+          height: '28px',
+          transform: 'rotate(-8deg)',
+          zIndex: 1
+        }}
+      ></div>
+
+      <div 
+        className="leaf-decoration leaf-shape-3 leaf-color-2 leaf-size-small" 
+        style={{ 
+          position: 'fixed',
+          top: '-25px',
+          right: '18%',
+          width: '70px',
+          height: '50px',
+          transform: 'rotate(5deg)',
+          zIndex: 1
+        }}
+      ></div>
+
+      <div 
+        className="leaf-decoration leaf-shape-4 leaf-color-4 leaf-size-tiny" 
+        style={{ 
+          position: 'fixed',
+          top: '-10px',
+          right: '25%',
+          width: '40px',
+          height: '28px',
+          transform: 'rotate(-13deg)',
+          zIndex: 1
+        }}
+      ></div>
+
+      <div 
+        className="leaf-decoration leaf-shape-2 leaf-color-1 leaf-size-small" 
+        style={{ 
+          position: 'fixed',
+          top: '-30px',
+          right: '32%',
+          width: '70px',
+          height: '50px',
+          transform: 'rotate(18deg)',
+          zIndex: 1
+        }}
+      ></div>
+
+      {/* Additional scattered small top leaves */}
+      <div 
+        className="leaf-decoration leaf-shape-5 leaf-color-6 leaf-size-tiny" 
+        style={{ 
+          position: 'fixed',
+          top: '-12px',
+          left: '8%',
+          width: '40px',
+          height: '28px',
+          transform: 'rotate(-11deg)',
+          zIndex: 1
+        }}
+      ></div>
+
+      <div 
+        className="leaf-decoration leaf-shape-6 leaf-color-3 leaf-size-tiny" 
+        style={{ 
+          position: 'fixed',
+          top: '-18px',
+          left: '22%',
+          width: '40px',
+          height: '28px',
+          transform: 'rotate(7deg)',
+          zIndex: 1
+        }}
+      ></div>
+
+      <div 
+        className="leaf-decoration leaf-shape-1 leaf-color-7 leaf-size-tiny" 
+        style={{ 
+          position: 'fixed',
+          top: '-8px',
+          left: '35%',
+          width: '40px',
+          height: '28px',
+          transform: 'rotate(-14deg)',
+          zIndex: 1
+        }}
+      ></div>
+
+      <div 
+        className="leaf-decoration leaf-shape-3 leaf-color-5 leaf-size-tiny" 
+        style={{ 
+          position: 'fixed',
+          top: '-12px',
+          right: '8%',
+          width: '40px',
+          height: '28px',
+          transform: 'rotate(11deg)',
+          zIndex: 1
+        }}
+      ></div>
+
+      <div 
+        className="leaf-decoration leaf-shape-4 leaf-color-2 leaf-size-tiny" 
+        style={{ 
+          position: 'fixed',
+          top: '-18px',
+          right: '22%',
+          width: '40px',
+          height: '28px',
+          transform: 'rotate(-7deg)',
+          zIndex: 1
+        }}
+      ></div>
+
+      <div 
+        className="leaf-decoration leaf-shape-2 leaf-color-4 leaf-size-tiny" 
+        style={{ 
+          position: 'fixed',
+          top: '-8px',
+          right: '35%',
+          width: '40px',
+          height: '28px',
+          transform: 'rotate(14deg)',
+          zIndex: 1
+        }}
+      ></div>
+
+      {/* Medium-sized top leaves for variety */}
+      <div 
+        className="leaf-decoration leaf-shape-6 leaf-color-1 leaf-size-medium" 
+        style={{ 
+          position: 'fixed',
+          top: '-35px',
+          left: '2%',
+          width: '100px',
+          height: '70px',
+          transform: 'rotate(-20deg)',
+          zIndex: 1
+        }}
+      ></div>
+
+      <div 
+        className="leaf-decoration leaf-shape-5 leaf-color-4 leaf-size-medium" 
+        style={{ 
+          position: 'fixed',
+          top: '-35px',
+          right: '2%',
+          width: '100px',
+          height: '70px',
+          transform: 'rotate(20deg)',
+          zIndex: 1
+        }}
+      ></div>
+
+      <div 
+        className="leaf-decoration leaf-shape-1 leaf-color-3 leaf-size-medium" 
+        style={{ 
+          position: 'fixed',
+          top: '-40px',
+          left: '15%',
+          width: '100px',
+          height: '70px',
+          transform: 'rotate(9deg)',
+          zIndex: 1
+        }}
+      ></div>
+
+      <div 
+        className="leaf-decoration leaf-shape-3 leaf-color-6 leaf-size-medium" 
+        style={{ 
+          position: 'fixed',
+          top: '-40px',
+          right: '15%',
+          width: '100px',
+          height: '70px',
+          transform: 'rotate(-9deg)',
+          zIndex: 1
+        }}
+      ></div>
+
+      {/* Additional Random Jungle Leaves - Different Sizes - Random rotation ±20° */}
       {/* Mid-level scattered leaves */}
       <div 
         className="leaf-decoration leaf-shape-5 leaf-color-3 leaf-size-large" 
