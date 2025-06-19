@@ -1,4 +1,5 @@
-# **canøpy** Restaurant Nutrition Estimator
+# **canøpy** 
+Your Restaurant Nutrition Estimator
 
 AI-powered conversational tool for estimating nutritional values at restaurants, especially independent and ethnic establishments.
 
