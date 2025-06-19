@@ -486,7 +486,22 @@ FINAL CALORIES: ${finalCalories}`;
   return finalResult;
 }
 
-// AI mode function (Perplexity API)
+// Extract dish name from user input for generic estimation
+function extractDishFromInput(userInput: string): string {
+  const lowerInput = userInput.toLowerCase();
+  
+  if (lowerInput.includes(' from ')) {
+    const parts = userInput.split(/ from /i);
+    return parts[0]?.trim() || userInput;
+  } else if (lowerInput.includes(' at ')) {
+    const parts = userInput.split(/ at /i);
+    return parts[0]?.trim() || userInput;
+  }
+  
+  return userInput;
+}
+
+// AI mode function (Perplexity API) - Updated with improved logic
 async function estimateCaloriesAIMode(userInput: string): Promise<RestaurantDiscoveryResult> {
   console.log('🤖 AI MODE: Starting Perplexity-powered calorie estimation for:', userInput);
   
@@ -517,22 +532,35 @@ COMPREHENSIVE SEARCH STRATEGY:
 
 STRICT OUTPUT FORMAT:
 RESTAURANT: [name and location if found, or "RESTAURANT NOT FOUND"]
-MENU ITEM: [exact item name from menu, or "ITEM NOT FOUND"]  
+MENU ITEM: [exact item name from menu, or "Not found"]  
 MENU DESCRIPTION: [complete ingredient list from menu, or "ITEM NOT ON MENU" or "INGREDIENTS NOT LISTED"]
 INGREDIENT SOURCE: [where ingredients were found - menu PDF, website, review site, social media, etc., or "NOT FOUND"]
 FOUND: [YES if restaurant AND menu item found, NO otherwise]`
   );
   
-  // NEW LOGIC: Check if restaurant was actually found by parsing the response
+  // Parse restaurant info from Phase 1
   const restaurantInfo = parseRestaurantInfo(restaurantResponse);
   
-  // Determine if restaurant was found based on parsed content, not just "FOUND: YES"
-  const restaurantFound = restaurantInfo.restaurant !== 'Unknown' && 
-                         restaurantInfo.menuItem !== 'Unknown' &&
-                         !restaurantResponse.includes('RESTAURANT NOT FOUND') &&
-                         !restaurantResponse.includes('NOT FOUND');
+  // NEW LOGIC: Check if restaurant was identified (regardless of menu item)
+  const restaurantIdentified = restaurantInfo.restaurant !== 'Unknown' && 
+                              restaurantInfo.restaurant !== 'RESTAURANT NOT FOUND' &&
+                              !restaurantResponse.includes('RESTAURANT NOT FOUND');
 
-  if (!restaurantFound) {
+  // Check if specific menu item was found on the restaurant's menu
+  const menuItemFoundInRestaurant = restaurantInfo.menuItem !== 'Unknown' && 
+                                   restaurantInfo.menuItem !== 'Not found' &&
+                                   !restaurantResponse.includes('ITEM NOT ON MENU') &&
+                                   !restaurantResponse.includes('NOT FOUND') &&
+                                   restaurantResponse.includes('FOUND: YES');
+
+  console.log('Phase 1 Analysis:', {
+    restaurantIdentified,
+    menuItemFoundInRestaurant,
+    restaurant: restaurantInfo.restaurant,
+    menuItem: restaurantInfo.menuItem
+  });
+
+  if (!restaurantIdentified) {
     return { 
       restaurant: restaurantInfo.restaurant,
       menuItem: restaurantInfo.menuItem,
@@ -548,9 +576,16 @@ FOUND: [YES if restaurant AND menu item found, NO otherwise]`
     };
   }
 
-  // PHASE 2: Complete Dish Analysis - Enhanced with strict calorie formatting
-  const dishResponse = await callPerplexityAPI(
-    `Analyze this dish and calculate total calories with precise formatting:
+  // PHASE 2: Complete Dish Analysis - Adjusted based on menu item availability
+  let dishAnalysisPrompt: string;
+  let menuItemForAnalysis: string;
+  let menuDescriptionForAnalysis: string;
+
+  if (menuItemFoundInRestaurant) {
+    // Use the specific menu item and description found
+    menuItemForAnalysis = restaurantInfo.menuItem;
+    menuDescriptionForAnalysis = restaurantInfo.description;
+    dishAnalysisPrompt = `Analyze this specific menu item and calculate total calories with precise formatting:
 
 Restaurant: ${restaurantInfo.restaurant}
 Menu Item: ${restaurantInfo.menuItem}
@@ -558,17 +593,40 @@ Menu Description: ${restaurantInfo.description}
 Ingredient Source: ${restaurantInfo.ingredientSource}
 
 CRITICAL REQUIREMENTS:
-1. If ingredients were found in Phase 1, use them as the base
-2. If ingredients NOT found, research typical components for this dish type
-3. Add missing standard components:
-   - Burgers: bun (150 cal) + patty (250-400 cal) + cheese (100 cal) + vegetables (20 cal)
+1. Use the exact ingredients listed in the menu description
+2. Add missing standard components typical for this dish type at restaurants
+3. Calculate realistic restaurant portion sizes
+4. MUST provide exact calorie number in specified format`;
+  } else {
+    // Restaurant found but menu item not found - estimate generic version
+    const genericDish = extractDishFromInput(userInput);
+    menuItemForAnalysis = `${genericDish} (generic estimate)`;
+    menuDescriptionForAnalysis = `Generic ${genericDish} - menu item not found at ${restaurantInfo.restaurant}`;
+    
+    dishAnalysisPrompt = `Estimate calories for a generic version of this dish since the specific menu item was not found:
+
+Restaurant: ${restaurantInfo.restaurant} (restaurant found)
+Requested Dish: ${genericDish}
+Status: Menu item not found at this restaurant
+Original Input: ${userInput}
+
+CRITICAL REQUIREMENTS:
+1. Since the specific menu item wasn't found, estimate a GENERIC version of "${genericDish}"
+2. Use typical restaurant ingredients and portions for this type of dish
+3. Add standard components based on dish type:
+   - Pizza: dough (200 cal) + sauce (30 cal) + cheese (200-300 cal) + toppings (varies)
+   - Burger: bun (150 cal) + patty (250-400 cal) + cheese (100 cal) + vegetables (20 cal)
    - Coffee drinks: espresso (5 cal) + milk amount and type (varies)
-   - Sandwiches: bread (160 cal) + fillings + condiments
+   - Pasta: pasta (200 cal) + sauce (100-200 cal) + protein/vegetables (varies)
 4. Calculate realistic restaurant portion sizes
-5. MUST provide exact calorie number in specified format
+5. MUST provide exact calorie number in specified format`;
+  }
+
+  const dishResponse = await callPerplexityAPI(
+    dishAnalysisPrompt + `
 
 STRICT OUTPUT FORMAT (follow exactly):
-FOUND INGREDIENTS: [what was listed in menu, or "None found in menu"]
+FOUND INGREDIENTS: [what was listed in menu, or "Generic ingredients estimated"]
 ADDED STANDARD COMPONENTS: [what you added based on dish type, or "None added"]
 COMPLETE INGREDIENT LIST:
 - [component 1]: [amount and calories]
@@ -579,7 +637,7 @@ CONFIDENCE: [HIGH/MEDIUM/LOW]
 
 Example format:
 TOTAL CALORIES: 650
-CONFIDENCE: HIGH`
+CONFIDENCE: ${menuItemFoundInRestaurant ? 'HIGH' : 'MEDIUM'}`
   );
 
   // Parse Phase 2 response
@@ -591,7 +649,7 @@ CONFIDENCE: HIGH`
 
 Original Input: "${userInput}"
 Restaurant: ${restaurantInfo.restaurant}
-Menu Item: ${restaurantInfo.menuItem}
+Menu Item: ${menuItemForAnalysis}
 Standard Ingredients: ${dishAnalysis.completeList}
 Standard Calories: ${dishAnalysis.calories}
 
@@ -632,11 +690,11 @@ FINAL CALORIES: ${dishAnalysis.calories}`
 
   // Prepare complete result for database save
   const finalResult: RestaurantDiscoveryResult = {
-    // Phase 1 results
+    // Phase 1 results - found is true if restaurant identified, regardless of menu item
     restaurant: restaurantInfo.restaurant,
-    menuItem: restaurantInfo.menuItem,
-    description: restaurantInfo.description,
-    found: true,
+    menuItem: menuItemForAnalysis,
+    description: menuDescriptionForAnalysis,
+    found: restaurantIdentified, // Changed: based on restaurant identification, not menu item
     
     // Phase 2 results
     ingredientSource: restaurantInfo.ingredientSource,
@@ -666,11 +724,11 @@ FINAL CALORIES: ${dishAnalysis.calories}`
     
     // New database fields
     restaurant_found_name: restaurantInfo.restaurant,
-    menu_item_found_name: restaurantInfo.menuItem,
-    restaurant_calories_exact: standardCalories, // From restaurant research
-    similar_dish_calories_estimated: null, // Not used in AI mode
+    menu_item_found_name: menuItemFoundInRestaurant ? restaurantInfo.menuItem : null,
+    restaurant_calories_exact: menuItemFoundInRestaurant ? standardCalories : null,
+    similar_dish_calories_estimated: !menuItemFoundInRestaurant ? standardCalories : null,
     ingredient_calories_estimated: null, // Not used in AI mode
-    calorie_estimation_source: 'perplexity_ai',
+    calorie_estimation_source: menuItemFoundInRestaurant ? 'perplexity_ai_exact' : 'perplexity_ai_generic',
     raw_google_search_data: null // Not used in AI mode
   };
 
@@ -680,6 +738,13 @@ FINAL CALORIES: ${dishAnalysis.calories}`
   finalResult.saveError = saveResult.error;
 
   console.log('🤖 AI MODE: Three-phase analysis complete!');
+  console.log('Final result summary:', {
+    restaurantFound: restaurantIdentified,
+    menuItemFound: menuItemFoundInRestaurant,
+    finalCalories: finalCalories,
+    estimationSource: finalResult.calorie_estimation_source
+  });
+  
   return finalResult;
 }
 
