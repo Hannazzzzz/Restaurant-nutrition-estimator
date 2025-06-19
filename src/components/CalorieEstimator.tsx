@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { Calculator, Utensils, TrendingUp, AlertCircle, Database, MapPin, CheckCircle, XCircle, Edit3, Zap, Search } from 'lucide-react';
+import { Calculator, Utensils, TrendingUp, AlertCircle, Database, MapPin, CheckCircle, XCircle, Edit3, Zap, Search, Brain } from 'lucide-react';
 import { estimateCalories } from '../utils/calorieEstimator';
 import { testSupabaseConnection, supabase } from '../lib/supabase';
 import { testGoogleSearch } from '../utils/googleSearchApi';
+import { testPerplexityAPI } from '../utils/perplexityApi';
 import { RestaurantDiscoveryResult } from '../types';
 import FoodHistory from './FoodHistory';
 
@@ -18,6 +19,8 @@ export default function CalorieEstimator() {
   const [historyRefreshTrigger, setHistoryRefreshTrigger] = useState(0);
   const [googleTestResult, setGoogleTestResult] = useState<{ success: boolean; message: string; results?: any[] } | null>(null);
   const [isTestingGoogle, setIsTestingGoogle] = useState(false);
+  const [perplexityTestResult, setPerplexityTestResult] = useState<{ success: boolean; message: string; response?: string } | null>(null);
+  const [isTestingPerplexity, setIsTestingPerplexity] = useState(false);
 
   // Test database connection on component mount
   useEffect(() => {
@@ -39,26 +42,25 @@ export default function CalorieEstimator() {
     return userId;
   }
 
-  // Input validation function
+  // Updated input validation function - now more flexible
   function validateMealInput(input: string) {
     const trimmedInput = input.trim();
     
-    // Check for 'from' or 'at' keyword
-    if (!trimmedInput.toLowerCase().includes(' from ') && 
-        !trimmedInput.toLowerCase().includes(' at ')) {
-      return {
-        valid: false,
-        error: "Please end your description with 'from' or 'at' [restaurant name]",
-        suggestion: "Example: 'Cortado from Baryl' or 'Pasta at Il Buco'"
-      };
-    }
-    
     // Check minimum length
-    if (trimmedInput.length < 10) {
+    if (trimmedInput.length < 5) {
       return {
         valid: false,
         error: "Please provide more details about your meal",
         suggestion: "Include the food item and restaurant name"
+      };
+    }
+    
+    // Check for obvious non-food inputs
+    if (trimmedInput.length < 3 || /^[0-9]+$/.test(trimmedInput)) {
+      return {
+        valid: false,
+        error: "Please describe a food item or meal",
+        suggestion: "Example: 'Big Mac from McDonald's' or 'Margherita pizza'"
       };
     }
     
@@ -120,6 +122,26 @@ export default function CalorieEstimator() {
       });
     } finally {
       setIsTestingGoogle(false);
+    }
+  };
+
+  // Test function for Perplexity API
+  const runPerplexityTest = async () => {
+    setIsTestingPerplexity(true);
+    setPerplexityTestResult(null);
+    
+    try {
+      console.log('Testing Perplexity API...');
+      const result = await testPerplexityAPI();
+      setPerplexityTestResult(result);
+    } catch (err) {
+      console.error('Perplexity API test failed:', err);
+      setPerplexityTestResult({
+        success: false,
+        message: err instanceof Error ? err.message : 'Unknown error occurred'
+      });
+    } finally {
+      setIsTestingPerplexity(false);
     }
   };
 
@@ -288,6 +310,48 @@ export default function CalorieEstimator() {
               )}
             </div>
 
+            {/* Perplexity API Test */}
+            <div>
+              <button
+                onClick={runPerplexityTest}
+                disabled={isTestingPerplexity}
+                className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium py-2 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 mb-2"
+              >
+                {isTestingPerplexity ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    Testing Perplexity AI...
+                  </>
+                ) : (
+                  <>
+                    <Brain className="w-4 h-4" />
+                    Test Perplexity API
+                  </>
+                )}
+              </button>
+
+              {perplexityTestResult && (
+                <div className={`p-3 rounded-xl border ${
+                  perplexityTestResult.success 
+                    ? 'bg-green-50 border-green-200 text-green-700' 
+                    : 'bg-red-50 border-red-200 text-red-700'
+                }`}>
+                  <div className="flex items-center gap-2">
+                    <Brain className="w-4 h-4" />
+                    <span className="text-xs font-medium">
+                      {perplexityTestResult.success ? '✅ Perplexity API Test Passed' : '❌ Perplexity API Test Failed'}
+                    </span>
+                  </div>
+                  <p className="text-xs mt-1">{perplexityTestResult.message}</p>
+                  {perplexityTestResult.response && (
+                    <div className="text-xs mt-2 bg-white bg-opacity-50 p-2 rounded">
+                      <strong>Sample response:</strong> {perplexityTestResult.response.substring(0, 100)}...
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
             {/* Google Search Test */}
             <div>
               <button
@@ -341,24 +405,26 @@ export default function CalorieEstimator() {
             id="meal-input"
             value={userInput}
             onChange={(e) => setUserInput(e.target.value)}
-            placeholder="Describe your meal, ending with 'from' or 'at' [restaurant name]
+            placeholder="Describe any meal or food item:
 
 Examples:
+• Big Mac from McDonald's
+• Margherita pizza from Tony's
 • Cortado from Baryl Frederiksberg
 • Avocado toast at Halifax Copenhagen  
-• Lasagna from Il Buco
-• Burger without bun from Halifax
-• Large cortado from Coffee Collective"
+• Chicken tikka masala
+• Large fries
+• Chocolate croissant"
             className="meal-input"
             disabled={isLoading}
             rows={4}
           />
           
-          {/* Input format helper */}
+          {/* Updated input format helper */}
           <div className="format-help">
             <span className="format-icon">💡</span>
             <span className="format-text">
-              End with "from" or "at" [restaurant name, location] for best results. Include modifications like "without", "extra", "large"
+              Include restaurant name for best results, but any food description works! AI will research and estimate calories.
             </span>
           </div>
           
@@ -388,7 +454,7 @@ Examples:
               <div className="input-format-error">
                 <div className="flex items-center gap-2 text-red-700 mb-2">
                   <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                  <h3 className="font-medium text-sm">📝 Input Format Issue</h3>
+                  <h3 className="font-medium text-sm">📝 Input Issue</h3>
                 </div>
                 <p className="text-red-700 text-sm">{error}</p>
                 {discoveryResult.suggestion && (

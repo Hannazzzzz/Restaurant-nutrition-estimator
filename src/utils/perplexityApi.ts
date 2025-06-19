@@ -87,3 +87,24 @@ export async function callPerplexityAPI(prompt: string): Promise<string> {
     throw new Error('Unknown error occurred while calling Perplexity API');
   }
 }
+
+// Test function for debugging Perplexity API
+export async function testPerplexityAPI(): Promise<{ success: boolean; message: string; response?: string }> {
+  try {
+    console.log('🧪 Testing Perplexity API...');
+    
+    const testPrompt = 'What are the main ingredients in a Big Mac from McDonald\'s? Provide a brief answer.';
+    const response = await callPerplexityAPI(testPrompt);
+    
+    return {
+      success: true,
+      message: `✅ Perplexity API test successful! Response received (${response.length} characters)`,
+      response: response
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: `❌ Perplexity API test failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+    };
+  }
+}

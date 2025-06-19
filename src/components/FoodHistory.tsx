@@ -45,12 +45,16 @@ export default function FoodHistory({ userId, refreshTrigger }: FoodHistoryProps
       setLoading(true);
       setError(null);
       
+      // Get entries from the past 7 days for Recent Meals section
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      
       const { data, error: fetchError } = await supabase
         .from('food_entries')
         .select('*')
         .eq('user_id', userId)
-        .order('created_at', { ascending: false })
-        .limit(20);
+        .gte('created_at', sevenDaysAgo.toISOString())
+        .order('created_at', { ascending: false });
       
       if (fetchError) {
         throw fetchError;
@@ -97,8 +101,10 @@ export default function FoodHistory({ userId, refreshTrigger }: FoodHistoryProps
       
       // Calculate stats
       const totalMeals = data.length;
-      const totalCalories = data.reduce((sum, entry) => sum + entry.estimated_calories, 0);
-      const averageCaloriesPerDay = Math.round(totalCalories / 7); // Average per day over 7 days
+      const totalCalories = data.reduce((sum, entry) => sum + (entry.estimated_calories || 0), 0);
+      
+      // Fixed calculation: total calories divided by 7 days (not by number of meals)
+      const averageCaloriesPerDay = Math.round(totalCalories / 7);
       
       // Find most frequent restaurant
       const restaurantCounts: { [key: string]: number } = {};
@@ -107,16 +113,22 @@ export default function FoodHistory({ userId, refreshTrigger }: FoodHistoryProps
         restaurantCounts[restaurant] = (restaurantCounts[restaurant] || 0) + 1;
       });
       
-      const mostFrequentRestaurant = Object.keys(restaurantCounts).reduce((a, b) => 
-        restaurantCounts[a] > restaurantCounts[b] ? a : b
-      );
+      let mostFrequentRestaurant = 'None';
+      let mostFrequentRestaurantCount = 0;
+      
+      if (Object.keys(restaurantCounts).length > 0) {
+        mostFrequentRestaurant = Object.keys(restaurantCounts).reduce((a, b) => 
+          restaurantCounts[a] > restaurantCounts[b] ? a : b
+        );
+        mostFrequentRestaurantCount = restaurantCounts[mostFrequentRestaurant];
+      }
       
       setWeeklyStats({
         totalMeals,
         totalCalories,
         averageCaloriesPerDay,
         mostFrequentRestaurant,
-        mostFrequentRestaurantCount: restaurantCounts[mostFrequentRestaurant]
+        mostFrequentRestaurantCount
       });
       
     } catch (err) {
@@ -302,7 +314,7 @@ export default function FoodHistory({ userId, refreshTrigger }: FoodHistoryProps
       <div className="border-t border-gray-100 pt-6">
         <h3 className="text-sm font-medium text-gray-700 mb-4 flex items-center gap-2">
           <History className="w-4 h-4 text-gray-500" />
-          Recent Meals
+          Recent Meals (Past 7 Days)
         </h3>
 
         {/* Entries List */}
@@ -404,7 +416,7 @@ export default function FoodHistory({ userId, refreshTrigger }: FoodHistoryProps
         {/* Footer */}
         <div className="mt-4 pt-4 border-t border-gray-100">
           <p className="text-xs text-gray-500 text-center">
-            Showing your {entries.length} most recent meal{entries.length !== 1 ? 's' : ''}
+            Showing {entries.length} meal{entries.length !== 1 ? 's' : ''} from the past 7 days
           </p>
         </div>
       </div>
