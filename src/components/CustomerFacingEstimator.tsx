@@ -37,7 +37,7 @@ export default function CustomerFacingEstimator() {
     }
   };
 
-  // Generate random leaf properties
+  // Generate random leaf properties for the wall
   const generateRandomLeaf = (index: number) => {
     const shapes = ['leaf-shape-1', 'leaf-shape-2', 'leaf-shape-3', 'leaf-shape-4', 'leaf-shape-5', 'leaf-shape-6'];
     const colors = ['leaf-color-1', 'leaf-color-2', 'leaf-color-3', 'leaf-color-4', 'leaf-color-5', 'leaf-color-6', 'leaf-color-7'];
@@ -70,12 +70,12 @@ export default function CustomerFacingEstimator() {
     };
   };
 
-  // Generate 90 leaves for the wall
+  // Generate 90 leaves for the dense wall
   const wallLeaves = Array.from({ length: 90 }, (_, index) => generateRandomLeaf(index));
 
   return (
     <div className="canopy-theme">
-      {/* Decorative Leaves - Updated with new classes */}
+      {/* Decorative Leaves - Enhanced with new diverse system */}
       <div className="leaf-decoration leaf-shape-1 leaf-color-1 leaf-size-large leaf-top-left" style={{ transform: 'rotate(25deg)' }}></div>
       <div className="leaf-decoration leaf-shape-2 leaf-color-2 leaf-size-medium leaf-top-right" style={{ transform: 'rotate(-15deg)' }}></div>
       <div className="leaf-decoration leaf-shape-3 leaf-color-3 leaf-size-large leaf-bottom-left" style={{ transform: 'rotate(45deg)' }}></div>
@@ -83,7 +83,7 @@ export default function CustomerFacingEstimator() {
       <div className="leaf-decoration leaf-shape-5 leaf-color-5 leaf-size-small leaf-mid-left" style={{ transform: 'rotate(35deg)' }}></div>
       <div className="leaf-decoration leaf-shape-6 leaf-color-6 leaf-size-small leaf-mid-right" style={{ transform: 'rotate(-35deg)' }}></div>
       
-      {/* Additional leaves for more density */}
+      {/* Additional leaves for more density with diverse shapes and colors */}
       <div className="leaf-decoration leaf-shape-2 leaf-color-7 leaf-size-medium leaf-top-left-2" style={{ transform: 'rotate(55deg)' }}></div>
       <div className="leaf-decoration leaf-shape-1 leaf-color-1 leaf-size-small leaf-top-right-2" style={{ transform: 'rotate(-45deg)' }}></div>
       <div className="leaf-decoration leaf-shape-4 leaf-color-3 leaf-size-large leaf-bottom-left-2" style={{ transform: 'rotate(65deg)' }}></div>
@@ -97,7 +97,7 @@ export default function CustomerFacingEstimator() {
       <div className="leaf-decoration leaf-shape-5 leaf-color-5 leaf-size-small leaf-left-lower" style={{ transform: 'rotate(95deg)' }}></div>
       <div className="leaf-decoration leaf-shape-6 leaf-color-2 leaf-size-medium leaf-right-lower" style={{ transform: 'rotate(-95deg)' }}></div>
       
-      {/* Wall of Leaves at Bottom */}
+      {/* Dense Wall of Leaves at Bottom - 90 randomly generated leaves */}
       <div className="leaf-wall-container">
         {wallLeaves.map((leaf, index) => (
           <div
