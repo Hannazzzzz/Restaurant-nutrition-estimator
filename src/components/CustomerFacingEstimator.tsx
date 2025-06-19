@@ -7,7 +7,6 @@ export default function CustomerFacingEstimator() {
   const [userInput, setUserInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
-  const [isInputFocused, setIsInputFocused] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,7 +38,7 @@ export default function CustomerFacingEstimator() {
   };
 
   return (
-    <div className={`canopy-theme ${isInputFocused ? 'input-focused' : ''}`}>
+    <div className="canopy-theme">
       {/* Strategic Large Leaves - Clean Framing (STATIC) */}
       {/* Left Side - 2 massive leaves */}
       <div 
@@ -51,8 +50,7 @@ export default function CustomerFacingEstimator() {
           width: '300px',
           height: '200px',
           transform: 'rotate(25deg)',
-          zIndex: 1,
-          transition: 'transform 0.6s ease-out'
+          zIndex: 1
         }}
       ></div>
 
@@ -65,8 +63,7 @@ export default function CustomerFacingEstimator() {
           width: '250px',
           height: '180px',
           transform: 'rotate(45deg)',
-          zIndex: 1,
-          transition: 'transform 0.6s ease-out'
+          zIndex: 1
         }}
       ></div>
 
@@ -80,8 +77,7 @@ export default function CustomerFacingEstimator() {
           width: '300px',
           height: '200px',
           transform: 'rotate(-15deg)',
-          zIndex: 1,
-          transition: 'transform 0.6s ease-out'
+          zIndex: 1
         }}
       ></div>
 
@@ -94,8 +90,7 @@ export default function CustomerFacingEstimator() {
           width: '250px',
           height: '180px',
           transform: 'rotate(-25deg)',
-          zIndex: 1,
-          transition: 'transform 0.6s ease-out'
+          zIndex: 1
         }}
       ></div>
 
@@ -109,8 +104,7 @@ export default function CustomerFacingEstimator() {
           width: '200px',
           height: '150px',
           transform: 'rotate(35deg)',
-          zIndex: 1,
-          transition: 'transform 0.6s ease-out'
+          zIndex: 1
         }}
       ></div>
 
@@ -123,8 +117,247 @@ export default function CustomerFacingEstimator() {
           width: '200px',
           height: '150px',
           transform: 'rotate(-35deg)',
-          zIndex: 1,
-          transition: 'transform 0.6s ease-out'
+          zIndex: 1
+        }}
+      ></div>
+
+      {/* Additional Random Jungle Leaves - Different Sizes */}
+      {/* Top hanging leaves */}
+      <div 
+        className="leaf-decoration leaf-shape-1 leaf-color-2 leaf-size-small" 
+        style={{ 
+          position: 'fixed',
+          top: '-20px',
+          left: '25%',
+          width: '70px',
+          height: '50px',
+          transform: 'rotate(15deg)',
+          zIndex: 1
+        }}
+      ></div>
+
+      <div 
+        className="leaf-decoration leaf-shape-3 leaf-color-4 leaf-size-medium" 
+        style={{ 
+          position: 'fixed',
+          top: '-30px',
+          left: '60%',
+          width: '100px',
+          height: '70px',
+          transform: 'rotate(-25deg)',
+          zIndex: 1
+        }}
+      ></div>
+
+      <div 
+        className="leaf-decoration leaf-shape-2 leaf-color-1 leaf-size-tiny" 
+        style={{ 
+          position: 'fixed',
+          top: '-15px',
+          left: '45%',
+          width: '40px',
+          height: '28px',
+          transform: 'rotate(45deg)',
+          zIndex: 1
+        }}
+      ></div>
+
+      <div 
+        className="leaf-decoration leaf-shape-4 leaf-color-6 leaf-size-small" 
+        style={{ 
+          position: 'fixed',
+          top: '-25px',
+          right: '35%',
+          width: '70px',
+          height: '50px',
+          transform: 'rotate(-35deg)',
+          zIndex: 1
+        }}
+      ></div>
+
+      {/* Mid-level scattered leaves */}
+      <div 
+        className="leaf-decoration leaf-shape-5 leaf-color-3 leaf-size-large" 
+        style={{ 
+          position: 'fixed',
+          left: '5%',
+          top: '45%',
+          width: '150px',
+          height: '105px',
+          transform: 'rotate(65deg)',
+          zIndex: 1
+        }}
+      ></div>
+
+      <div 
+        className="leaf-decoration leaf-shape-6 leaf-color-7 leaf-size-medium" 
+        style={{ 
+          position: 'fixed',
+          right: '8%',
+          top: '55%',
+          width: '100px',
+          height: '70px',
+          transform: 'rotate(-55deg)',
+          zIndex: 1
+        }}
+      ></div>
+
+      <div 
+        className="leaf-decoration leaf-shape-1 leaf-color-5 leaf-size-small" 
+        style={{ 
+          position: 'fixed',
+          left: '15%',
+          top: '65%',
+          width: '70px',
+          height: '50px',
+          transform: 'rotate(85deg)',
+          zIndex: 1
+        }}
+      ></div>
+
+      <div 
+        className="leaf-decoration leaf-shape-3 leaf-color-2 leaf-size-medium" 
+        style={{ 
+          position: 'fixed',
+          right: '12%',
+          top: '35%',
+          width: '100px',
+          height: '70px',
+          transform: 'rotate(-75deg)',
+          zIndex: 1
+        }}
+      ></div>
+
+      {/* Corner accent leaves */}
+      <div 
+        className="leaf-decoration leaf-shape-2 leaf-color-4 leaf-size-large" 
+        style={{ 
+          position: 'fixed',
+          left: '-30px',
+          top: '5%',
+          width: '150px',
+          height: '105px',
+          transform: 'rotate(35deg)',
+          zIndex: 1
+        }}
+      ></div>
+
+      <div 
+        className="leaf-decoration leaf-shape-4 leaf-color-1 leaf-size-large" 
+        style={{ 
+          position: 'fixed',
+          right: '-30px',
+          top: '8%',
+          width: '150px',
+          height: '105px',
+          transform: 'rotate(-45deg)',
+          zIndex: 1
+        }}
+      ></div>
+
+      {/* Bottom scattered leaves */}
+      <div 
+        className="leaf-decoration leaf-shape-5 leaf-color-6 leaf-size-medium" 
+        style={{ 
+          position: 'fixed',
+          bottom: '10%',
+          left: '8%',
+          width: '100px',
+          height: '70px',
+          transform: 'rotate(25deg)',
+          zIndex: 1
+        }}
+      ></div>
+
+      <div 
+        className="leaf-decoration leaf-shape-6 leaf-color-3 leaf-size-medium" 
+        style={{ 
+          position: 'fixed',
+          bottom: '15%',
+          right: '10%',
+          width: '100px',
+          height: '70px',
+          transform: 'rotate(-35deg)',
+          zIndex: 1
+        }}
+      ></div>
+
+      <div 
+        className="leaf-decoration leaf-shape-1 leaf-color-7 leaf-size-small" 
+        style={{ 
+          position: 'fixed',
+          bottom: '5%',
+          left: '35%',
+          width: '70px',
+          height: '50px',
+          transform: 'rotate(55deg)',
+          zIndex: 1
+        }}
+      ></div>
+
+      <div 
+        className="leaf-decoration leaf-shape-3 leaf-color-5 leaf-size-small" 
+        style={{ 
+          position: 'fixed',
+          bottom: '8%',
+          right: '40%',
+          width: '70px',
+          height: '50px',
+          transform: 'rotate(-65deg)',
+          zIndex: 1
+        }}
+      ></div>
+
+      {/* Fill gaps with tiny leaves */}
+      <div 
+        className="leaf-decoration leaf-shape-2 leaf-color-2 leaf-size-tiny" 
+        style={{ 
+          position: 'fixed',
+          left: '30%',
+          top: '25%',
+          width: '40px',
+          height: '28px',
+          transform: 'rotate(75deg)',
+          zIndex: 1
+        }}
+      ></div>
+
+      <div 
+        className="leaf-decoration leaf-shape-4 leaf-color-4 leaf-size-tiny" 
+        style={{ 
+          position: 'fixed',
+          right: '25%',
+          top: '75%',
+          width: '40px',
+          height: '28px',
+          transform: 'rotate(-85deg)',
+          zIndex: 1
+        }}
+      ></div>
+
+      <div 
+        className="leaf-decoration leaf-shape-5 leaf-color-1 leaf-size-tiny" 
+        style={{ 
+          position: 'fixed',
+          left: '70%',
+          top: '45%',
+          width: '40px',
+          height: '28px',
+          transform: 'rotate(95deg)',
+          zIndex: 1
+        }}
+      ></div>
+
+      <div 
+        className="leaf-decoration leaf-shape-6 leaf-color-3 leaf-size-tiny" 
+        style={{ 
+          position: 'fixed',
+          right: '65%',
+          bottom: '35%',
+          width: '40px',
+          height: '28px',
+          transform: 'rotate(-95deg)',
+          zIndex: 1
         }}
       ></div>
 
@@ -184,8 +417,6 @@ export default function CustomerFacingEstimator() {
                 <textarea
                   value={userInput}
                   onChange={(e) => setUserInput(e.target.value)}
-                  onFocus={() => setIsInputFocused(true)}
-                  onBlur={() => setIsInputFocused(false)}
                   placeholder="Describe your meal..."
                   className="canopy-input w-full h-32 px-6 py-4 pr-16 text-lg rounded-2xl resize-none font-montserrat placeholder-white/70 transition-all duration-300"
                   disabled={isLoading}

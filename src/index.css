@@ -127,11 +127,6 @@ body {
   height: 210px;
 }
 
-/* Input focus effect for leaves */
-.canopy-theme.input-focused .leaf-decoration {
-  transform: scale(0.95) translateX(10px) !important;
-}
-
 /* Fireflies - Keep movement */
 .firefly {
   position: absolute;
@@ -230,11 +225,10 @@ body {
   left: 2px;
 }
 
-/* Plant Decorations around Input */
+/* Plant Decorations around Input - NO FOCUS ANIMATIONS */
 .plant-decoration {
   position: absolute;
   z-index: 3;
-  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   pointer-events: none;
 }
 
@@ -286,32 +280,6 @@ body {
   background: #68b684;
   border-radius: 0% 50% 0% 50%;
   transform: rotate(30deg);
-}
-
-/* Focus State - Plants slide away slightly */
-.input-jungle-wrapper:focus-within .plant-decoration.vine-left {
-  transform: rotate(-30deg) translateX(-15px) scale(0.9);
-  opacity: 0.4;
-}
-
-.input-jungle-wrapper:focus-within .plant-decoration.vine-right {
-  transform: rotate(25deg) translateX(15px) scale(0.9);
-  opacity: 0.4;
-}
-
-.input-jungle-wrapper:focus-within .plant-decoration.moss-bottom {
-  transform: translateY(8px) scale(0.95);
-  opacity: 0.3;
-}
-
-.input-jungle-wrapper:focus-within .plant-decoration.small-leaf-1 {
-  transform: rotate(-45deg) translateX(-12px) translateY(-8px) scale(0.8);
-  opacity: 0.3;
-}
-
-.input-jungle-wrapper:focus-within .plant-decoration.small-leaf-2 {
-  transform: rotate(30deg) translateX(12px) translateY(-6px) scale(0.8);
-  opacity: 0.3;
 }
 
 /* Enhanced Input Styling - Transparent with light text */
