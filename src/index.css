@@ -58,7 +58,7 @@ body {
   transform: rotate(45deg);
 }
 
-/* Leaf Positions */
+/* Leaf Positions - Original */
 .leaf-top-left {
   top: 10%;
   left: -20px;
@@ -95,12 +95,87 @@ body {
   animation-delay: 5s;
 }
 
+/* Additional Leaf Positions - More leaves */
+.leaf-top-left-2 {
+  top: 5%;
+  left: -10px;
+  animation-delay: 1.5s;
+}
+
+.leaf-top-right-2 {
+  top: 25%;
+  right: -15px;
+  animation-delay: 3.5s;
+}
+
+.leaf-bottom-left-2 {
+  bottom: 30%;
+  left: -20px;
+  animation-delay: 2.5s;
+}
+
+.leaf-bottom-right-2 {
+  bottom: 25%;
+  right: -10px;
+  animation-delay: 4.5s;
+}
+
+.leaf-mid-left-2 {
+  top: 40%;
+  left: -25px;
+  animation-delay: 0.5s;
+}
+
+.leaf-mid-right-2 {
+  top: 70%;
+  right: -20px;
+  animation-delay: 2.8s;
+}
+
+.leaf-top-center {
+  top: 8%;
+  left: 50%;
+  transform: translateX(-50%) rotate(15deg);
+  animation-delay: 1.2s;
+}
+
+.leaf-bottom-center {
+  bottom: 15%;
+  left: 50%;
+  transform: translateX(-50%) rotate(-25deg);
+  animation-delay: 3.8s;
+}
+
+.leaf-left-upper {
+  top: 30%;
+  left: -18px;
+  animation-delay: 2.2s;
+}
+
+.leaf-right-upper {
+  top: 35%;
+  right: -22px;
+  animation-delay: 4.2s;
+}
+
+.leaf-left-lower {
+  bottom: 40%;
+  left: -12px;
+  animation-delay: 1.8s;
+}
+
+.leaf-right-lower {
+  bottom: 35%;
+  right: -18px;
+  animation-delay: 3.2s;
+}
+
 @keyframes leafSway {
   0%, 100% { transform: rotate(25deg) translateY(0px); }
   50% { transform: rotate(35deg) translateY(-10px); }
 }
 
-/* Fireflies */
+/* Fireflies - Slower movement */
 .firefly {
   position: absolute;
   width: 4px;
@@ -110,17 +185,17 @@ body {
   box-shadow: 0 0 10px #fff3a0, 0 0 20px #fff3a0, 0 0 30px #fff3a0;
   opacity: 0.8;
   z-index: 2;
-  animation: fireflyFloat 8s ease-in-out infinite;
+  animation: fireflyFloat 12s ease-in-out infinite;
 }
 
 .firefly:nth-child(odd) {
   animation-delay: 0s;
-  animation-duration: 6s;
+  animation-duration: 10s;
 }
 
 .firefly:nth-child(even) {
-  animation-delay: 3s;
-  animation-duration: 10s;
+  animation-delay: 5s;
+  animation-duration: 14s;
 }
 
 .firefly-1 { top: 20%; left: 15%; }
@@ -192,7 +267,7 @@ body {
   50% { opacity: 0.8; }
 }
 
-/* Tropical Flowers */
+/* Tropical Flowers - Repositioned closer to leaves */
 .flower-decoration {
   position: absolute;
   z-index: 2;
@@ -221,11 +296,19 @@ body {
   left: 2px;
 }
 
-.flower-1 { top: 25%; left: 10%; animation-delay: 0s; }
-.flower-2 { top: 35%; right: 25%; animation-delay: 1s; }
-.flower-3 { top: 65%; left: 20%; animation-delay: 2s; }
-.flower-4 { top: 75%; right: 30%; animation-delay: 3s; }
-.flower-5 { top: 45%; left: 80%; animation-delay: 1.5s; }
+/* Original flowers closer to leaves */
+.flower-1 { top: 12%; left: 5%; animation-delay: 0s; }
+.flower-2 { top: 18%; right: 8%; animation-delay: 1s; }
+.flower-3 { bottom: 22%; left: 8%; animation-delay: 2s; }
+.flower-4 { bottom: 12%; right: 12%; animation-delay: 3s; }
+.flower-5 { top: 62%; right: 5%; animation-delay: 1.5s; }
+
+/* Additional flowers near new leaves */
+.flower-6 { top: 8%; left: 15%; animation-delay: 2.5s; }
+.flower-7 { top: 28%; right: 18%; animation-delay: 0.8s; }
+.flower-8 { bottom: 32%; left: 12%; animation-delay: 3.2s; }
+.flower-9 { top: 42%; left: 5%; animation-delay: 1.8s; }
+.flower-10 { bottom: 38%; right: 8%; animation-delay: 2.8s; }
 
 @keyframes flowerBob {
   0%, 100% { transform: translateY(0px) scale(1); }
@@ -322,32 +405,34 @@ body {
   opacity: 0.2;
 }
 
-/* Enhanced Input Styling */
+/* Enhanced Input Styling - Transparent with light text */
 .canopy-input {
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.2);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
+  color: #f0f0f0;
 }
 
 .canopy-input:focus {
-  background: rgba(255, 255, 255, 0.98);
+  background: rgba(255, 255, 255, 0.08);
   border-color: rgba(255, 243, 160, 0.6);
   box-shadow: 0 0 0 4px rgba(255, 243, 160, 0.2), 0 12px 40px rgba(0, 0, 0, 0.15);
   outline: none;
+  color: #f0f0f0;
 }
 
-/* Canopy Button Styling */
+/* Canopy Button Styling - Dark with light outline */
 .canopy-button {
-  background: linear-gradient(135deg, #4a7c59 0%, #68b684 100%);
-  border: none;
+  background: linear-gradient(135deg, #1a3a2e 0%, #2c5364 100%);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
 }
 
 .canopy-button:hover:not(:disabled) {
-  background: linear-gradient(135deg, #68b684 0%, #4a7c59 100%);
+  background: linear-gradient(135deg, #2c5364 0%, #1a3a2e 100%);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
   transform: translateY(-2px);
 }

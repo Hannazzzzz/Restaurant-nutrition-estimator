@@ -39,7 +39,7 @@ export default function CustomerFacingEstimator() {
 
   return (
     <div className="canopy-theme">
-      {/* Decorative Leaves */}
+      {/* Decorative Leaves - More leaves added */}
       <div className="leaf-decoration large leaf-top-left"></div>
       <div className="leaf-decoration medium leaf-top-right"></div>
       <div className="leaf-decoration large leaf-bottom-left"></div>
@@ -47,7 +47,21 @@ export default function CustomerFacingEstimator() {
       <div className="leaf-decoration small leaf-mid-left"></div>
       <div className="leaf-decoration small leaf-mid-right"></div>
       
-      {/* Fireflies */}
+      {/* Additional leaves for more density */}
+      <div className="leaf-decoration medium leaf-top-left-2"></div>
+      <div className="leaf-decoration small leaf-top-right-2"></div>
+      <div className="leaf-decoration large leaf-bottom-left-2"></div>
+      <div className="leaf-decoration small leaf-bottom-right-2"></div>
+      <div className="leaf-decoration medium leaf-mid-left-2"></div>
+      <div className="leaf-decoration large leaf-mid-right-2"></div>
+      <div className="leaf-decoration small leaf-top-center"></div>
+      <div className="leaf-decoration medium leaf-bottom-center"></div>
+      <div className="leaf-decoration small leaf-left-upper"></div>
+      <div className="leaf-decoration medium leaf-right-upper"></div>
+      <div className="leaf-decoration small leaf-left-lower"></div>
+      <div className="leaf-decoration medium leaf-right-lower"></div>
+      
+      {/* Fireflies - slower movement */}
       <div className="firefly firefly-1"></div>
       <div className="firefly firefly-2"></div>
       <div className="firefly firefly-3"></div>
@@ -62,12 +76,17 @@ export default function CustomerFacingEstimator() {
       <div className="light-beam beam-2"></div>
       <div className="light-beam beam-3"></div>
       
-      {/* Tropical Flowers */}
+      {/* Tropical Flowers - repositioned closer to leaves */}
       <div className="flower-decoration flower-1"></div>
       <div className="flower-decoration flower-2"></div>
       <div className="flower-decoration flower-3"></div>
       <div className="flower-decoration flower-4"></div>
       <div className="flower-decoration flower-5"></div>
+      <div className="flower-decoration flower-6"></div>
+      <div className="flower-decoration flower-7"></div>
+      <div className="flower-decoration flower-8"></div>
+      <div className="flower-decoration flower-9"></div>
+      <div className="flower-decoration flower-10"></div>
 
       {/* Built with Bolt Badge */}
       <a
@@ -111,7 +130,7 @@ export default function CustomerFacingEstimator() {
                   value={userInput}
                   onChange={(e) => setUserInput(e.target.value)}
                   placeholder="Describe your meal..."
-                  className="canopy-input w-full h-32 px-6 py-4 pr-16 text-lg rounded-2xl resize-none font-montserrat placeholder-gray-500 transition-all duration-300"
+                  className="canopy-input w-full h-32 px-6 py-4 pr-16 text-lg rounded-2xl resize-none font-montserrat placeholder-white/70 transition-all duration-300"
                   disabled={isLoading}
                   rows={3}
                 />
@@ -157,13 +176,6 @@ export default function CustomerFacingEstimator() {
               )}
             </div>
           </form>
-
-          {/* Subtle Instructions */}
-          <div className="text-center mt-8">
-            <p className="font-montserrat text-white/60 text-sm">
-              Try: "Big Mac from McDonald's" or "Margherita pizza"
-            </p>
-          </div>
         </div>
       </div>
     </div>
