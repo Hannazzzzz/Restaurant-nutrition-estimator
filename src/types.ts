@@ -40,4 +40,18 @@ export interface RestaurantDiscoveryResult {
   timestamp?: string;
   saved?: boolean;
   saveError?: string;
+  
+  // Google Search metadata
+  googleSearchQuery?: string;
+  googleResultsCount?: number;
+  testMode?: boolean;
+  
+  // New database fields for detailed tracking
+  restaurant_found_name?: string;
+  menu_item_found_name?: string;
+  restaurant_calories_exact?: number;
+  similar_dish_calories_estimated?: number;
+  ingredient_calories_estimated?: number;
+  calorie_estimation_source?: string;
+  raw_google_search_data?: string;
 }

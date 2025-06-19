@@ -1,4 +1,4 @@
-import { CalorieEstimate } from '../types';
+import { CalorieEstimate, RestaurantDiscoveryResult } from '../types';
 import { callPerplexityAPI } from './perplexityApi';
 import { callGoogleCustomSearch, formatSearchResultsForAI } from './googleSearchApi';
 import { supabase } from '../lib/supabase';
@@ -7,48 +7,6 @@ interface FoodKeyword {
   keywords: string[];
   baseCalories: number;
   category: string;
-}
-
-interface RestaurantDiscoveryResult {
-  restaurant: string;
-  menuItem: string;
-  description: string;
-  found: boolean;
-  rawResponse: string;
-  estimatedCalories: string;
-  error?: string;
-  suggestion?: string;
-  inputFormat?: boolean;
-  
-  // Phase 2: Dish Analysis - Updated fields
-  ingredientSource?: string;
-  foundIngredients?: string;
-  addedComponents?: string;
-  completeIngredients?: string;
-  standardCalories?: string;
-  confidence?: string;
-  rawResponses?: {
-    phase1: string;
-    phase2: string;
-    phase3?: string;
-  };
-  phase?: number;
-  ready?: string;
-  
-  // Phase 3: User Modifications
-  modificationsDetected?: string;
-  calorieAdjustments?: string;
-  calculation?: string;
-  finalCalories?: number;
-  originalInput?: string;
-  timestamp?: string;
-  saved?: boolean;
-  saveError?: string;
-  
-  // Google Search metadata
-  googleSearchQuery?: string;
-  googleResultsCount?: number;
-  testMode?: boolean;
 }
 
 const foodDatabase: FoodKeyword[] = [
@@ -175,9 +133,11 @@ function getUserId() {
   return userId;
 }
 
-// Database save function
-async function saveToDatabase(result: any) {
+// Enhanced database save function with new schema fields
+async function saveToDatabase(result: RestaurantDiscoveryResult) {
   try {
+    const finalCalories = result.finalCalories || parseInt(result.standardCalories || '0') || 0;
+    
     const { data, error } = await supabase
       .from('food_entries')
       .insert([
@@ -185,9 +145,26 @@ async function saveToDatabase(result: any) {
           user_id: getUserId(),
           restaurant_name: result.restaurant,
           food_description: result.originalInput,
-          estimated_calories: result.finalCalories || result.standardCalories || 0,
+          estimated_calories: finalCalories,
           raw_ai_response: JSON.stringify(result.rawResponses || result.rawResponse),
-          created_at: new Date().toISOString()
+          created_at: new Date().toISOString(),
+          
+          // New schema fields
+          restaurant_found_name: result.restaurant_found_name || result.restaurant,
+          menu_item_found_name: result.menu_item_found_name || result.menuItem,
+          restaurant_calories_exact: result.restaurant_calories_exact || null,
+          similar_dish_calories_estimated: result.similar_dish_calories_estimated || null,
+          ingredient_calories_estimated: result.ingredient_calories_estimated || null,
+          calorie_estimation_source: result.calorie_estimation_source || 'unknown',
+          raw_google_search_data: result.raw_google_search_data || null,
+          
+          // Legacy fields for backward compatibility
+          menu_item: result.menuItem,
+          standard_calories: parseInt(result.standardCalories || '0') || null,
+          final_calories: finalCalories,
+          modifications: result.modificationsDetected || null,
+          complete_ingredients: result.completeIngredients || null,
+          confidence_level: result.confidence || null
         }
       ]);
 
@@ -398,7 +375,9 @@ async function estimateCaloriesTestMode(userInput: string): Promise<RestaurantDi
       estimatedCalories: 'Search failed',
       googleSearchQuery: searchQuery,
       googleResultsCount: searchResults.length,
-      testMode: true
+      testMode: true,
+      calorie_estimation_source: 'search_failed',
+      raw_google_search_data: JSON.stringify({ error: searchError, query: searchQuery })
     };
   }
   
@@ -445,7 +424,7 @@ CALCULATION: ${calculation}
 FINAL CALORIES: ${finalCalories}`;
 
   // Prepare complete result
-  const finalResult = {
+  const finalResult: RestaurantDiscoveryResult = {
     // Phase 1 results
     restaurant: searchAnalysis.restaurant,
     menuItem: searchAnalysis.menuItem,
@@ -481,7 +460,20 @@ FINAL CALORIES: ${finalCalories}`;
     // Google Search metadata
     googleSearchQuery: searchQuery,
     googleResultsCount: searchResults.length,
-    testMode: true
+    testMode: true,
+    
+    // New database fields
+    restaurant_found_name: searchAnalysis.found ? searchAnalysis.restaurant : null,
+    menu_item_found_name: searchAnalysis.found ? searchAnalysis.menuItem : null,
+    restaurant_calories_exact: null, // Not available in test mode
+    similar_dish_calories_estimated: null, // Not available in test mode
+    ingredient_calories_estimated: finalCalories,
+    calorie_estimation_source: 'rule_based_google',
+    raw_google_search_data: JSON.stringify({
+      query: searchQuery,
+      results: searchResults,
+      analysis: searchAnalysis
+    })
   };
 
   // Save to database
@@ -549,7 +541,10 @@ FOUND: [YES if restaurant AND menu item found, NO otherwise]`
       error: 'Restaurant not found', 
       suggestion: 'Try including restaurant name + location',
       rawResponse: restaurantResponse,
-      estimatedCalories: 'Restaurant discovery failed'
+      estimatedCalories: 'Restaurant discovery failed',
+      calorie_estimation_source: 'perplexity_ai_failed',
+      restaurant_found_name: null,
+      menu_item_found_name: null
     };
   }
 
@@ -636,7 +631,7 @@ FINAL CALORIES: ${dishAnalysis.calories}`
   const finalCalories = parseInt(modificationAnalysis.finalCalories) || standardCalories;
 
   // Prepare complete result for database save
-  const finalResult = {
+  const finalResult: RestaurantDiscoveryResult = {
     // Phase 1 results
     restaurant: restaurantInfo.restaurant,
     menuItem: restaurantInfo.menuItem,
@@ -667,7 +662,16 @@ FINAL CALORIES: ${dishAnalysis.calories}`
       phase3: modificationResponse
     },
     rawResponse: restaurantResponse, // Keep for backward compatibility
-    estimatedCalories: `${finalCalories} calories (AI-powered estimate)`
+    estimatedCalories: `${finalCalories} calories (AI-powered estimate)`,
+    
+    // New database fields
+    restaurant_found_name: restaurantInfo.restaurant,
+    menu_item_found_name: restaurantInfo.menuItem,
+    restaurant_calories_exact: standardCalories, // From restaurant research
+    similar_dish_calories_estimated: null, // Not used in AI mode
+    ingredient_calories_estimated: null, // Not used in AI mode
+    calorie_estimation_source: 'perplexity_ai',
+    raw_google_search_data: null // Not used in AI mode
   };
 
   // Save to database
@@ -679,17 +683,34 @@ FINAL CALORIES: ${dishAnalysis.calories}`
   return finalResult;
 }
 
+// Main estimation function with fallback logic
 export async function estimateCalories(userInput: string, usePerplexityAPI: boolean = false): Promise<RestaurantDiscoveryResult> {
   try {
     if (usePerplexityAPI) {
-      return await estimateCaloriesAIMode(userInput);
+      console.log('🤖 Attempting AI Mode with Perplexity API...');
+      try {
+        return await estimateCaloriesAIMode(userInput);
+      } catch (perplexityError) {
+        console.warn('🤖 AI Mode failed, falling back to Test Mode:', perplexityError);
+        
+        // Fallback to test mode if Perplexity fails
+        const fallbackResult = await estimateCaloriesTestMode(userInput);
+        
+        // Add fallback information to the result
+        fallbackResult.error = `AI Mode failed: ${perplexityError instanceof Error ? perplexityError.message : 'Unknown error'}. Switched to Test Mode.`;
+        fallbackResult.suggestion = 'AI analysis failed, but we provided a rule-based estimate. Check your Perplexity API configuration.';
+        fallbackResult.calorie_estimation_source = 'fallback_to_rule_based';
+        
+        return fallbackResult;
+      }
     } else {
+      console.log('🧪 Using Test Mode (Google + Rules)...');
       return await estimateCaloriesTestMode(userInput);
     }
   } catch (error) {
-    console.error('Calorie estimation error:', error);
+    console.error('Complete estimation failure:', error);
     
-    let errorMessage = 'Estimation failed';
+    let errorMessage = 'Complete estimation failed';
     let suggestion = 'Please try again';
     
     if (error instanceof Error) {
@@ -711,7 +732,10 @@ export async function estimateCalories(userInput: string, usePerplexityAPI: bool
       suggestion: suggestion,
       rawResponse: `${usePerplexityAPI ? '🤖 AI MODE' : '🧪 TEST MODE'} ERROR: ${errorMessage}`,
       estimatedCalories: 'Estimation failed',
-      testMode: !usePerplexityAPI
+      testMode: !usePerplexityAPI,
+      calorie_estimation_source: 'complete_failure',
+      restaurant_found_name: null,
+      menu_item_found_name: null
     };
   }
 }
