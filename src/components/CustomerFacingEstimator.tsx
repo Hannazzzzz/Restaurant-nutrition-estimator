@@ -38,115 +38,110 @@ export default function CustomerFacingEstimator() {
     }
   };
 
-  // Generate random leaf properties for the wall
-  const generateRandomLeaf = (index: number) => {
-    const shapes = ['leaf-shape-1', 'leaf-shape-2', 'leaf-shape-3', 'leaf-shape-4', 'leaf-shape-5', 'leaf-shape-6'];
-    const colors = ['leaf-color-1', 'leaf-color-2', 'leaf-color-3', 'leaf-color-4', 'leaf-color-5', 'leaf-color-6', 'leaf-color-7'];
-    const sizes = ['leaf-size-tiny', 'leaf-size-small', 'leaf-size-medium', 'leaf-size-large', 'leaf-size-extra-large'];
-    
-    const shape = shapes[Math.floor(Math.random() * shapes.length)];
-    const color = colors[Math.floor(Math.random() * colors.length)];
-    const size = sizes[Math.floor(Math.random() * sizes.length)];
-    
-    // Random positioning and styling
-    const left = Math.random() * 100; // 0-100%
-    const bottom = Math.random() * 180; // 0-180px from bottom
-    const rotation = Math.random() * 360; // 0-360 degrees
-    const opacity = 0.4 + Math.random() * 0.4; // 0.4-0.8
-    const zIndex = Math.floor(Math.random() * 5) + 1; // 1-5
-    
-    return {
-      shape,
-      color,
-      size,
-      style: {
-        left: `${left}%`,
-        bottom: `${bottom}px`,
-        transform: `rotate(${rotation}deg)`,
-        opacity: opacity,
-        zIndex: zIndex
-      }
-    };
-  };
-
-  // Generate 90 leaves for the dense wall
-  const wallLeaves = Array.from({ length: 90 }, (_, index) => generateRandomLeaf(index));
-
   return (
     <div className={`canopy-theme ${isInputFocused ? 'input-focused' : ''}`}>
-      {/* Strategic Large Leaves - Framing the Interface */}
-      
-      {/* Left Side Framing - 2 Large Leaves */}
-      <div className="leaf-decoration leaf-shape-1 leaf-color-1 leaf-size-giant leaf-frame-left-1" style={{ transform: 'rotate(25deg)' }}></div>
-      <div className="leaf-decoration leaf-shape-3 leaf-color-3 leaf-size-huge leaf-frame-left-2" style={{ transform: 'rotate(45deg)' }}></div>
-      
-      {/* Right Side Framing - 3 Large Leaves */}
-      <div className="leaf-decoration leaf-shape-2 leaf-color-2 leaf-size-giant leaf-frame-right-1" style={{ transform: 'rotate(-15deg)' }}></div>
-      <div className="leaf-decoration leaf-shape-4 leaf-color-4 leaf-size-huge leaf-frame-right-2" style={{ transform: 'rotate(-25deg)' }}></div>
-      <div className="leaf-decoration leaf-shape-6 leaf-color-6 leaf-size-giant leaf-frame-right-3" style={{ transform: 'rotate(-35deg)' }}></div>
-      
-      {/* Bottom Edge - 3-5 Leaves */}
-      <div className="leaf-decoration leaf-shape-5 leaf-color-5 leaf-size-extra-large leaf-frame-bottom-1" style={{ transform: 'rotate(35deg)' }}></div>
-      <div className="leaf-decoration leaf-shape-2 leaf-color-7 leaf-size-large leaf-frame-bottom-2" style={{ transform: 'rotate(55deg)' }}></div>
-      <div className="leaf-decoration leaf-shape-1 leaf-color-1 leaf-size-extra-large leaf-frame-bottom-3" style={{ transform: 'rotate(-45deg)' }}></div>
-      <div className="leaf-decoration leaf-shape-4 leaf-color-3 leaf-size-large leaf-frame-bottom-4" style={{ transform: 'rotate(-55deg)' }}></div>
-      <div className="leaf-decoration leaf-shape-3 leaf-color-5 leaf-size-extra-large leaf-frame-bottom-5" style={{ transform: 'rotate(65deg)' }}></div>
-      
-      {/* Top Hanging - 1-2 Smaller Leaves */}
-      <div className="leaf-decoration leaf-shape-6 leaf-color-2 leaf-size-medium leaf-frame-top-1" style={{ transform: 'rotate(75deg)' }}></div>
-      <div className="leaf-decoration leaf-shape-1 leaf-color-6 leaf-size-small leaf-frame-top-2" style={{ transform: 'rotate(-75deg)' }}></div>
-      
-      {/* Fill Leaves - Smaller leaves around the larger framing ones */}
-      <div className="leaf-decoration leaf-shape-2 leaf-color-1 leaf-size-small leaf-fill-1" style={{ transform: 'rotate(85deg)' }}></div>
-      <div className="leaf-decoration leaf-shape-4 leaf-color-3 leaf-size-medium leaf-fill-2" style={{ transform: 'rotate(-85deg)' }}></div>
-      <div className="leaf-decoration leaf-shape-5 leaf-color-5 leaf-size-tiny leaf-fill-3" style={{ transform: 'rotate(95deg)' }}></div>
-      <div className="leaf-decoration leaf-shape-6 leaf-color-2 leaf-size-small leaf-fill-4" style={{ transform: 'rotate(-95deg)' }}></div>
-      <div className="leaf-decoration leaf-shape-1 leaf-color-4 leaf-size-medium leaf-fill-5" style={{ transform: 'rotate(105deg)' }}></div>
-      <div className="leaf-decoration leaf-shape-3 leaf-color-7 leaf-size-tiny leaf-fill-6" style={{ transform: 'rotate(-105deg)' }}></div>
-      <div className="leaf-decoration leaf-shape-2 leaf-color-6 leaf-size-small leaf-fill-7" style={{ transform: 'rotate(115deg)' }}></div>
-      <div className="leaf-decoration leaf-shape-4 leaf-color-1 leaf-size-medium leaf-fill-8" style={{ transform: 'rotate(-115deg)' }}></div>
-      
-      {/* Subtle Overlapping Leaves - These will move slightly when input is focused */}
-      <div className="leaf-decoration leaf-shape-5 leaf-color-3 leaf-size-large leaf-overlap-input-slight" style={{ top: '40%', left: '15%', transform: 'rotate(20deg)' }}></div>
-      <div className="leaf-decoration leaf-shape-1 leaf-color-5 leaf-size-medium leaf-overlap-input-slight" style={{ top: '55%', right: '20%', transform: 'rotate(-30deg)' }}></div>
-      
-      {/* Dense Wall of Leaves at Bottom - 90 randomly generated leaves (static) */}
-      <div className="leaf-wall-container">
-        {wallLeaves.map((leaf, index) => (
-          <div
-            key={index}
-            className={`leaf-decoration leaf-wall-item ${leaf.shape} ${leaf.color} ${leaf.size}`}
-            style={leaf.style}
-          ></div>
-        ))}
-      </div>
-      
-      {/* Fireflies - Much slower movement */}
-      <div className="firefly firefly-1"></div>
-      <div className="firefly firefly-2"></div>
-      <div className="firefly firefly-3"></div>
-      <div className="firefly firefly-4"></div>
-      <div className="firefly firefly-5"></div>
-      <div className="firefly firefly-6"></div>
-      <div className="firefly firefly-7"></div>
-      <div className="firefly firefly-8"></div>
-      
-      {/* Light Beams - Very subtle and static */}
-      <div className="light-beam beam-1"></div>
-      <div className="light-beam beam-2"></div>
-      <div className="light-beam beam-3"></div>
-      
-      {/* Tropical Flowers - Keep them */}
-      <div className="flower-decoration flower-1"></div>
-      <div className="flower-decoration flower-2"></div>
-      <div className="flower-decoration flower-3"></div>
-      <div className="flower-decoration flower-4"></div>
-      <div className="flower-decoration flower-5"></div>
-      <div className="flower-decoration flower-6"></div>
-      <div className="flower-decoration flower-7"></div>
-      <div className="flower-decoration flower-8"></div>
-      <div className="flower-decoration flower-9"></div>
-      <div className="flower-decoration flower-10"></div>
+      {/* Strategic Large Leaves - Clean Framing (STATIC) */}
+      {/* Left Side - 2 massive leaves */}
+      <div 
+        className="leaf-decoration leaf-shape-1 leaf-color-1 leaf-size-giant" 
+        style={{ 
+          position: 'fixed',
+          left: '-100px',
+          top: '20%',
+          width: '300px',
+          height: '200px',
+          transform: 'rotate(25deg)',
+          zIndex: 1,
+          transition: 'transform 0.6s ease-out'
+        }}
+      ></div>
+
+      <div 
+        className="leaf-decoration leaf-shape-3 leaf-color-3 leaf-size-huge" 
+        style={{ 
+          position: 'fixed',
+          left: '-80px',
+          bottom: '30%',
+          width: '250px',
+          height: '180px',
+          transform: 'rotate(45deg)',
+          zIndex: 1,
+          transition: 'transform 0.6s ease-out'
+        }}
+      ></div>
+
+      {/* Right Side - 2 massive leaves */}
+      <div 
+        className="leaf-decoration leaf-shape-2 leaf-color-2 leaf-size-giant" 
+        style={{ 
+          position: 'fixed',
+          right: '-100px',
+          top: '15%',
+          width: '300px',
+          height: '200px',
+          transform: 'rotate(-15deg)',
+          zIndex: 1,
+          transition: 'transform 0.6s ease-out'
+        }}
+      ></div>
+
+      <div 
+        className="leaf-decoration leaf-shape-4 leaf-color-4 leaf-size-huge" 
+        style={{ 
+          position: 'fixed',
+          right: '-80px',
+          bottom: '25%',
+          width: '250px',
+          height: '180px',
+          transform: 'rotate(-25deg)',
+          zIndex: 1,
+          transition: 'transform 0.6s ease-out'
+        }}
+      ></div>
+
+      {/* Bottom leaves - partial overlap */}
+      <div 
+        className="leaf-decoration leaf-shape-5 leaf-color-5 leaf-size-extra-large" 
+        style={{ 
+          position: 'fixed',
+          bottom: '-50px',
+          left: '20%',
+          width: '200px',
+          height: '150px',
+          transform: 'rotate(35deg)',
+          zIndex: 1,
+          transition: 'transform 0.6s ease-out'
+        }}
+      ></div>
+
+      <div 
+        className="leaf-decoration leaf-shape-6 leaf-color-6 leaf-size-extra-large" 
+        style={{ 
+          position: 'fixed',
+          bottom: '-50px',
+          right: '20%',
+          width: '200px',
+          height: '150px',
+          transform: 'rotate(-35deg)',
+          zIndex: 1,
+          transition: 'transform 0.6s ease-out'
+        }}
+      ></div>
+
+      {/* Beautiful floating fireflies - KEEP MOVEMENT */}
+      <div className="firefly firefly-1" style={{ zIndex: 3 }}></div>
+      <div className="firefly firefly-2" style={{ zIndex: 3 }}></div>
+      <div className="firefly firefly-3" style={{ zIndex: 3 }}></div>
+      <div className="firefly firefly-4" style={{ zIndex: 3 }}></div>
+
+      {/* Static flowers - NO MOVEMENT */}
+      <div className="flower-decoration" style={{ position: 'fixed', top: '25%', left: '15%', zIndex: 2, animation: 'none' }}></div>
+      <div className="flower-decoration" style={{ position: 'fixed', bottom: '40%', right: '20%', zIndex: 2, animation: 'none' }}></div>
+      <div className="flower-decoration" style={{ position: 'fixed', top: '70%', left: '80%', zIndex: 2, animation: 'none' }}></div>
+
+      {/* Static light beams - very subtle */}
+      <div className="light-beam beam-1" style={{ opacity: 0.1, animation: 'none' }}></div>
+      <div className="light-beam beam-2" style={{ opacity: 0.1, animation: 'none' }}></div>
 
       {/* Built with Bolt Badge */}
       <a
