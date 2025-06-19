@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { Calculator, Utensils, TrendingUp, AlertCircle, Wifi, WifiOff, Database, TestTube, MapPin, CheckCircle, XCircle, Edit3, Beaker, Zap } from 'lucide-react';
+import { Calculator, Utensils, TrendingUp, AlertCircle, Wifi, WifiOff, Database, TestTube, MapPin, CheckCircle, XCircle, Edit3, Beaker, Zap, Search } from 'lucide-react';
 import { estimateCalories } from '../utils/calorieEstimator';
 import { testSupabaseConnection, supabase } from '../lib/supabase';
+import { testGoogleSearch } from '../utils/googleSearchApi';
 import { RestaurantDiscoveryResult } from '../types';
 import FoodHistory from './FoodHistory';
 
@@ -16,6 +17,8 @@ export default function CalorieEstimator() {
   const [isTestingFoodEntries, setIsTestingFoodEntries] = useState(false);
   const [historyRefreshTrigger, setHistoryRefreshTrigger] = useState(0);
   const [usePerplexityAPI, setUsePerplexityAPI] = useState(false);
+  const [googleTestResult, setGoogleTestResult] = useState<{ success: boolean; message: string; results?: any[] } | null>(null);
+  const [isTestingGoogle, setIsTestingGoogle] = useState(false);
 
   // Test database connection on component mount
   useEffect(() => {
@@ -98,6 +101,26 @@ export default function CalorieEstimator() {
       });
     } finally {
       setIsTestingFoodEntries(false);
+    }
+  };
+
+  // Test function for Google Search API
+  const runGoogleSearchTest = async () => {
+    setIsTestingGoogle(true);
+    setGoogleTestResult(null);
+    
+    try {
+      console.log('Testing Google Custom Search API...');
+      const result = await testGoogleSearch();
+      setGoogleTestResult(result);
+    } catch (err) {
+      console.error('Google Search test failed:', err);
+      setGoogleTestResult({
+        success: false,
+        message: err instanceof Error ? err.message : 'Unknown error occurred'
+      });
+    } finally {
+      setIsTestingGoogle(false);
     }
   };
 
@@ -250,56 +273,97 @@ export default function CalorieEstimator() {
           </div>
         )}
 
-        {/* Food Entries Test Section */}
+        {/* API Testing Section */}
         <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
           <h3 className="text-sm font-medium text-gray-700 mb-3">
-            Database Table Test (Temporary)
+            API Connection Tests
           </h3>
           
-          <button
-            onClick={runFoodEntriesTest}
-            disabled={isTestingFoodEntries}
-            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium py-2 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 mb-3"
-          >
-            {isTestingFoodEntries ? (
-              <>
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                Testing food_entries table...
-              </>
-            ) : (
-              <>
-                <TestTube className="w-4 h-4" />
-                Test food_entries Table
-              </>
-            )}
-          </button>
+          <div className="space-y-3">
+            {/* Database Test */}
+            <div>
+              <button
+                onClick={runFoodEntriesTest}
+                disabled={isTestingFoodEntries}
+                className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium py-2 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 mb-2"
+              >
+                {isTestingFoodEntries ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    Testing Database...
+                  </>
+                ) : (
+                  <>
+                    <Database className="w-4 h-4" />
+                    Test Database Connection
+                  </>
+                )}
+              </button>
 
-          {/* Food Entries Test Result */}
-          {foodEntriesTestResult && (
-            <div className={`p-3 rounded-xl border ${
-              foodEntriesTestResult.success 
-                ? 'bg-green-50 border-green-200 text-green-700' 
-                : 'bg-red-50 border-red-200 text-red-700'
-            }`}>
-              <div className="flex items-center gap-2">
-                <Database className="w-4 h-4" />
-                <span className="text-xs font-medium">
-                  {foodEntriesTestResult.success ? '✅ food_entries Table Test Passed' : '❌ food_entries Table Test Failed'}
-                </span>
-              </div>
-              {foodEntriesTestResult.message && (
-                <p className="text-xs mt-1">{foodEntriesTestResult.message}</p>
-              )}
-              {foodEntriesTestResult.error && (
-                <p className="text-xs mt-1 opacity-75">{foodEntriesTestResult.error}</p>
-              )}
-              {foodEntriesTestResult.data && (
-                <div className="text-xs mt-2 bg-white bg-opacity-50 p-2 rounded">
-                  <strong>Data returned:</strong> {JSON.stringify(foodEntriesTestResult.data, null, 2)}
+              {foodEntriesTestResult && (
+                <div className={`p-3 rounded-xl border ${
+                  foodEntriesTestResult.success 
+                    ? 'bg-green-50 border-green-200 text-green-700' 
+                    : 'bg-red-50 border-red-200 text-red-700'
+                }`}>
+                  <div className="flex items-center gap-2">
+                    <Database className="w-4 h-4" />
+                    <span className="text-xs font-medium">
+                      {foodEntriesTestResult.success ? '✅ Database Test Passed' : '❌ Database Test Failed'}
+                    </span>
+                  </div>
+                  {foodEntriesTestResult.message && (
+                    <p className="text-xs mt-1">{foodEntriesTestResult.message}</p>
+                  )}
+                  {foodEntriesTestResult.error && (
+                    <p className="text-xs mt-1 opacity-75">{foodEntriesTestResult.error}</p>
+                  )}
                 </div>
               )}
             </div>
-          )}
+
+            {/* Google Search Test */}
+            <div>
+              <button
+                onClick={runGoogleSearchTest}
+                disabled={isTestingGoogle}
+                className="w-full bg-orange-600 hover:bg-orange-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium py-2 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 mb-2"
+              >
+                {isTestingGoogle ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    Testing Google Search...
+                  </>
+                ) : (
+                  <>
+                    <Search className="w-4 h-4" />
+                    Test Google Search API
+                  </>
+                )}
+              </button>
+
+              {googleTestResult && (
+                <div className={`p-3 rounded-xl border ${
+                  googleTestResult.success 
+                    ? 'bg-green-50 border-green-200 text-green-700' 
+                    : 'bg-red-50 border-red-200 text-red-700'
+                }`}>
+                  <div className="flex items-center gap-2">
+                    <Search className="w-4 h-4" />
+                    <span className="text-xs font-medium">
+                      {googleTestResult.success ? '✅ Google Search Test Passed' : '❌ Google Search Test Failed'}
+                    </span>
+                  </div>
+                  <p className="text-xs mt-1">{googleTestResult.message}</p>
+                  {googleTestResult.results && googleTestResult.results.length > 0 && (
+                    <div className="text-xs mt-2 bg-white bg-opacity-50 p-2 rounded">
+                      <strong>Sample result:</strong> {googleTestResult.results[0].title}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* Input Section */}
