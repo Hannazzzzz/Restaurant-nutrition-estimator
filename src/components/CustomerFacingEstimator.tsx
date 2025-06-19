@@ -255,13 +255,197 @@ export default function CustomerFacingEstimator() {
         }}
       ></div>
 
+      {/* Dense Lower Corner Leaves - Left Side */}
+      <div 
+        className="leaf-decoration leaf-shape-1 leaf-color-3 leaf-size-large" 
+        style={{ 
+          position: 'fixed',
+          bottom: '5%',
+          left: '2%',
+          width: '150px',
+          height: '105px',
+          transform: 'rotate(25deg)',
+          zIndex: 1
+        }}
+      ></div>
+
+      <div 
+        className="leaf-decoration leaf-shape-2 leaf-color-5 leaf-size-medium" 
+        style={{ 
+          position: 'fixed',
+          bottom: '8%',
+          left: '8%',
+          width: '100px',
+          height: '70px',
+          transform: 'rotate(55deg)',
+          zIndex: 1
+        }}
+      ></div>
+
+      <div 
+        className="leaf-decoration leaf-shape-3 leaf-color-1 leaf-size-small" 
+        style={{ 
+          position: 'fixed',
+          bottom: '12%',
+          left: '5%',
+          width: '70px',
+          height: '50px',
+          transform: 'rotate(75deg)',
+          zIndex: 1
+        }}
+      ></div>
+
+      <div 
+        className="leaf-decoration leaf-shape-4 leaf-color-7 leaf-size-tiny" 
+        style={{ 
+          position: 'fixed',
+          bottom: '15%',
+          left: '12%',
+          width: '40px',
+          height: '28px',
+          transform: 'rotate(95deg)',
+          zIndex: 1
+        }}
+      ></div>
+
+      <div 
+        className="leaf-decoration leaf-shape-5 leaf-color-2 leaf-size-medium" 
+        style={{ 
+          position: 'fixed',
+          bottom: '3%',
+          left: '15%',
+          width: '100px',
+          height: '70px',
+          transform: 'rotate(45deg)',
+          zIndex: 1
+        }}
+      ></div>
+
+      <div 
+        className="leaf-decoration leaf-shape-6 leaf-color-4 leaf-size-small" 
+        style={{ 
+          position: 'fixed',
+          bottom: '18%',
+          left: '3%',
+          width: '70px',
+          height: '50px',
+          transform: 'rotate(65deg)',
+          zIndex: 1
+        }}
+      ></div>
+
+      <div 
+        className="leaf-decoration leaf-shape-1 leaf-color-6 leaf-size-large" 
+        style={{ 
+          position: 'fixed',
+          bottom: '1%',
+          left: '25%',
+          width: '150px',
+          height: '105px',
+          transform: 'rotate(35deg)',
+          zIndex: 1
+        }}
+      ></div>
+
+      {/* Dense Lower Corner Leaves - Right Side */}
+      <div 
+        className="leaf-decoration leaf-shape-2 leaf-color-1 leaf-size-large" 
+        style={{ 
+          position: 'fixed',
+          bottom: '5%',
+          right: '2%',
+          width: '150px',
+          height: '105px',
+          transform: 'rotate(-25deg)',
+          zIndex: 1
+        }}
+      ></div>
+
+      <div 
+        className="leaf-decoration leaf-shape-3 leaf-color-3 leaf-size-medium" 
+        style={{ 
+          position: 'fixed',
+          bottom: '8%',
+          right: '8%',
+          width: '100px',
+          height: '70px',
+          transform: 'rotate(-55deg)',
+          zIndex: 1
+        }}
+      ></div>
+
+      <div 
+        className="leaf-decoration leaf-shape-4 leaf-color-5 leaf-size-small" 
+        style={{ 
+          position: 'fixed',
+          bottom: '12%',
+          right: '5%',
+          width: '70px',
+          height: '50px',
+          transform: 'rotate(-75deg)',
+          zIndex: 1
+        }}
+      ></div>
+
+      <div 
+        className="leaf-decoration leaf-shape-5 leaf-color-7 leaf-size-tiny" 
+        style={{ 
+          position: 'fixed',
+          bottom: '15%',
+          right: '12%',
+          width: '40px',
+          height: '28px',
+          transform: 'rotate(-95deg)',
+          zIndex: 1
+        }}
+      ></div>
+
+      <div 
+        className="leaf-decoration leaf-shape-6 leaf-color-2 leaf-size-medium" 
+        style={{ 
+          position: 'fixed',
+          bottom: '3%',
+          right: '15%',
+          width: '100px',
+          height: '70px',
+          transform: 'rotate(-45deg)',
+          zIndex: 1
+        }}
+      ></div>
+
+      <div 
+        className="leaf-decoration leaf-shape-1 leaf-color-4 leaf-size-small" 
+        style={{ 
+          position: 'fixed',
+          bottom: '18%',
+          right: '3%',
+          width: '70px',
+          height: '50px',
+          transform: 'rotate(-65deg)',
+          zIndex: 1
+        }}
+      ></div>
+
+      <div 
+        className="leaf-decoration leaf-shape-2 leaf-color-6 leaf-size-large" 
+        style={{ 
+          position: 'fixed',
+          bottom: '1%',
+          right: '25%',
+          width: '150px',
+          height: '105px',
+          transform: 'rotate(-35deg)',
+          zIndex: 1
+        }}
+      ></div>
+
       {/* Bottom scattered leaves */}
       <div 
         className="leaf-decoration leaf-shape-5 leaf-color-6 leaf-size-medium" 
         style={{ 
           position: 'fixed',
           bottom: '10%',
-          left: '8%',
+          left: '35%',
           width: '100px',
           height: '70px',
           transform: 'rotate(25deg)',
@@ -274,7 +458,7 @@ export default function CustomerFacingEstimator() {
         style={{ 
           position: 'fixed',
           bottom: '15%',
-          right: '10%',
+          right: '40%',
           width: '100px',
           height: '70px',
           transform: 'rotate(-35deg)',
@@ -287,7 +471,7 @@ export default function CustomerFacingEstimator() {
         style={{ 
           position: 'fixed',
           bottom: '5%',
-          left: '35%',
+          left: '45%',
           width: '70px',
           height: '50px',
           transform: 'rotate(55deg)',
@@ -300,7 +484,7 @@ export default function CustomerFacingEstimator() {
         style={{ 
           position: 'fixed',
           bottom: '8%',
-          right: '40%',
+          right: '50%',
           width: '70px',
           height: '50px',
           transform: 'rotate(-65deg)',
@@ -361,16 +545,29 @@ export default function CustomerFacingEstimator() {
         }}
       ></div>
 
-      {/* Beautiful floating fireflies - KEEP MOVEMENT */}
+      {/* Enhanced fireflies with independent movement */}
       <div className="firefly firefly-1" style={{ zIndex: 3 }}></div>
       <div className="firefly firefly-2" style={{ zIndex: 3 }}></div>
       <div className="firefly firefly-3" style={{ zIndex: 3 }}></div>
       <div className="firefly firefly-4" style={{ zIndex: 3 }}></div>
+      <div className="firefly firefly-5" style={{ zIndex: 3 }}></div>
+      <div className="firefly firefly-6" style={{ zIndex: 3 }}></div>
+      <div className="firefly firefly-7" style={{ zIndex: 3 }}></div>
+      <div className="firefly firefly-8" style={{ zIndex: 3 }}></div>
+      <div className="firefly firefly-9" style={{ zIndex: 3 }}></div>
+      <div className="firefly firefly-10" style={{ zIndex: 3 }}></div>
 
-      {/* Static flowers - NO MOVEMENT */}
+      {/* More flowers scattered throughout */}
       <div className="flower-decoration" style={{ position: 'fixed', top: '25%', left: '15%', zIndex: 2, animation: 'none' }}></div>
       <div className="flower-decoration" style={{ position: 'fixed', bottom: '40%', right: '20%', zIndex: 2, animation: 'none' }}></div>
       <div className="flower-decoration" style={{ position: 'fixed', top: '70%', left: '80%', zIndex: 2, animation: 'none' }}></div>
+      <div className="flower-decoration" style={{ position: 'fixed', top: '35%', right: '10%', zIndex: 2, animation: 'none' }}></div>
+      <div className="flower-decoration" style={{ position: 'fixed', bottom: '60%', left: '25%', zIndex: 2, animation: 'none' }}></div>
+      <div className="flower-decoration" style={{ position: 'fixed', top: '55%', right: '35%', zIndex: 2, animation: 'none' }}></div>
+      <div className="flower-decoration" style={{ position: 'fixed', bottom: '20%', left: '60%', zIndex: 2, animation: 'none' }}></div>
+      <div className="flower-decoration" style={{ position: 'fixed', top: '80%', right: '60%', zIndex: 2, animation: 'none' }}></div>
+      <div className="flower-decoration" style={{ position: 'fixed', bottom: '75%', left: '40%', zIndex: 2, animation: 'none' }}></div>
+      <div className="flower-decoration" style={{ position: 'fixed', top: '15%', left: '70%', zIndex: 2, animation: 'none' }}></div>
 
       {/* Static light beams - very subtle */}
       <div className="light-beam beam-1" style={{ opacity: 0.1, animation: 'none' }}></div>
