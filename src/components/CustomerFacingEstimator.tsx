@@ -37,29 +37,76 @@ export default function CustomerFacingEstimator() {
     }
   };
 
+  // Generate random leaf properties
+  const generateRandomLeaf = (index: number) => {
+    const shapes = ['leaf-shape-1', 'leaf-shape-2', 'leaf-shape-3', 'leaf-shape-4', 'leaf-shape-5', 'leaf-shape-6'];
+    const colors = ['leaf-color-1', 'leaf-color-2', 'leaf-color-3', 'leaf-color-4', 'leaf-color-5', 'leaf-color-6', 'leaf-color-7'];
+    const sizes = ['leaf-size-tiny', 'leaf-size-small', 'leaf-size-medium', 'leaf-size-large', 'leaf-size-extra-large'];
+    
+    const shape = shapes[Math.floor(Math.random() * shapes.length)];
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const size = sizes[Math.floor(Math.random() * sizes.length)];
+    
+    // Random positioning and styling
+    const left = Math.random() * 100; // 0-100%
+    const bottom = Math.random() * 180; // 0-180px from bottom
+    const rotation = Math.random() * 360; // 0-360 degrees
+    const animationDelay = Math.random() * 8; // 0-8 seconds
+    const opacity = 0.4 + Math.random() * 0.4; // 0.4-0.8
+    const zIndex = Math.floor(Math.random() * 5) + 1; // 1-5
+    
+    return {
+      shape,
+      color,
+      size,
+      style: {
+        left: `${left}%`,
+        bottom: `${bottom}px`,
+        transform: `rotate(${rotation}deg)`,
+        animationDelay: `${animationDelay}s`,
+        opacity: opacity,
+        zIndex: zIndex
+      }
+    };
+  };
+
+  // Generate 90 leaves for the wall
+  const wallLeaves = Array.from({ length: 90 }, (_, index) => generateRandomLeaf(index));
+
   return (
     <div className="canopy-theme">
-      {/* Decorative Leaves - More leaves added */}
-      <div className="leaf-decoration large leaf-top-left"></div>
-      <div className="leaf-decoration medium leaf-top-right"></div>
-      <div className="leaf-decoration large leaf-bottom-left"></div>
-      <div className="leaf-decoration medium leaf-bottom-right"></div>
-      <div className="leaf-decoration small leaf-mid-left"></div>
-      <div className="leaf-decoration small leaf-mid-right"></div>
+      {/* Decorative Leaves - Updated with new classes */}
+      <div className="leaf-decoration leaf-shape-1 leaf-color-1 leaf-size-large leaf-top-left" style={{ transform: 'rotate(25deg)' }}></div>
+      <div className="leaf-decoration leaf-shape-2 leaf-color-2 leaf-size-medium leaf-top-right" style={{ transform: 'rotate(-15deg)' }}></div>
+      <div className="leaf-decoration leaf-shape-3 leaf-color-3 leaf-size-large leaf-bottom-left" style={{ transform: 'rotate(45deg)' }}></div>
+      <div className="leaf-decoration leaf-shape-4 leaf-color-4 leaf-size-medium leaf-bottom-right" style={{ transform: 'rotate(-25deg)' }}></div>
+      <div className="leaf-decoration leaf-shape-5 leaf-color-5 leaf-size-small leaf-mid-left" style={{ transform: 'rotate(35deg)' }}></div>
+      <div className="leaf-decoration leaf-shape-6 leaf-color-6 leaf-size-small leaf-mid-right" style={{ transform: 'rotate(-35deg)' }}></div>
       
       {/* Additional leaves for more density */}
-      <div className="leaf-decoration medium leaf-top-left-2"></div>
-      <div className="leaf-decoration small leaf-top-right-2"></div>
-      <div className="leaf-decoration large leaf-bottom-left-2"></div>
-      <div className="leaf-decoration small leaf-bottom-right-2"></div>
-      <div className="leaf-decoration medium leaf-mid-left-2"></div>
-      <div className="leaf-decoration large leaf-mid-right-2"></div>
-      <div className="leaf-decoration small leaf-top-center"></div>
-      <div className="leaf-decoration medium leaf-bottom-center"></div>
-      <div className="leaf-decoration small leaf-left-upper"></div>
-      <div className="leaf-decoration medium leaf-right-upper"></div>
-      <div className="leaf-decoration small leaf-left-lower"></div>
-      <div className="leaf-decoration medium leaf-right-lower"></div>
+      <div className="leaf-decoration leaf-shape-2 leaf-color-7 leaf-size-medium leaf-top-left-2" style={{ transform: 'rotate(55deg)' }}></div>
+      <div className="leaf-decoration leaf-shape-1 leaf-color-1 leaf-size-small leaf-top-right-2" style={{ transform: 'rotate(-45deg)' }}></div>
+      <div className="leaf-decoration leaf-shape-4 leaf-color-3 leaf-size-large leaf-bottom-left-2" style={{ transform: 'rotate(65deg)' }}></div>
+      <div className="leaf-decoration leaf-shape-3 leaf-color-5 leaf-size-small leaf-bottom-right-2" style={{ transform: 'rotate(-55deg)' }}></div>
+      <div className="leaf-decoration leaf-shape-6 leaf-color-2 leaf-size-medium leaf-mid-left-2" style={{ transform: 'rotate(15deg)' }}></div>
+      <div className="leaf-decoration leaf-shape-5 leaf-color-4 leaf-size-large leaf-mid-right-2" style={{ transform: 'rotate(-65deg)' }}></div>
+      <div className="leaf-decoration leaf-shape-1 leaf-color-6 leaf-size-small leaf-top-center" style={{ transform: 'rotate(75deg)' }}></div>
+      <div className="leaf-decoration leaf-shape-3 leaf-color-7 leaf-size-medium leaf-bottom-center" style={{ transform: 'rotate(-75deg)' }}></div>
+      <div className="leaf-decoration leaf-shape-2 leaf-color-1 leaf-size-small leaf-left-upper" style={{ transform: 'rotate(85deg)' }}></div>
+      <div className="leaf-decoration leaf-shape-4 leaf-color-3 leaf-size-medium leaf-right-upper" style={{ transform: 'rotate(-85deg)' }}></div>
+      <div className="leaf-decoration leaf-shape-5 leaf-color-5 leaf-size-small leaf-left-lower" style={{ transform: 'rotate(95deg)' }}></div>
+      <div className="leaf-decoration leaf-shape-6 leaf-color-2 leaf-size-medium leaf-right-lower" style={{ transform: 'rotate(-95deg)' }}></div>
+      
+      {/* Wall of Leaves at Bottom */}
+      <div className="leaf-wall-container">
+        {wallLeaves.map((leaf, index) => (
+          <div
+            key={index}
+            className={`leaf-decoration leaf-wall-item ${leaf.shape} ${leaf.color} ${leaf.size}`}
+            style={leaf.style}
+          ></div>
+        ))}
+      </div>
       
       {/* Fireflies - slower movement */}
       <div className="firefly firefly-1"></div>
