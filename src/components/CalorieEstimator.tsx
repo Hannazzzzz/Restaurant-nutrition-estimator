@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { Calculator, Utensils, TrendingUp, AlertCircle, Wifi, WifiOff, Database, TestTube, MapPin, CheckCircle, XCircle, Edit3 } from 'lucide-react';
+import { Calculator, Utensils, TrendingUp, AlertCircle, Wifi, WifiOff, Database, TestTube, MapPin, CheckCircle, XCircle, Edit3, Beaker } from 'lucide-react';
 import { estimateCalories } from '../utils/calorieEstimator';
 import { testSupabaseConnection, supabase } from '../lib/supabase';
 import { RestaurantDiscoveryResult } from '../types';
@@ -127,7 +127,7 @@ export default function CalorieEstimator() {
     }
     
     try {
-      // Three-phase analysis
+      // Three-phase analysis (now in test mode)
       const result = await estimateCalories(userInput);
       setDiscoveryResult(result);
       
@@ -174,8 +174,17 @@ export default function CalorieEstimator() {
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
             Restaurant Nutrition Estimator
           </h1>
+          <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-3 mb-4">
+            <div className="flex items-center gap-2 text-yellow-700">
+              <Beaker className="w-4 h-4" />
+              <span className="text-sm font-medium">🧪 Test Mode Active</span>
+            </div>
+            <p className="text-xs text-yellow-600 mt-1">
+              Using Google Search + rule-based estimation (Perplexity API bypassed for testing)
+            </p>
+          </div>
           <p className="text-gray-600 text-sm leading-relaxed">
-            Complete 3-phase analysis: Restaurant discovery + dish analysis + modifications
+            Testing Google integration with fallback calorie estimation
           </p>
         </div>
 
@@ -288,12 +297,12 @@ Examples:
             {isLoading ? (
               <>
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                Analyzing meal...
+                Testing Google integration...
               </>
             ) : (
               <>
                 <Calculator className="w-4 h-4" />
-                Analyze Complete Meal
+                Test Google Search + Estimation
               </>
             )}
           </button>
@@ -333,6 +342,21 @@ Examples:
         {/* Restaurant Discovery Results */}
         {discoveryResult && !discoveryResult.inputFormat && (
           <div className="results-container">
+            {/* Test Mode Banner */}
+            {discoveryResult.testMode && (
+              <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-4 mb-4">
+                <div className="flex items-center gap-2 text-yellow-700 mb-2">
+                  <Beaker className="w-4 h-4" />
+                  <span className="text-sm font-medium">🧪 Test Mode Results</span>
+                </div>
+                <div className="text-xs text-yellow-600 space-y-1">
+                  <p>• Google Search Query: "{discoveryResult.googleSearchQuery}"</p>
+                  <p>• Search Results Found: {discoveryResult.googleResultsCount}</p>
+                  <p>• Using rule-based calorie estimation</p>
+                </div>
+              </div>
+            )}
+
             {discoveryResult.found ? (
               <>
                 {/* Phase 1 Results */}
@@ -344,6 +368,9 @@ Examples:
                     <h2 className="text-lg font-semibold text-gray-900 mb-1">
                       🏪 Restaurant Found (Phase 1)
                     </h2>
+                    {discoveryResult.testMode && (
+                      <p className="text-xs text-yellow-600">Google Search + Rule-based Analysis</p>
+                    )}
                   </div>
 
                   <div className="space-y-4">
@@ -374,26 +401,29 @@ Examples:
                       <h2 className="text-lg font-semibold text-gray-900 mb-1">
                         🍽️ Complete Dish Analysis (Phase 2)
                       </h2>
+                      {discoveryResult.testMode && (
+                        <p className="text-xs text-yellow-600">Rule-based Keyword Matching</p>
+                      )}
                     </div>
 
                     <div className="space-y-4">
                       {discoveryResult.foundIngredients && (
                         <div className="bg-green-50 rounded-xl p-4">
-                          <h4 className="text-sm font-medium text-green-800 mb-2">Found in Menu:</h4>
+                          <h4 className="text-sm font-medium text-green-800 mb-2">Found in Search Results:</h4>
                           <p className="text-green-700 text-sm">{discoveryResult.foundIngredients}</p>
                         </div>
                       )}
 
                       {discoveryResult.addedComponents && (
                         <div className="bg-yellow-50 rounded-xl p-4">
-                          <h4 className="text-sm font-medium text-yellow-800 mb-2">Added Standard Components:</h4>
+                          <h4 className="text-sm font-medium text-yellow-800 mb-2">Matched Food Categories:</h4>
                           <p className="text-yellow-700 text-sm">{discoveryResult.addedComponents}</p>
                         </div>
                       )}
 
                       {discoveryResult.completeIngredients && (
                         <div className="bg-gray-50 rounded-xl p-4">
-                          <h4 className="text-sm font-medium text-gray-800 mb-2">Complete Ingredient List:</h4>
+                          <h4 className="text-sm font-medium text-gray-800 mb-2">Complete Analysis:</h4>
                           <pre className="components-list text-gray-700">{discoveryResult.completeIngredients}</pre>
                         </div>
                       )}
@@ -421,6 +451,9 @@ Examples:
                       <h2 className="text-lg font-semibold text-gray-900 mb-1">
                         ✏️ Your Modifications (Phase 3)
                       </h2>
+                      {discoveryResult.testMode && (
+                        <p className="text-xs text-yellow-600">Rule-based Modification Detection</p>
+                      )}
                     </div>
 
                     <div className="space-y-4">
@@ -433,7 +466,7 @@ Examples:
                         <>
                           <div className="bg-yellow-50 rounded-xl p-4">
                             <h4 className="text-sm font-medium text-yellow-800 mb-2">Calorie Adjustments:</h4>
-                            <pre className="adjustments-list text-yellow-700">{discoveryResult.calorieAdjustments}</pre>
+                            <p className="text-yellow-700 text-sm">{discoveryResult.calorieAdjustments}</p>
                           </div>
 
                           <div className="bg-gray-50 rounded-xl p-4">
@@ -474,6 +507,9 @@ Examples:
                   <h2 className="text-lg font-semibold text-gray-900 mb-1">
                     ❌ Restaurant Not Found
                   </h2>
+                  {discoveryResult.testMode && (
+                    <p className="text-xs text-yellow-600">Google Search returned {discoveryResult.googleResultsCount} results</p>
+                  )}
                 </div>
 
                 <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-4">
@@ -493,25 +529,25 @@ Examples:
             {(discoveryResult.rawResponse || discoveryResult.rawResponses) && (
               <details className="debug-section bg-white rounded-2xl shadow-lg p-6 mb-6">
                 <summary className="text-xs text-gray-500 cursor-pointer hover:text-gray-700 mb-2">
-                  Show AI Responses (Debug)
+                  Show Test Mode Responses (Debug)
                 </summary>
                 {discoveryResult.rawResponses ? (
                   <div className="raw-responses space-y-4">
                     <div className="phase-response">
-                      <h4 className="text-sm font-medium text-gray-700 mb-2">Phase 1 (Restaurant Discovery):</h4>
+                      <h4 className="text-sm font-medium text-gray-700 mb-2">Phase 1 (Google Search Analysis):</h4>
                       <pre className="bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs text-gray-700 whitespace-pre-wrap overflow-x-auto">
                         {discoveryResult.rawResponses.phase1}
                       </pre>
                     </div>
                     <div className="phase-response">
-                      <h4 className="text-sm font-medium text-gray-700 mb-2">Phase 2 (Dish Analysis):</h4>
+                      <h4 className="text-sm font-medium text-gray-700 mb-2">Phase 2 (Rule-based Analysis):</h4>
                       <pre className="bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs text-gray-700 whitespace-pre-wrap overflow-x-auto">
                         {discoveryResult.rawResponses.phase2}
                       </pre>
                     </div>
                     {discoveryResult.rawResponses.phase3 && (
                       <div className="phase-response">
-                        <h4 className="text-sm font-medium text-gray-700 mb-2">Phase 3 (Modifications):</h4>
+                        <h4 className="text-sm font-medium text-gray-700 mb-2">Phase 3 (Modification Analysis):</h4>
                         <pre className="bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs text-gray-700 whitespace-pre-wrap overflow-x-auto">
                           {discoveryResult.rawResponses.phase3}
                         </pre>
@@ -541,7 +577,7 @@ Examples:
         {/* Footer */}
         <div className="text-center mt-8 pb-8">
           <p className="text-xs text-gray-500">
-            Complete 3-phase analysis: Restaurant discovery + dish analysis + user modifications
+            🧪 Test Mode: Google Search + Rule-based estimation (Perplexity API bypassed)
           </p>
         </div>
       </div>
