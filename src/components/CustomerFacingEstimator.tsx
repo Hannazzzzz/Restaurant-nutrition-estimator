@@ -689,7 +689,7 @@ export default function CustomerFacingEstimator() {
       <div className="firefly firefly-9" style={{ zIndex: 3 }}></div>
       <div className="firefly firefly-10" style={{ zIndex: 3 }}></div>
 
-      {/* More flowers scattered throughout - REMOVED the one behind title */}
+      {/* More flowers scattered throughout */}
       <div className="flower-decoration" style={{ position: 'fixed', top: '25%', left: '15%', zIndex: 2, animation: 'none' }}></div>
       <div className="flower-decoration" style={{ position: 'fixed', bottom: '40%', right: '20%', zIndex: 2, animation: 'none' }}></div>
       <div className="flower-decoration" style={{ position: 'fixed', top: '70%', left: '80%', zIndex: 2, animation: 'none' }}></div>
@@ -699,7 +699,7 @@ export default function CustomerFacingEstimator() {
       <div className="flower-decoration" style={{ position: 'fixed', bottom: '20%', left: '60%', zIndex: 2, animation: 'none' }}></div>
       <div className="flower-decoration" style={{ position: 'fixed', top: '80%', right: '60%', zIndex: 2, animation: 'none' }}></div>
       <div className="flower-decoration" style={{ position: 'fixed', bottom: '75%', left: '40%', zIndex: 2, animation: 'none' }}></div>
-      {/* REMOVED: flower at top: '15%', left: '70%' - was behind title */}
+      <div className="flower-decoration" style={{ position: 'fixed', top: '15%', left: '70%', zIndex: 2, animation: 'none' }}></div>
 
       {/* Enhanced light beams - subtle and static */}
       <div className="light-beam beam-1"></div>
