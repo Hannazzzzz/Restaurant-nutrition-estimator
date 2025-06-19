@@ -219,47 +219,7 @@ export default function CalorieEstimator() {
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
             Restaurant Nutrition Estimator
           </h1>
-          
-          {/* AI Mode Banner */}
-          <div className="bg-white rounded-2xl shadow-lg p-4 mb-4">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <div className="inline-flex items-center justify-center w-8 h-8 bg-purple-100 rounded-full">
-                <Zap className="w-4 h-4 text-purple-600" />
-              </div>
-              <h3 className="text-sm font-medium text-gray-700">
-                🤖 AI-Powered Analysis
-              </h3>
-            </div>
-            
-            <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
-              <p className="font-medium text-purple-700 text-sm mb-1">Advanced Restaurant Research</p>
-              <p className="text-purple-600 text-xs">Using Perplexity AI for comprehensive 3-phase analysis with real-time web search</p>
-            </div>
-          </div>
-          
-          <p className="text-gray-600 text-sm leading-relaxed">
-            Complete AI-powered restaurant research, dish analysis, and modification detection
-          </p>
         </div>
-
-        {/* Database Status Indicator */}
-        {dbStatus && (
-          <div className={`mb-4 p-3 rounded-xl border ${
-            dbStatus.success 
-              ? 'bg-green-50 border-green-200 text-green-700' 
-              : 'bg-red-50 border-red-200 text-red-700'
-          }`}>
-            <div className="flex items-center gap-2">
-              <Database className="w-4 h-4" />
-              <span className="text-xs font-medium">
-                {dbStatus.success ? '✅ Database Connected' : '❌ Database Connection Failed'}
-              </span>
-            </div>
-            {dbStatus.error && (
-              <p className="text-xs mt-1 opacity-75">{dbStatus.error}</p>
-            )}
-          </div>
-        )}
 
         {/* API Testing Section */}
         <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
@@ -420,14 +380,6 @@ Examples:
             rows={4}
           />
           
-          {/* Updated input format helper */}
-          <div className="format-help">
-            <span className="format-icon">💡</span>
-            <span className="format-text">
-              Include restaurant name for best results, but any food description works! AI will research and estimate calories.
-            </span>
-          </div>
-          
           <button
             onClick={handleEstimate}
             disabled={!userInput.trim() || isLoading}
@@ -478,190 +430,52 @@ Examples:
           </div>
         )}
 
-        {/* Restaurant Discovery Results */}
-        {discoveryResult && !discoveryResult.inputFormat && (
-          <div className="results-container">
-            {/* AI Mode Banner */}
-            <div className="bg-purple-50 border-purple-200 border rounded-2xl p-4 mb-4">
-              <div className="flex items-center gap-2 mb-2 text-purple-700">
-                <Zap className="w-4 h-4" />
-                <span className="text-sm font-medium">🤖 AI Analysis Results</span>
+        {/* Simple Results Display */}
+        {discoveryResult && !discoveryResult.inputFormat && discoveryResult.found && (
+          <div className="bg-white rounded-2xl shadow-lg p-6 mb-6 animate-in slide-in-from-bottom-4 duration-300">
+            <div className="text-center mb-6">
+              <div className="inline-flex items-center justify-center w-12 h-12 bg-green-100 rounded-full mb-3">
+                <CheckCircle className="w-6 h-6 text-green-600" />
               </div>
-              <div className="text-xs space-y-1 text-purple-600">
-                <p>• Using Perplexity AI for restaurant research</p>
-                <p>• AI-powered ingredient analysis and calorie calculation</p>
-                <p>• Advanced modification detection</p>
-                {discoveryResult.calorie_estimation_source && (
-                  <p>• Estimation type: {discoveryResult.calorie_estimation_source.replace('perplexity_ai_', '').replace('_', ' ')}</p>
-                )}
+              <h2 className="text-lg font-semibold text-gray-900 mb-1">
+                Analysis Complete
+              </h2>
+            </div>
+
+            <div className="space-y-4">
+              <div className="bg-emerald-50 rounded-xl p-4">
+                <h3 className="text-sm font-medium text-emerald-800 mb-2">Restaurant</h3>
+                <p className="text-emerald-700 font-semibold">{discoveryResult.restaurant}</p>
+              </div>
+
+              <div className="bg-blue-50 rounded-xl p-4">
+                <h3 className="text-sm font-medium text-blue-800 mb-2">Menu Item</h3>
+                <p className="text-blue-700 font-semibold">{discoveryResult.menuItem}</p>
+              </div>
+
+              <div className="final-result">
+                <h4 className="text-sm font-medium text-blue-800 mb-2">Estimated Calories:</h4>
+                <p className="final-calories">{discoveryResult.finalCalories} calories</p>
+                <p className="text-xs text-blue-600 mt-1">Confidence: {discoveryResult.confidence}</p>
               </div>
             </div>
 
-            {discoveryResult.found ? (
-              <>
-                {/* Phase 1 Results */}
-                <div className="phase-result phase-1 bg-white rounded-2xl shadow-lg p-6 mb-6 animate-in slide-in-from-bottom-4 duration-300">
-                  <div className="text-center mb-6">
-                    <div className="inline-flex items-center justify-center w-12 h-12 bg-green-100 rounded-full mb-3">
-                      <CheckCircle className="w-6 h-6 text-green-600" />
-                    </div>
-                    <h2 className="text-lg font-semibold text-gray-900 mb-1">
-                      🏪 Restaurant Found (Phase 1)
-                    </h2>
-                    <p className="text-xs text-purple-600">AI-Powered Restaurant Research</p>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div className="bg-emerald-50 rounded-xl p-4">
-                      <h3 className="text-sm font-medium text-emerald-800 mb-2">Restaurant</h3>
-                      <p className="text-emerald-700 font-semibold">{discoveryResult.restaurant}</p>
-                    </div>
-
-                    <div className="bg-blue-50 rounded-xl p-4">
-                      <h3 className="text-sm font-medium text-blue-800 mb-2">Menu Item</h3>
-                      <p className="text-blue-700 font-semibold">{discoveryResult.menuItem}</p>
-                      {discoveryResult.calorie_estimation_source === 'perplexity_ai_generic' && (
-                        <p className="text-xs text-blue-600 mt-1">⚠️ Specific menu item not found - using generic estimate</p>
-                      )}
-                    </div>
-
-                    <div className="bg-purple-50 rounded-xl p-4">
-                      <h3 className="text-sm font-medium text-purple-800 mb-2">Description</h3>
-                      <p className="text-purple-700">{discoveryResult.description}</p>
-                    </div>
-                  </div>
+            {/* Database Save Status */}
+            <div className="mt-4">
+              {discoveryResult.saved ? (
+                <div className="save-success">
+                  <p className="text-sm font-medium">✅ Saved to your food log</p>
                 </div>
-
-                {/* Phase 2 Results */}
-                {discoveryResult.phase && discoveryResult.phase >= 2 && (
-                  <div className="phase-result phase-2 bg-white rounded-2xl shadow-lg p-6 mb-6 animate-in slide-in-from-bottom-4 duration-300">
-                    <div className="text-center mb-6">
-                      <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full mb-3">
-                        <Utensils className="w-6 h-6 text-blue-600" />
-                      </div>
-                      <h2 className="text-lg font-semibold text-gray-900 mb-1">
-                        🍽️ Complete Dish Analysis (Phase 2)
-                      </h2>
-                      <p className="text-xs text-purple-600">AI-Powered Ingredient Analysis</p>
-                    </div>
-
-                    <div className="space-y-4">
-                      {discoveryResult.foundIngredients && (
-                        <div className="bg-green-50 rounded-xl p-4">
-                          <h4 className="text-sm font-medium text-green-800 mb-2">Found in Menu:</h4>
-                          <p className="text-green-700 text-sm">{discoveryResult.foundIngredients}</p>
-                        </div>
-                      )}
-
-                      {discoveryResult.addedComponents && (
-                        <div className="bg-yellow-50 rounded-xl p-4">
-                          <h4 className="text-sm font-medium text-yellow-800 mb-2">Added Standard Components:</h4>
-                          <p className="text-yellow-700 text-sm">{discoveryResult.addedComponents}</p>
-                        </div>
-                      )}
-
-                      {discoveryResult.completeIngredients && (
-                        <div className="bg-gray-50 rounded-xl p-4">
-                          <h4 className="text-sm font-medium text-gray-800 mb-2">Complete Ingredient List:</h4>
-                          <pre className="components-list text-gray-700">{discoveryResult.completeIngredients}</pre>
-                        </div>
-                      )}
-
-                      {discoveryResult.standardCalories && (
-                        <div className="bg-blue-50 rounded-xl p-4">
-                          <h4 className="text-sm font-medium text-blue-800 mb-2">Standard Calories:</h4>
-                          <p className="calorie-number text-blue-700">{discoveryResult.standardCalories} calories</p>
-                          {discoveryResult.confidence && (
-                            <p className="text-xs text-blue-600 mt-1">Confidence: {discoveryResult.confidence}</p>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* Phase 3 Results */}
-                {discoveryResult.phase && discoveryResult.phase >= 3 && (
-                  <div className="phase-result phase-3 bg-white rounded-2xl shadow-lg p-6 mb-6 animate-in slide-in-from-bottom-4 duration-300">
-                    <div className="text-center mb-6">
-                      <div className="inline-flex items-center justify-center w-12 h-12 bg-orange-100 rounded-full mb-3">
-                        <Edit3 className="w-6 h-6 text-orange-600" />
-                      </div>
-                      <h2 className="text-lg font-semibold text-gray-900 mb-1">
-                        ✏️ Your Modifications (Phase 3)
-                      </h2>
-                      <p className="text-xs text-purple-600">AI-Powered Modification Analysis</p>
-                    </div>
-
-                    <div className="space-y-4">
-                      <div className="bg-orange-50 rounded-xl p-4">
-                        <h4 className="text-sm font-medium text-orange-800 mb-2">Modifications Detected:</h4>
-                        <p className="text-orange-700 font-medium">{discoveryResult.modificationsDetected}</p>
-                      </div>
-
-                      {discoveryResult.modificationsDetected !== 'NONE' && (
-                        <>
-                          <div className="bg-yellow-50 rounded-xl p-4">
-                            <h4 className="text-sm font-medium text-yellow-800 mb-2">Calorie Adjustments:</h4>
-                            <pre className="adjustments-list text-yellow-700">{discoveryResult.calorieAdjustments}</pre>
-                          </div>
-
-                          <div className="bg-gray-50 rounded-xl p-4">
-                            <h4 className="text-sm font-medium text-gray-800 mb-2">Calculation:</h4>
-                            <p className="calculation text-gray-700">{discoveryResult.calculation}</p>
-                          </div>
-                        </>
-                      )}
-
-                      <div className="final-result">
-                        <h4 className="text-sm font-medium text-blue-800 mb-2">Final Total:</h4>
-                        <p className="final-calories">{discoveryResult.finalCalories} calories</p>
-                        <p className="text-xs text-blue-600 mt-1">Confidence: {discoveryResult.confidence}</p>
-                      </div>
-                    </div>
-
-                    {/* Database Save Status */}
-                    <div className="mt-4">
-                      {discoveryResult.saved ? (
-                        <div className="save-success">
-                          <p className="text-sm font-medium">✅ Saved to your food log</p>
-                        </div>
-                      ) : discoveryResult.saveError ? (
-                        <div className="save-error">
-                          <p className="text-sm font-medium">❌ Save failed: {discoveryResult.saveError}</p>
-                        </div>
-                      ) : null}
-                    </div>
-                  </div>
-                )}
-              </>
-            ) : (
-              <div className="restaurant-not-found bg-white rounded-2xl shadow-lg p-6 mb-6 animate-in slide-in-from-bottom-4 duration-300">
-                <div className="text-center mb-6">
-                  <div className="inline-flex items-center justify-center w-12 h-12 bg-red-100 rounded-full mb-3">
-                    <XCircle className="w-6 h-6 text-red-600" />
-                  </div>
-                  <h2 className="text-lg font-semibold text-gray-900 mb-1">
-                    ❌ AI Analysis Failed
-                  </h2>
+              ) : discoveryResult.saveError ? (
+                <div className="save-error">
+                  <p className="text-sm font-medium">❌ Save failed: {discoveryResult.saveError}</p>
                 </div>
-
-                <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-4">
-                  <p className="text-yellow-800 text-sm font-medium mb-2">
-                    💡 Try being more specific:
-                  </p>
-                  <ul className="text-yellow-700 text-xs space-y-1">
-                    <li>• Include restaurant name: "burger from McDonald's"</li>
-                    <li>• Add location: "pizza from Tony's in Brooklyn"</li>
-                    <li>• Be specific: "cortado from Joe & The Juice Copenhagen"</li>
-                  </ul>
-                </div>
-              </div>
-            )}
+              ) : null}
+            </div>
 
             {/* Debug section */}
             {(discoveryResult.rawResponse || discoveryResult.rawResponses) && (
-              <details className="debug-section bg-white rounded-2xl shadow-lg p-6 mb-6">
+              <details className="mt-6">
                 <summary className="text-xs text-gray-500 cursor-pointer hover:text-gray-700 mb-2">
                   Show AI Responses (Debug)
                 </summary>
@@ -700,6 +514,31 @@ Examples:
           </div>
         )}
 
+        {/* Failed Analysis Display */}
+        {discoveryResult && !discoveryResult.inputFormat && !discoveryResult.found && (
+          <div className="restaurant-not-found bg-white rounded-2xl shadow-lg p-6 mb-6 animate-in slide-in-from-bottom-4 duration-300">
+            <div className="text-center mb-6">
+              <div className="inline-flex items-center justify-center w-12 h-12 bg-red-100 rounded-full mb-3">
+                <XCircle className="w-6 h-6 text-red-600" />
+              </div>
+              <h2 className="text-lg font-semibold text-gray-900 mb-1">
+                ❌ AI Analysis Failed
+              </h2>
+            </div>
+
+            <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-4">
+              <p className="text-yellow-800 text-sm font-medium mb-2">
+                💡 Try being more specific:
+              </p>
+              <ul className="text-yellow-700 text-xs space-y-1">
+                <li>• Include restaurant name: "burger from McDonald's"</li>
+                <li>• Add location: "pizza from Tony's in Brooklyn"</li>
+                <li>• Be specific: "cortado from Joe & The Juice Copenhagen"</li>
+              </ul>
+            </div>
+          </div>
+        )}
+
         {/* Food History Section */}
         <div className="mb-6">
           <FoodHistory 
@@ -711,7 +550,7 @@ Examples:
         {/* Footer */}
         <div className="text-center mt-8 pb-8">
           <p className="text-xs text-gray-500">
-            Complete AI-powered 3-phase analysis: Restaurant research + dish analysis + modifications
+            AI-powered restaurant nutrition analysis
           </p>
         </div>
       </div>
