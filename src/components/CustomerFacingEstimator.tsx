@@ -7,6 +7,7 @@ export default function CustomerFacingEstimator() {
   const [userInput, setUserInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [isInputFocused, setIsInputFocused] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,7 +52,6 @@ export default function CustomerFacingEstimator() {
     const left = Math.random() * 100; // 0-100%
     const bottom = Math.random() * 180; // 0-180px from bottom
     const rotation = Math.random() * 360; // 0-360 degrees
-    const animationDelay = Math.random() * 8; // 0-8 seconds
     const opacity = 0.4 + Math.random() * 0.4; // 0.4-0.8
     const zIndex = Math.floor(Math.random() * 5) + 1; // 1-5
     
@@ -63,7 +63,6 @@ export default function CustomerFacingEstimator() {
         left: `${left}%`,
         bottom: `${bottom}px`,
         transform: `rotate(${rotation}deg)`,
-        animationDelay: `${animationDelay}s`,
         opacity: opacity,
         zIndex: zIndex
       }
@@ -74,30 +73,44 @@ export default function CustomerFacingEstimator() {
   const wallLeaves = Array.from({ length: 90 }, (_, index) => generateRandomLeaf(index));
 
   return (
-    <div className="canopy-theme">
-      {/* Decorative Leaves - Enhanced with new diverse system */}
-      <div className="leaf-decoration leaf-shape-1 leaf-color-1 leaf-size-large leaf-top-left" style={{ transform: 'rotate(25deg)' }}></div>
-      <div className="leaf-decoration leaf-shape-2 leaf-color-2 leaf-size-medium leaf-top-right" style={{ transform: 'rotate(-15deg)' }}></div>
-      <div className="leaf-decoration leaf-shape-3 leaf-color-3 leaf-size-large leaf-bottom-left" style={{ transform: 'rotate(45deg)' }}></div>
-      <div className="leaf-decoration leaf-shape-4 leaf-color-4 leaf-size-medium leaf-bottom-right" style={{ transform: 'rotate(-25deg)' }}></div>
-      <div className="leaf-decoration leaf-shape-5 leaf-color-5 leaf-size-small leaf-mid-left" style={{ transform: 'rotate(35deg)' }}></div>
-      <div className="leaf-decoration leaf-shape-6 leaf-color-6 leaf-size-small leaf-mid-right" style={{ transform: 'rotate(-35deg)' }}></div>
+    <div className={`canopy-theme ${isInputFocused ? 'input-focused' : ''}`}>
+      {/* Strategic Large Leaves - Framing the Interface */}
       
-      {/* Additional leaves for more density with diverse shapes and colors */}
-      <div className="leaf-decoration leaf-shape-2 leaf-color-7 leaf-size-medium leaf-top-left-2" style={{ transform: 'rotate(55deg)' }}></div>
-      <div className="leaf-decoration leaf-shape-1 leaf-color-1 leaf-size-small leaf-top-right-2" style={{ transform: 'rotate(-45deg)' }}></div>
-      <div className="leaf-decoration leaf-shape-4 leaf-color-3 leaf-size-large leaf-bottom-left-2" style={{ transform: 'rotate(65deg)' }}></div>
-      <div className="leaf-decoration leaf-shape-3 leaf-color-5 leaf-size-small leaf-bottom-right-2" style={{ transform: 'rotate(-55deg)' }}></div>
-      <div className="leaf-decoration leaf-shape-6 leaf-color-2 leaf-size-medium leaf-mid-left-2" style={{ transform: 'rotate(15deg)' }}></div>
-      <div className="leaf-decoration leaf-shape-5 leaf-color-4 leaf-size-large leaf-mid-right-2" style={{ transform: 'rotate(-65deg)' }}></div>
-      <div className="leaf-decoration leaf-shape-1 leaf-color-6 leaf-size-small leaf-top-center" style={{ transform: 'rotate(75deg)' }}></div>
-      <div className="leaf-decoration leaf-shape-3 leaf-color-7 leaf-size-medium leaf-bottom-center" style={{ transform: 'rotate(-75deg)' }}></div>
-      <div className="leaf-decoration leaf-shape-2 leaf-color-1 leaf-size-small leaf-left-upper" style={{ transform: 'rotate(85deg)' }}></div>
-      <div className="leaf-decoration leaf-shape-4 leaf-color-3 leaf-size-medium leaf-right-upper" style={{ transform: 'rotate(-85deg)' }}></div>
-      <div className="leaf-decoration leaf-shape-5 leaf-color-5 leaf-size-small leaf-left-lower" style={{ transform: 'rotate(95deg)' }}></div>
-      <div className="leaf-decoration leaf-shape-6 leaf-color-2 leaf-size-medium leaf-right-lower" style={{ transform: 'rotate(-95deg)' }}></div>
+      {/* Left Side Framing - 2 Large Leaves */}
+      <div className="leaf-decoration leaf-shape-1 leaf-color-1 leaf-size-giant leaf-frame-left-1" style={{ transform: 'rotate(25deg)' }}></div>
+      <div className="leaf-decoration leaf-shape-3 leaf-color-3 leaf-size-huge leaf-frame-left-2" style={{ transform: 'rotate(45deg)' }}></div>
       
-      {/* Dense Wall of Leaves at Bottom - 90 randomly generated leaves */}
+      {/* Right Side Framing - 3 Large Leaves */}
+      <div className="leaf-decoration leaf-shape-2 leaf-color-2 leaf-size-giant leaf-frame-right-1" style={{ transform: 'rotate(-15deg)' }}></div>
+      <div className="leaf-decoration leaf-shape-4 leaf-color-4 leaf-size-huge leaf-frame-right-2" style={{ transform: 'rotate(-25deg)' }}></div>
+      <div className="leaf-decoration leaf-shape-6 leaf-color-6 leaf-size-giant leaf-frame-right-3" style={{ transform: 'rotate(-35deg)' }}></div>
+      
+      {/* Bottom Edge - 3-5 Leaves */}
+      <div className="leaf-decoration leaf-shape-5 leaf-color-5 leaf-size-extra-large leaf-frame-bottom-1" style={{ transform: 'rotate(35deg)' }}></div>
+      <div className="leaf-decoration leaf-shape-2 leaf-color-7 leaf-size-large leaf-frame-bottom-2" style={{ transform: 'rotate(55deg)' }}></div>
+      <div className="leaf-decoration leaf-shape-1 leaf-color-1 leaf-size-extra-large leaf-frame-bottom-3" style={{ transform: 'rotate(-45deg)' }}></div>
+      <div className="leaf-decoration leaf-shape-4 leaf-color-3 leaf-size-large leaf-frame-bottom-4" style={{ transform: 'rotate(-55deg)' }}></div>
+      <div className="leaf-decoration leaf-shape-3 leaf-color-5 leaf-size-extra-large leaf-frame-bottom-5" style={{ transform: 'rotate(65deg)' }}></div>
+      
+      {/* Top Hanging - 1-2 Smaller Leaves */}
+      <div className="leaf-decoration leaf-shape-6 leaf-color-2 leaf-size-medium leaf-frame-top-1" style={{ transform: 'rotate(75deg)' }}></div>
+      <div className="leaf-decoration leaf-shape-1 leaf-color-6 leaf-size-small leaf-frame-top-2" style={{ transform: 'rotate(-75deg)' }}></div>
+      
+      {/* Fill Leaves - Smaller leaves around the larger framing ones */}
+      <div className="leaf-decoration leaf-shape-2 leaf-color-1 leaf-size-small leaf-fill-1" style={{ transform: 'rotate(85deg)' }}></div>
+      <div className="leaf-decoration leaf-shape-4 leaf-color-3 leaf-size-medium leaf-fill-2" style={{ transform: 'rotate(-85deg)' }}></div>
+      <div className="leaf-decoration leaf-shape-5 leaf-color-5 leaf-size-tiny leaf-fill-3" style={{ transform: 'rotate(95deg)' }}></div>
+      <div className="leaf-decoration leaf-shape-6 leaf-color-2 leaf-size-small leaf-fill-4" style={{ transform: 'rotate(-95deg)' }}></div>
+      <div className="leaf-decoration leaf-shape-1 leaf-color-4 leaf-size-medium leaf-fill-5" style={{ transform: 'rotate(105deg)' }}></div>
+      <div className="leaf-decoration leaf-shape-3 leaf-color-7 leaf-size-tiny leaf-fill-6" style={{ transform: 'rotate(-105deg)' }}></div>
+      <div className="leaf-decoration leaf-shape-2 leaf-color-6 leaf-size-small leaf-fill-7" style={{ transform: 'rotate(115deg)' }}></div>
+      <div className="leaf-decoration leaf-shape-4 leaf-color-1 leaf-size-medium leaf-fill-8" style={{ transform: 'rotate(-115deg)' }}></div>
+      
+      {/* Subtle Overlapping Leaves - These will move slightly when input is focused */}
+      <div className="leaf-decoration leaf-shape-5 leaf-color-3 leaf-size-large leaf-overlap-input-slight" style={{ top: '40%', left: '15%', transform: 'rotate(20deg)' }}></div>
+      <div className="leaf-decoration leaf-shape-1 leaf-color-5 leaf-size-medium leaf-overlap-input-slight" style={{ top: '55%', right: '20%', transform: 'rotate(-30deg)' }}></div>
+      
+      {/* Dense Wall of Leaves at Bottom - 90 randomly generated leaves (static) */}
       <div className="leaf-wall-container">
         {wallLeaves.map((leaf, index) => (
           <div
@@ -108,7 +121,7 @@ export default function CustomerFacingEstimator() {
         ))}
       </div>
       
-      {/* Fireflies - slower movement */}
+      {/* Fireflies - Much slower movement */}
       <div className="firefly firefly-1"></div>
       <div className="firefly firefly-2"></div>
       <div className="firefly firefly-3"></div>
@@ -118,12 +131,12 @@ export default function CustomerFacingEstimator() {
       <div className="firefly firefly-7"></div>
       <div className="firefly firefly-8"></div>
       
-      {/* Light Beams */}
+      {/* Light Beams - Very subtle and static */}
       <div className="light-beam beam-1"></div>
       <div className="light-beam beam-2"></div>
       <div className="light-beam beam-3"></div>
       
-      {/* Tropical Flowers - repositioned closer to leaves */}
+      {/* Tropical Flowers - Keep them */}
       <div className="flower-decoration flower-1"></div>
       <div className="flower-decoration flower-2"></div>
       <div className="flower-decoration flower-3"></div>
@@ -165,7 +178,7 @@ export default function CustomerFacingEstimator() {
           {/* Input Form */}
           <form onSubmit={handleSubmit} className="relative">
             <div className="input-jungle-wrapper">
-              {/* Plant Decorations */}
+              {/* Plant Decorations - Only slight overlap */}
               <div className="plant-decoration vine-left"></div>
               <div className="plant-decoration vine-right"></div>
               <div className="plant-decoration moss-bottom"></div>
@@ -176,6 +189,8 @@ export default function CustomerFacingEstimator() {
                 <textarea
                   value={userInput}
                   onChange={(e) => setUserInput(e.target.value)}
+                  onFocus={() => setIsInputFocused(true)}
+                  onBlur={() => setIsInputFocused(false)}
                   placeholder="Describe your meal..."
                   className="canopy-input w-full h-32 px-6 py-4 pr-16 text-lg rounded-2xl resize-none font-montserrat placeholder-white/70 transition-all duration-300"
                   disabled={isLoading}

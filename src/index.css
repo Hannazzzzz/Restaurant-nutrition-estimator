@@ -30,12 +30,11 @@ body {
   overflow-x: hidden;
 }
 
-/* Enhanced Leaf System - Diverse Shapes */
+/* Enhanced Leaf System - Static with Large Sizes */
 .leaf-decoration {
   position: absolute;
   opacity: 0.7;
   z-index: 1;
-  animation: leafSway 6s ease-in-out infinite;
 }
 
 /* Leaf Shape Variations */
@@ -92,145 +91,177 @@ body {
   background: linear-gradient(45deg, #1a5d1a 0%, #2e7d32 50%, #66bb6a 100%);
 }
 
-/* Leaf Size Variations */
+/* Leaf Size Variations - Much Larger Sizes */
 .leaf-size-tiny {
-  width: 25px;
-  height: 18px;
-}
-
-.leaf-size-small {
   width: 40px;
   height: 28px;
 }
 
+.leaf-size-small {
+  width: 70px;
+  height: 50px;
+}
+
 .leaf-size-medium {
-  width: 60px;
-  height: 42px;
+  width: 100px;
+  height: 70px;
 }
 
 .leaf-size-large {
-  width: 85px;
-  height: 60px;
+  width: 150px;
+  height: 105px;
 }
 
 .leaf-size-extra-large {
-  width: 110px;
-  height: 78px;
+  width: 200px;
+  height: 140px;
 }
 
-/* Leaf Positions - Original Enhanced */
-.leaf-top-left {
-  top: 10%;
-  left: -20px;
-  animation-delay: 0s;
+.leaf-size-huge {
+  width: 250px;
+  height: 175px;
 }
 
-.leaf-top-right {
+.leaf-size-giant {
+  width: 300px;
+  height: 210px;
+}
+
+/* Strategic Leaf Positions - Framing the Interface */
+.leaf-frame-left-1 {
   top: 15%;
-  right: -30px;
-  animation-delay: 2s;
+  left: -100px;
+  z-index: 1;
 }
 
-.leaf-bottom-left {
-  bottom: 20%;
-  left: -25px;
-  animation-delay: 4s;
+.leaf-frame-left-2 {
+  top: 45%;
+  left: -80px;
+  z-index: 1;
 }
 
-.leaf-bottom-right {
-  bottom: 10%;
-  right: -20px;
-  animation-delay: 1s;
+.leaf-frame-right-1 {
+  top: 10%;
+  right: -120px;
+  z-index: 1;
 }
 
-.leaf-mid-left {
-  top: 50%;
-  left: -15px;
-  animation-delay: 3s;
+.leaf-frame-right-2 {
+  top: 35%;
+  right: -90px;
+  z-index: 1;
 }
 
-.leaf-mid-right {
-  top: 60%;
-  right: -25px;
-  animation-delay: 5s;
+.leaf-frame-right-3 {
+  top: 65%;
+  right: -110px;
+  z-index: 1;
 }
 
-/* Additional Leaf Positions - More leaves */
-.leaf-top-left-2 {
-  top: 5%;
-  left: -10px;
-  animation-delay: 1.5s;
+.leaf-frame-bottom-1 {
+  bottom: 5%;
+  left: 10%;
+  z-index: 1;
 }
 
-.leaf-top-right-2 {
-  top: 25%;
-  right: -15px;
-  animation-delay: 3.5s;
+.leaf-frame-bottom-2 {
+  bottom: 8%;
+  left: 30%;
+  z-index: 1;
 }
 
-.leaf-bottom-left-2 {
-  bottom: 30%;
-  left: -20px;
-  animation-delay: 2.5s;
+.leaf-frame-bottom-3 {
+  bottom: 12%;
+  right: 15%;
+  z-index: 1;
 }
 
-.leaf-bottom-right-2 {
-  bottom: 25%;
-  right: -10px;
-  animation-delay: 4.5s;
+.leaf-frame-bottom-4 {
+  bottom: 6%;
+  right: 35%;
+  z-index: 1;
 }
 
-.leaf-mid-left-2 {
-  top: 40%;
-  left: -25px;
-  animation-delay: 0.5s;
-}
-
-.leaf-mid-right-2 {
-  top: 70%;
-  right: -20px;
-  animation-delay: 2.8s;
-}
-
-.leaf-top-center {
-  top: 8%;
-  left: 50%;
-  transform: translateX(-50%) rotate(15deg);
-  animation-delay: 1.2s;
-}
-
-.leaf-bottom-center {
+.leaf-frame-bottom-5 {
   bottom: 15%;
   left: 50%;
-  transform: translateX(-50%) rotate(-25deg);
-  animation-delay: 3.8s;
+  transform: translateX(-50%);
+  z-index: 1;
 }
 
-.leaf-left-upper {
-  top: 30%;
-  left: -18px;
-  animation-delay: 2.2s;
+.leaf-frame-top-1 {
+  top: 5%;
+  left: 25%;
+  z-index: 1;
 }
 
-.leaf-right-upper {
-  top: 35%;
-  right: -22px;
-  animation-delay: 4.2s;
+.leaf-frame-top-2 {
+  top: 8%;
+  right: 30%;
+  z-index: 1;
 }
 
-.leaf-left-lower {
-  bottom: 40%;
-  left: -12px;
-  animation-delay: 1.8s;
+/* Subtle Input Overlap Leaves */
+.leaf-overlap-input-slight {
+  z-index: 11;
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.leaf-right-lower {
+.canopy-theme.input-focused .leaf-overlap-input-slight {
+  transform: translateY(-10px) scale(0.95);
+  opacity: 0.5;
+}
+
+/* Fill Leaves - Smaller leaves around the larger framing ones */
+.leaf-fill-1 {
+  top: 25%;
+  left: 5%;
+  z-index: 1;
+}
+
+.leaf-fill-2 {
+  top: 55%;
+  left: 8%;
+  z-index: 1;
+}
+
+.leaf-fill-3 {
+  top: 20%;
+  right: 8%;
+  z-index: 1;
+}
+
+.leaf-fill-4 {
+  top: 50%;
+  right: 5%;
+  z-index: 1;
+}
+
+.leaf-fill-5 {
+  top: 75%;
+  right: 12%;
+  z-index: 1;
+}
+
+.leaf-fill-6 {
+  bottom: 25%;
+  left: 5%;
+  z-index: 1;
+}
+
+.leaf-fill-7 {
   bottom: 35%;
-  right: -18px;
-  animation-delay: 3.2s;
+  right: 8%;
+  z-index: 1;
 }
 
-/* Wall of Leaves Container */
+.leaf-fill-8 {
+  top: 12%;
+  left: 15%;
+  z-index: 1;
+}
+
+/* Wall of Leaves Container - Static */
 .leaf-wall-container {
   position: fixed;
   bottom: 0;
@@ -243,19 +274,9 @@ body {
 
 .leaf-wall-item {
   position: absolute;
-  animation: leafSway 8s ease-in-out infinite;
 }
 
-@keyframes leafSway {
-  0%, 100% { 
-    transform: translateY(0px);
-  }
-  50% { 
-    transform: translateY(-8px);
-  }
-}
-
-/* Fireflies - Slower movement */
+/* Fireflies - Much Slower Movement */
 .firefly {
   position: absolute;
   width: 4px;
@@ -265,17 +286,17 @@ body {
   box-shadow: 0 0 10px #fff3a0, 0 0 20px #fff3a0, 0 0 30px #fff3a0;
   opacity: 0.8;
   z-index: 2;
-  animation: fireflyFloat 12s ease-in-out infinite;
+  animation: fireflyFloat 20s ease-in-out infinite;
 }
 
 .firefly:nth-child(odd) {
   animation-delay: 0s;
-  animation-duration: 10s;
+  animation-duration: 18s;
 }
 
 .firefly:nth-child(even) {
-  animation-delay: 5s;
-  animation-duration: 14s;
+  animation-delay: 10s;
+  animation-duration: 22s;
 }
 
 .firefly-1 { top: 20%; left: 15%; }
@@ -293,26 +314,25 @@ body {
     opacity: 0.8;
   }
   25% { 
-    transform: translateY(-20px) translateX(10px);
+    transform: translateY(-15px) translateX(8px);
     opacity: 1;
   }
   50% { 
-    transform: translateY(-10px) translateX(-15px);
+    transform: translateY(-8px) translateX(-12px);
     opacity: 0.6;
   }
   75% { 
-    transform: translateY(-30px) translateX(5px);
+    transform: translateY(-20px) translateX(4px);
     opacity: 0.9;
   }
 }
 
-/* Light Beams */
+/* Light Beams - Very Subtle and Static */
 .light-beam {
   position: absolute;
-  background: linear-gradient(45deg, transparent 0%, rgba(255, 243, 160, 0.1) 50%, transparent 100%);
+  background: linear-gradient(45deg, transparent 0%, rgba(255, 243, 160, 0.05) 50%, transparent 100%);
   z-index: 1;
-  opacity: 0.6;
-  animation: lightShimmer 4s ease-in-out infinite;
+  opacity: 0.05;
 }
 
 .light-beam.beam-1 {
@@ -321,7 +341,6 @@ body {
   width: 2px;
   height: 200px;
   transform: rotate(15deg);
-  animation-delay: 0s;
 }
 
 .light-beam.beam-2 {
@@ -330,7 +349,6 @@ body {
   width: 1px;
   height: 150px;
   transform: rotate(-20deg);
-  animation-delay: 2s;
 }
 
 .light-beam.beam-3 {
@@ -339,15 +357,9 @@ body {
   width: 3px;
   height: 180px;
   transform: rotate(25deg);
-  animation-delay: 1s;
 }
 
-@keyframes lightShimmer {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 0.8; }
-}
-
-/* Tropical Flowers - Repositioned closer to leaves */
+/* Tropical Flowers - Keep them */
 .flower-decoration {
   position: absolute;
   z-index: 2;
@@ -459,30 +471,30 @@ body {
   transform: rotate(30deg);
 }
 
-/* Focus State - Plants slide away */
+/* Focus State - Plants slide away slightly */
 .input-jungle-wrapper:focus-within .plant-decoration.vine-left {
-  transform: rotate(-30deg) translateX(-20px) scale(0.8);
-  opacity: 0.3;
+  transform: rotate(-30deg) translateX(-15px) scale(0.9);
+  opacity: 0.4;
 }
 
 .input-jungle-wrapper:focus-within .plant-decoration.vine-right {
-  transform: rotate(25deg) translateX(20px) scale(0.8);
-  opacity: 0.3;
+  transform: rotate(25deg) translateX(15px) scale(0.9);
+  opacity: 0.4;
 }
 
 .input-jungle-wrapper:focus-within .plant-decoration.moss-bottom {
-  transform: translateY(10px) scale(0.9);
-  opacity: 0.2;
+  transform: translateY(8px) scale(0.95);
+  opacity: 0.3;
 }
 
 .input-jungle-wrapper:focus-within .plant-decoration.small-leaf-1 {
-  transform: rotate(-45deg) translateX(-15px) translateY(-10px) scale(0.7);
-  opacity: 0.2;
+  transform: rotate(-45deg) translateX(-12px) translateY(-8px) scale(0.8);
+  opacity: 0.3;
 }
 
 .input-jungle-wrapper:focus-within .plant-decoration.small-leaf-2 {
-  transform: rotate(30deg) translateX(15px) translateY(-8px) scale(0.7);
-  opacity: 0.2;
+  transform: rotate(30deg) translateX(12px) translateY(-6px) scale(0.8);
+  opacity: 0.3;
 }
 
 /* Enhanced Input Styling - Transparent with light text */
@@ -551,19 +563,29 @@ body {
 
 /* Responsive Design */
 @media (max-width: 768px) {
+  .leaf-size-giant {
+    width: 200px;
+    height: 140px;
+  }
+  
+  .leaf-size-huge {
+    width: 180px;
+    height: 126px;
+  }
+  
   .leaf-size-extra-large {
-    width: 80px;
-    height: 56px;
+    width: 150px;
+    height: 105px;
   }
   
   .leaf-size-large {
-    width: 65px;
-    height: 46px;
+    width: 120px;
+    height: 84px;
   }
   
   .leaf-size-medium {
-    width: 45px;
-    height: 32px;
+    width: 80px;
+    height: 56px;
   }
   
   .leaf-wall-container {
