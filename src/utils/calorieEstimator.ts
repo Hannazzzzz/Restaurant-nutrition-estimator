@@ -326,7 +326,7 @@ CONFIDENCE: ${menuItemFoundInRestaurant ? 'HIGH' : 'MEDIUM'}`
   // Parse Phase 2 response
   const dishAnalysis = parseDishAnalysis(dishResponse);
 
-  // PHASE 3: User Modification Analysis - Enhanced with strict calculation format
+  // PHASE 3: User Modification Analysis - Updated to use "Total Calories" instead of "Standard Calories"
   const modificationResponse = await callPerplexityAPI(
     `Calculate final calories after user modifications with precise formatting:
 
@@ -334,29 +334,30 @@ Original Input: "${userInput}"
 Restaurant: ${restaurantInfo.restaurant}
 Menu Item: ${menuItemForAnalysis}
 Standard Ingredients: ${dishAnalysis.completeList}
-Standard Calories: ${dishAnalysis.calories}
+Total Calories: ${dishAnalysis.calories}
 
 CRITICAL REQUIREMENTS:
-1. Analyze original input for modification keywords:
+1. The 'Total Calories' value provided (${dishAnalysis.calories}) MUST be the exact starting point for your 'CALCULATION'. Do NOT re-estimate or modify this base value.
+2. Analyze original input for modification keywords:
    - Removals: "without", "no", "skip", "hold", "minus" (subtract calories)
    - Additions: "extra", "add", "with extra", "double", "plus" (add calories)
    - Size changes: "small" (-30%), "large" (+40%), "double portion" (+100%)
    - Substitutions: "instead of", "swap", "replace with"
-2. Calculate specific calorie adjustments for each modification
-3. Show clear math calculation
-4. MUST provide exact final number in specified format
+3. Calculate specific calorie adjustments for each modification
+4. Show clear math calculation starting with the provided Total Calories
+5. MUST provide exact final number in specified format
 
 STRICT OUTPUT FORMAT (follow exactly):
 MODIFICATIONS DETECTED: [list all found, or "NONE"]
 CALORIE ADJUSTMENTS:
 - [modification 1]: [+/- specific number] calories ([reasoning])
 - [modification 2]: [+/- specific number] calories ([reasoning])
-CALCULATION: [standard calories] [+/- adjustments] = [final total]
+CALCULATION: [total calories] [+/- adjustments] = [final total]
 FINAL CALORIES: [NUMBER ONLY - no text, just the number]
 
 Examples:
-CALCULATION: 650 - 150 + 50 = 550
-FINAL CALORIES: 550
+CALCULATION: ${dishAnalysis.calories} - 150 + 50 = [result]
+FINAL CALORIES: [result]
 
 If no modifications:
 MODIFICATIONS DETECTED: NONE
