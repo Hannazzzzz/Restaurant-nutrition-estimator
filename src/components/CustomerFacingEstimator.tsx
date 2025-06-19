@@ -933,15 +933,15 @@ export default function CustomerFacingEstimator() {
         />
       </a>
 
-      {/* Main Content */}
-      <div className="flex items-center justify-center min-h-screen p-4 relative z-10">
+      {/* Main Content - Moved up and reduced subtitle size */}
+      <div className="flex items-center justify-center min-h-screen p-4 relative z-10" style={{ paddingTop: '2rem' }}>
         <div className="w-full max-w-md">
           {/* Title - Clear area, no elements behind */}
-          <div className="text-center mb-12">
-            <h1 className="canopy-title text-5xl md:text-6xl mb-4">
+          <div className="text-center mb-8">
+            <h1 className="canopy-title text-5xl md:text-6xl mb-3">
               canøpy
             </h1>
-            <p className="font-montserrat text-white/80 text-lg font-light">
+            <p className="font-montserrat text-white/80 text-base font-light">
               Your restaurant nutrition estimator
             </p>
           </div>
