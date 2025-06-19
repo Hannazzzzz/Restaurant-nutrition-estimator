@@ -127,7 +127,7 @@ body {
   height: 210px;
 }
 
-/* Fireflies - Slower, independent movement */
+/* Fireflies - Enhanced with slower, independent movement */
 .firefly {
   position: absolute;
   width: 6px;
@@ -137,77 +137,75 @@ body {
   box-shadow: 0 0 15px #fff3a0, 0 0 25px #fff3a0, 0 0 35px #fff3a0;
   opacity: 0.8;
   z-index: 2;
-  animation: firefly-float 25s ease-in-out infinite !important;
 }
 
 .firefly-1 { 
   top: 20%; 
   left: 15%; 
-  animation-delay: 0s; 
   animation: firefly-float-1 28s ease-in-out infinite;
 }
 
 .firefly-2 { 
   top: 30%; 
   right: 20%; 
-  animation-delay: 5s; 
   animation: firefly-float-2 32s ease-in-out infinite;
+  animation-delay: 5s;
 }
 
 .firefly-3 { 
   top: 60%; 
   left: 25%; 
-  animation-delay: 10s; 
   animation: firefly-float-3 30s ease-in-out infinite;
+  animation-delay: 10s;
 }
 
 .firefly-4 { 
   top: 70%; 
   right: 15%; 
-  animation-delay: 15s; 
   animation: firefly-float-4 26s ease-in-out infinite;
+  animation-delay: 15s;
 }
 
 .firefly-5 { 
   top: 40%; 
   left: 60%; 
-  animation-delay: 20s; 
   animation: firefly-float-5 34s ease-in-out infinite;
+  animation-delay: 20s;
 }
 
 .firefly-6 { 
   top: 80%; 
   right: 40%; 
-  animation-delay: 25s; 
   animation: firefly-float-6 29s ease-in-out infinite;
+  animation-delay: 25s;
 }
 
 .firefly-7 { 
   top: 15%; 
   left: 80%; 
-  animation-delay: 30s; 
   animation: firefly-float-7 31s ease-in-out infinite;
+  animation-delay: 30s;
 }
 
 .firefly-8 { 
   top: 85%; 
   left: 10%; 
-  animation-delay: 35s; 
   animation: firefly-float-8 27s ease-in-out infinite;
+  animation-delay: 35s;
 }
 
 .firefly-9 { 
   top: 50%; 
   right: 70%; 
-  animation-delay: 40s; 
   animation: firefly-float-9 33s ease-in-out infinite;
+  animation-delay: 40s;
 }
 
 .firefly-10 { 
   top: 25%; 
   left: 40%; 
-  animation-delay: 45s; 
   animation: firefly-float-10 35s ease-in-out infinite;
+  animation-delay: 45s;
 }
 
 /* Individual firefly animations with slower, different paths */
@@ -281,29 +279,45 @@ body {
   85% { transform: translateY(-40px) translateX(12px); opacity: 0.6; }
 }
 
-/* Light Beams - Very Subtle and Static */
+/* Light Beams - Subtle and Static */
 .light-beam {
   position: absolute;
-  background: linear-gradient(45deg, transparent 0%, rgba(255, 243, 160, 0.05) 50%, transparent 100%);
+  background: linear-gradient(45deg, transparent 0%, rgba(255, 243, 160, 0.08) 50%, transparent 100%);
   z-index: 1;
-  opacity: 0.05;
-  animation: none !important;
+  opacity: 0.3;
+  pointer-events: none;
 }
 
 .light-beam.beam-1 {
   top: 0;
   left: 20%;
-  width: 2px;
-  height: 200px;
+  width: 3px;
+  height: 300px;
   transform: rotate(15deg);
 }
 
 .light-beam.beam-2 {
   top: 10%;
   right: 30%;
-  width: 1px;
-  height: 150px;
+  width: 2px;
+  height: 250px;
   transform: rotate(-20deg);
+}
+
+.light-beam.beam-3 {
+  top: 5%;
+  left: 60%;
+  width: 2px;
+  height: 200px;
+  transform: rotate(25deg);
+}
+
+.light-beam.beam-4 {
+  top: 15%;
+  right: 15%;
+  width: 3px;
+  height: 280px;
+  transform: rotate(-12deg);
 }
 
 /* Tropical Flowers - Static */

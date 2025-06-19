@@ -39,7 +39,7 @@ export default function CustomerFacingEstimator() {
 
   return (
     <div className="canopy-theme">
-      {/* Strategic Large Leaves - Clean Framing (STATIC) - Limited rotation ±20° */}
+      {/* Strategic Large Leaves - Clean Framing (STATIC) - Random rotation ±20° */}
       {/* Left Side - 2 massive leaves */}
       <div 
         className="leaf-decoration leaf-shape-1 leaf-color-1 leaf-size-giant" 
@@ -49,7 +49,7 @@ export default function CustomerFacingEstimator() {
           top: '20%',
           width: '300px',
           height: '200px',
-          transform: 'rotate(15deg)',
+          transform: 'rotate(8deg)',
           zIndex: 1
         }}
       ></div>
@@ -62,7 +62,7 @@ export default function CustomerFacingEstimator() {
           bottom: '30%',
           width: '250px',
           height: '180px',
-          transform: 'rotate(20deg)',
+          transform: 'rotate(-12deg)',
           zIndex: 1
         }}
       ></div>
@@ -76,7 +76,7 @@ export default function CustomerFacingEstimator() {
           top: '20%',
           width: '300px',
           height: '200px',
-          transform: 'rotate(-15deg)',
+          transform: 'rotate(-7deg)',
           zIndex: 1
         }}
       ></div>
@@ -89,7 +89,7 @@ export default function CustomerFacingEstimator() {
           bottom: '25%',
           width: '250px',
           height: '180px',
-          transform: 'rotate(-20deg)',
+          transform: 'rotate(14deg)',
           zIndex: 1
         }}
       ></div>
@@ -103,7 +103,7 @@ export default function CustomerFacingEstimator() {
           left: '20%',
           width: '200px',
           height: '150px',
-          transform: 'rotate(18deg)',
+          transform: 'rotate(-9deg)',
           zIndex: 1
         }}
       ></div>
@@ -116,12 +116,12 @@ export default function CustomerFacingEstimator() {
           right: '20%',
           width: '200px',
           height: '150px',
-          transform: 'rotate(-18deg)',
+          transform: 'rotate(11deg)',
           zIndex: 1
         }}
       ></div>
 
-      {/* Additional Random Jungle Leaves - Different Sizes - Limited rotation ±20° */}
+      {/* Additional Random Jungle Leaves - Different Sizes - Random rotation ±20° */}
       {/* Top hanging leaves - avoid title area (center 40%) */}
       <div 
         className="leaf-decoration leaf-shape-1 leaf-color-2 leaf-size-small" 
@@ -131,7 +131,7 @@ export default function CustomerFacingEstimator() {
           left: '15%',
           width: '70px',
           height: '50px',
-          transform: 'rotate(12deg)',
+          transform: 'rotate(-16deg)',
           zIndex: 1
         }}
       ></div>
@@ -144,7 +144,7 @@ export default function CustomerFacingEstimator() {
           right: '15%',
           width: '100px',
           height: '70px',
-          transform: 'rotate(-16deg)',
+          transform: 'rotate(19deg)',
           zIndex: 1
         }}
       ></div>
@@ -157,7 +157,7 @@ export default function CustomerFacingEstimator() {
           left: '8%',
           width: '40px',
           height: '28px',
-          transform: 'rotate(20deg)',
+          transform: 'rotate(-5deg)',
           zIndex: 1
         }}
       ></div>
@@ -170,7 +170,7 @@ export default function CustomerFacingEstimator() {
           right: '8%',
           width: '70px',
           height: '50px',
-          transform: 'rotate(-14deg)',
+          transform: 'rotate(13deg)',
           zIndex: 1
         }}
       ></div>
@@ -184,7 +184,7 @@ export default function CustomerFacingEstimator() {
           top: '45%',
           width: '150px',
           height: '105px',
-          transform: 'rotate(19deg)',
+          transform: 'rotate(-18deg)',
           zIndex: 1
         }}
       ></div>
@@ -197,7 +197,7 @@ export default function CustomerFacingEstimator() {
           top: '55%',
           width: '100px',
           height: '70px',
-          transform: 'rotate(-17deg)',
+          transform: 'rotate(6deg)',
           zIndex: 1
         }}
       ></div>
@@ -210,7 +210,7 @@ export default function CustomerFacingEstimator() {
           top: '65%',
           width: '70px',
           height: '50px',
-          transform: 'rotate(13deg)',
+          transform: 'rotate(17deg)',
           zIndex: 1
         }}
       ></div>
@@ -223,7 +223,7 @@ export default function CustomerFacingEstimator() {
           top: '35%',
           width: '100px',
           height: '70px',
-          transform: 'rotate(-11deg)',
+          transform: 'rotate(-10deg)',
           zIndex: 1
         }}
       ></div>
@@ -237,7 +237,7 @@ export default function CustomerFacingEstimator() {
           top: '5%',
           width: '150px',
           height: '105px',
-          transform: 'rotate(16deg)',
+          transform: 'rotate(4deg)',
           zIndex: 1
         }}
       ></div>
@@ -250,7 +250,7 @@ export default function CustomerFacingEstimator() {
           top: '8%',
           width: '150px',
           height: '105px',
-          transform: 'rotate(-18deg)',
+          transform: 'rotate(-15deg)',
           zIndex: 1
         }}
       ></div>
@@ -264,7 +264,7 @@ export default function CustomerFacingEstimator() {
           left: '2%',
           width: '150px',
           height: '105px',
-          transform: 'rotate(14deg)',
+          transform: 'rotate(9deg)',
           zIndex: 1
         }}
       ></div>
@@ -277,7 +277,7 @@ export default function CustomerFacingEstimator() {
           left: '8%',
           width: '100px',
           height: '70px',
-          transform: 'rotate(17deg)',
+          transform: 'rotate(-14deg)',
           zIndex: 1
         }}
       ></div>
@@ -290,7 +290,7 @@ export default function CustomerFacingEstimator() {
           left: '5%',
           width: '70px',
           height: '50px',
-          transform: 'rotate(19deg)',
+          transform: 'rotate(18deg)',
           zIndex: 1
         }}
       ></div>
@@ -303,7 +303,7 @@ export default function CustomerFacingEstimator() {
           left: '12%',
           width: '40px',
           height: '28px',
-          transform: 'rotate(11deg)',
+          transform: 'rotate(-3deg)',
           zIndex: 1
         }}
       ></div>
@@ -316,7 +316,7 @@ export default function CustomerFacingEstimator() {
           left: '15%',
           width: '100px',
           height: '70px',
-          transform: 'rotate(15deg)',
+          transform: 'rotate(12deg)',
           zIndex: 1
         }}
       ></div>
@@ -329,7 +329,7 @@ export default function CustomerFacingEstimator() {
           left: '3%',
           width: '70px',
           height: '50px',
-          transform: 'rotate(20deg)',
+          transform: 'rotate(-20deg)',
           zIndex: 1
         }}
       ></div>
@@ -342,7 +342,7 @@ export default function CustomerFacingEstimator() {
           left: '25%',
           width: '150px',
           height: '105px',
-          transform: 'rotate(12deg)',
+          transform: 'rotate(7deg)',
           zIndex: 1
         }}
       ></div>
@@ -356,7 +356,7 @@ export default function CustomerFacingEstimator() {
           left: '0%',
           width: '200px',
           height: '140px',
-          transform: 'rotate(18deg)',
+          transform: 'rotate(-11deg)',
           zIndex: 1
         }}
       ></div>
@@ -382,7 +382,7 @@ export default function CustomerFacingEstimator() {
           left: '1%',
           width: '100px',
           height: '70px',
-          transform: 'rotate(13deg)',
+          transform: 'rotate(-8deg)',
           zIndex: 1
         }}
       ></div>
@@ -395,7 +395,7 @@ export default function CustomerFacingEstimator() {
           left: '6%',
           width: '70px',
           height: '50px',
-          transform: 'rotate(19deg)',
+          transform: 'rotate(15deg)',
           zIndex: 1
         }}
       ></div>
@@ -408,7 +408,7 @@ export default function CustomerFacingEstimator() {
           left: '4%',
           width: '40px',
           height: '28px',
-          transform: 'rotate(14deg)',
+          transform: 'rotate(-6deg)',
           zIndex: 1
         }}
       ></div>
@@ -422,7 +422,7 @@ export default function CustomerFacingEstimator() {
           right: '2%',
           width: '150px',
           height: '105px',
-          transform: 'rotate(-14deg)',
+          transform: 'rotate(-9deg)',
           zIndex: 1
         }}
       ></div>
@@ -435,7 +435,7 @@ export default function CustomerFacingEstimator() {
           right: '8%',
           width: '100px',
           height: '70px',
-          transform: 'rotate(-17deg)',
+          transform: 'rotate(14deg)',
           zIndex: 1
         }}
       ></div>
@@ -448,7 +448,7 @@ export default function CustomerFacingEstimator() {
           right: '5%',
           width: '70px',
           height: '50px',
-          transform: 'rotate(-19deg)',
+          transform: 'rotate(-18deg)',
           zIndex: 1
         }}
       ></div>
@@ -461,7 +461,7 @@ export default function CustomerFacingEstimator() {
           right: '12%',
           width: '40px',
           height: '28px',
-          transform: 'rotate(-11deg)',
+          transform: 'rotate(3deg)',
           zIndex: 1
         }}
       ></div>
@@ -474,7 +474,7 @@ export default function CustomerFacingEstimator() {
           right: '15%',
           width: '100px',
           height: '70px',
-          transform: 'rotate(-15deg)',
+          transform: 'rotate(-12deg)',
           zIndex: 1
         }}
       ></div>
@@ -487,7 +487,7 @@ export default function CustomerFacingEstimator() {
           right: '3%',
           width: '70px',
           height: '50px',
-          transform: 'rotate(-20deg)',
+          transform: 'rotate(20deg)',
           zIndex: 1
         }}
       ></div>
@@ -500,7 +500,7 @@ export default function CustomerFacingEstimator() {
           right: '25%',
           width: '150px',
           height: '105px',
-          transform: 'rotate(-12deg)',
+          transform: 'rotate(-7deg)',
           zIndex: 1
         }}
       ></div>
@@ -514,7 +514,7 @@ export default function CustomerFacingEstimator() {
           right: '0%',
           width: '200px',
           height: '140px',
-          transform: 'rotate(-18deg)',
+          transform: 'rotate(11deg)',
           zIndex: 1
         }}
       ></div>
@@ -540,7 +540,7 @@ export default function CustomerFacingEstimator() {
           right: '1%',
           width: '100px',
           height: '70px',
-          transform: 'rotate(-13deg)',
+          transform: 'rotate(8deg)',
           zIndex: 1
         }}
       ></div>
@@ -553,7 +553,7 @@ export default function CustomerFacingEstimator() {
           right: '6%',
           width: '70px',
           height: '50px',
-          transform: 'rotate(-19deg)',
+          transform: 'rotate(-15deg)',
           zIndex: 1
         }}
       ></div>
@@ -566,7 +566,7 @@ export default function CustomerFacingEstimator() {
           right: '4%',
           width: '40px',
           height: '28px',
-          transform: 'rotate(-14deg)',
+          transform: 'rotate(6deg)',
           zIndex: 1
         }}
       ></div>
@@ -580,7 +580,7 @@ export default function CustomerFacingEstimator() {
           left: '35%',
           width: '100px',
           height: '70px',
-          transform: 'rotate(16deg)',
+          transform: 'rotate(-13deg)',
           zIndex: 1
         }}
       ></div>
@@ -593,7 +593,7 @@ export default function CustomerFacingEstimator() {
           right: '40%',
           width: '100px',
           height: '70px',
-          transform: 'rotate(-16deg)',
+          transform: 'rotate(10deg)',
           zIndex: 1
         }}
       ></div>
@@ -606,7 +606,7 @@ export default function CustomerFacingEstimator() {
           left: '45%',
           width: '70px',
           height: '50px',
-          transform: 'rotate(18deg)',
+          transform: 'rotate(5deg)',
           zIndex: 1
         }}
       ></div>
@@ -619,7 +619,7 @@ export default function CustomerFacingEstimator() {
           right: '50%',
           width: '70px',
           height: '50px',
-          transform: 'rotate(-18deg)',
+          transform: 'rotate(-19deg)',
           zIndex: 1
         }}
       ></div>
@@ -633,7 +633,7 @@ export default function CustomerFacingEstimator() {
           top: '25%',
           width: '40px',
           height: '28px',
-          transform: 'rotate(15deg)',
+          transform: 'rotate(-4deg)',
           zIndex: 1
         }}
       ></div>
@@ -646,7 +646,7 @@ export default function CustomerFacingEstimator() {
           top: '75%',
           width: '40px',
           height: '28px',
-          transform: 'rotate(-15deg)',
+          transform: 'rotate(11deg)',
           zIndex: 1
         }}
       ></div>
@@ -659,7 +659,7 @@ export default function CustomerFacingEstimator() {
           top: '45%',
           width: '40px',
           height: '28px',
-          transform: 'rotate(17deg)',
+          transform: 'rotate(-17deg)',
           zIndex: 1
         }}
       ></div>
@@ -672,7 +672,7 @@ export default function CustomerFacingEstimator() {
           bottom: '35%',
           width: '40px',
           height: '28px',
-          transform: 'rotate(-17deg)',
+          transform: 'rotate(14deg)',
           zIndex: 1
         }}
       ></div>
@@ -701,9 +701,11 @@ export default function CustomerFacingEstimator() {
       <div className="flower-decoration" style={{ position: 'fixed', bottom: '75%', left: '40%', zIndex: 2, animation: 'none' }}></div>
       <div className="flower-decoration" style={{ position: 'fixed', top: '15%', left: '70%', zIndex: 2, animation: 'none' }}></div>
 
-      {/* Static light beams - very subtle */}
-      <div className="light-beam beam-1" style={{ opacity: 0.1, animation: 'none' }}></div>
-      <div className="light-beam beam-2" style={{ opacity: 0.1, animation: 'none' }}></div>
+      {/* Enhanced light beams - subtle and static */}
+      <div className="light-beam beam-1"></div>
+      <div className="light-beam beam-2"></div>
+      <div className="light-beam beam-3"></div>
+      <div className="light-beam beam-4"></div>
 
       {/* Built with Bolt Badge */}
       <a
