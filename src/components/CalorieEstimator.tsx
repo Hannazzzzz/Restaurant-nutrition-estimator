@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { Calculator, Utensils, TrendingUp, AlertCircle, Wifi, WifiOff, Database, TestTube, MapPin, CheckCircle, XCircle, Edit3, Beaker, Zap, Search } from 'lucide-react';
+import { Calculator, Utensils, TrendingUp, AlertCircle, Database, MapPin, CheckCircle, XCircle, Edit3, Zap, Search } from 'lucide-react';
 import { estimateCalories } from '../utils/calorieEstimator';
 import { testSupabaseConnection, supabase } from '../lib/supabase';
 import { testGoogleSearch } from '../utils/googleSearchApi';
@@ -16,7 +16,6 @@ export default function CalorieEstimator() {
   const [foodEntriesTestResult, setFoodEntriesTestResult] = useState<{ success: boolean; message?: string; error?: string; data?: any } | null>(null);
   const [isTestingFoodEntries, setIsTestingFoodEntries] = useState(false);
   const [historyRefreshTrigger, setHistoryRefreshTrigger] = useState(0);
-  const [usePerplexityAPI, setUsePerplexityAPI] = useState(false);
   const [googleTestResult, setGoogleTestResult] = useState<{ success: boolean; message: string; results?: any[] } | null>(null);
   const [isTestingGoogle, setIsTestingGoogle] = useState(false);
 
@@ -151,8 +150,8 @@ export default function CalorieEstimator() {
     }
     
     try {
-      // Three-phase analysis (test mode or full AI mode)
-      const result = await estimateCalories(userInput, usePerplexityAPI);
+      // Always use AI mode (Perplexity API)
+      const result = await estimateCalories(userInput, true);
       setDiscoveryResult(result);
       
       if (result.error) {
@@ -167,7 +166,7 @@ export default function CalorieEstimator() {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
       setError(errorMessage);
-      console.error('Three-phase estimation error:', err);
+      console.error('AI estimation error:', err);
     } finally {
       setIsLoading(false);
     }
@@ -199,58 +198,25 @@ export default function CalorieEstimator() {
             Restaurant Nutrition Estimator
           </h1>
           
-          {/* API Mode Toggle */}
+          {/* AI Mode Banner */}
           <div className="bg-white rounded-2xl shadow-lg p-4 mb-4">
-            <h3 className="text-sm font-medium text-gray-700 mb-3">
-              🧪 API Testing Mode
-            </h3>
-            
-            <div className="flex items-center justify-center gap-4">
-              <button
-                onClick={() => setUsePerplexityAPI(false)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
-                  !usePerplexityAPI 
-                    ? 'bg-yellow-100 text-yellow-700 border-2 border-yellow-300' 
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-              >
-                <Beaker className="w-4 h-4" />
-                Test Mode
-              </button>
-              
-              <button
-                onClick={() => setUsePerplexityAPI(true)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
-                  usePerplexityAPI 
-                    ? 'bg-purple-100 text-purple-700 border-2 border-purple-300' 
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-              >
-                <Zap className="w-4 h-4" />
-                AI Mode
-              </button>
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <div className="inline-flex items-center justify-center w-8 h-8 bg-purple-100 rounded-full">
+                <Zap className="w-4 h-4 text-purple-600" />
+              </div>
+              <h3 className="text-sm font-medium text-gray-700">
+                🤖 AI-Powered Analysis
+              </h3>
             </div>
             
-            <div className="mt-3 text-xs text-gray-600">
-              {usePerplexityAPI ? (
-                <div className="bg-purple-50 border border-purple-200 rounded-lg p-2">
-                  <p className="font-medium text-purple-700">🤖 AI Mode Active</p>
-                  <p>Using Perplexity API for restaurant research and calorie analysis</p>
-                </div>
-              ) : (
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-2">
-                  <p className="font-medium text-yellow-700">🧪 Test Mode Active</p>
-                  <p>Using Google Search + rule-based estimation</p>
-                </div>
-              )}
+            <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
+              <p className="font-medium text-purple-700 text-sm mb-1">Advanced Restaurant Research</p>
+              <p className="text-purple-600 text-xs">Using Perplexity AI for comprehensive 3-phase analysis with real-time web search</p>
             </div>
           </div>
           
           <p className="text-gray-600 text-sm leading-relaxed">
-            {usePerplexityAPI 
-              ? "Complete AI-powered 3-phase analysis with restaurant research"
-              : "Testing Google integration with fallback calorie estimation"
-            }
+            Complete AI-powered restaurant research, dish analysis, and modification detection
           </p>
         </div>
 
@@ -404,12 +370,12 @@ Examples:
             {isLoading ? (
               <>
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                {usePerplexityAPI ? 'Analyzing with AI...' : 'Testing Google integration...'}
+                Analyzing with AI...
               </>
             ) : (
               <>
                 <Calculator className="w-4 h-4" />
-                {usePerplexityAPI ? 'Analyze with AI' : 'Test Google Search + Estimation'}
+                Analyze with AI
               </>
             )}
           </button>
@@ -434,9 +400,7 @@ Examples:
                 <div className="flex items-center gap-2 text-red-700">
                   <AlertCircle className="w-4 h-4 flex-shrink-0" />
                   <div>
-                    <h3 className="font-medium text-sm">
-                      {usePerplexityAPI ? '❌ AI Analysis Failed' : '❌ Restaurant Not Found'}
-                    </h3>
+                    <h3 className="font-medium text-sm">❌ AI Analysis Failed</h3>
                     <p className="text-xs mt-1">{error}</p>
                     {discoveryResult.suggestion && (
                       <p className="suggestion text-red-600 text-xs mt-2">💡 {discoveryResult.suggestion}</p>
@@ -451,47 +415,21 @@ Examples:
         {/* Restaurant Discovery Results */}
         {discoveryResult && !discoveryResult.inputFormat && (
           <div className="results-container">
-            {/* Mode Banner */}
-            {(discoveryResult.testMode || usePerplexityAPI) && (
-              <div className={`border rounded-2xl p-4 mb-4 ${
-                usePerplexityAPI 
-                  ? 'bg-purple-50 border-purple-200' 
-                  : 'bg-yellow-50 border-yellow-200'
-              }`}>
-                <div className={`flex items-center gap-2 mb-2 ${
-                  usePerplexityAPI ? 'text-purple-700' : 'text-yellow-700'
-                }`}>
-                  {usePerplexityAPI ? (
-                    <>
-                      <Zap className="w-4 h-4" />
-                      <span className="text-sm font-medium">🤖 AI Mode Results</span>
-                    </>
-                  ) : (
-                    <>
-                      <Beaker className="w-4 h-4" />
-                      <span className="text-sm font-medium">🧪 Test Mode Results</span>
-                    </>
-                  )}
-                </div>
-                <div className={`text-xs space-y-1 ${
-                  usePerplexityAPI ? 'text-purple-600' : 'text-yellow-600'
-                }`}>
-                  {usePerplexityAPI ? (
-                    <>
-                      <p>• Using Perplexity API for restaurant research</p>
-                      <p>• AI-powered ingredient analysis and calorie calculation</p>
-                      <p>• Advanced modification detection</p>
-                    </>
-                  ) : (
-                    <>
-                      <p>• Google Search Query: "{discoveryResult.googleSearchQuery}"</p>
-                      <p>• Search Results Found: {discoveryResult.googleResultsCount}</p>
-                      <p>• Using rule-based calorie estimation</p>
-                    </>
-                  )}
-                </div>
+            {/* AI Mode Banner */}
+            <div className="bg-purple-50 border-purple-200 border rounded-2xl p-4 mb-4">
+              <div className="flex items-center gap-2 mb-2 text-purple-700">
+                <Zap className="w-4 h-4" />
+                <span className="text-sm font-medium">🤖 AI Analysis Results</span>
               </div>
-            )}
+              <div className="text-xs space-y-1 text-purple-600">
+                <p>• Using Perplexity AI for restaurant research</p>
+                <p>• AI-powered ingredient analysis and calorie calculation</p>
+                <p>• Advanced modification detection</p>
+                {discoveryResult.calorie_estimation_source && (
+                  <p>• Estimation type: {discoveryResult.calorie_estimation_source.replace('perplexity_ai_', '').replace('_', ' ')}</p>
+                )}
+              </div>
+            </div>
 
             {discoveryResult.found ? (
               <>
@@ -504,12 +442,7 @@ Examples:
                     <h2 className="text-lg font-semibold text-gray-900 mb-1">
                       🏪 Restaurant Found (Phase 1)
                     </h2>
-                    {discoveryResult.testMode && (
-                      <p className="text-xs text-yellow-600">Google Search + Rule-based Analysis</p>
-                    )}
-                    {usePerplexityAPI && !discoveryResult.testMode && (
-                      <p className="text-xs text-purple-600">AI-Powered Restaurant Research</p>
-                    )}
+                    <p className="text-xs text-purple-600">AI-Powered Restaurant Research</p>
                   </div>
 
                   <div className="space-y-4">
@@ -521,6 +454,9 @@ Examples:
                     <div className="bg-blue-50 rounded-xl p-4">
                       <h3 className="text-sm font-medium text-blue-800 mb-2">Menu Item</h3>
                       <p className="text-blue-700 font-semibold">{discoveryResult.menuItem}</p>
+                      {discoveryResult.calorie_estimation_source === 'perplexity_ai_generic' && (
+                        <p className="text-xs text-blue-600 mt-1">⚠️ Specific menu item not found - using generic estimate</p>
+                      )}
                     </div>
 
                     <div className="bg-purple-50 rounded-xl p-4">
@@ -540,38 +476,27 @@ Examples:
                       <h2 className="text-lg font-semibold text-gray-900 mb-1">
                         🍽️ Complete Dish Analysis (Phase 2)
                       </h2>
-                      {discoveryResult.testMode && (
-                        <p className="text-xs text-yellow-600">Rule-based Keyword Matching</p>
-                      )}
-                      {usePerplexityAPI && !discoveryResult.testMode && (
-                        <p className="text-xs text-purple-600">AI-Powered Ingredient Analysis</p>
-                      )}
+                      <p className="text-xs text-purple-600">AI-Powered Ingredient Analysis</p>
                     </div>
 
                     <div className="space-y-4">
                       {discoveryResult.foundIngredients && (
                         <div className="bg-green-50 rounded-xl p-4">
-                          <h4 className="text-sm font-medium text-green-800 mb-2">
-                            {discoveryResult.testMode ? 'Found in Search Results:' : 'Found in Menu:'}
-                          </h4>
+                          <h4 className="text-sm font-medium text-green-800 mb-2">Found in Menu:</h4>
                           <p className="text-green-700 text-sm">{discoveryResult.foundIngredients}</p>
                         </div>
                       )}
 
                       {discoveryResult.addedComponents && (
                         <div className="bg-yellow-50 rounded-xl p-4">
-                          <h4 className="text-sm font-medium text-yellow-800 mb-2">
-                            {discoveryResult.testMode ? 'Matched Food Categories:' : 'Added Standard Components:'}
-                          </h4>
+                          <h4 className="text-sm font-medium text-yellow-800 mb-2">Added Standard Components:</h4>
                           <p className="text-yellow-700 text-sm">{discoveryResult.addedComponents}</p>
                         </div>
                       )}
 
                       {discoveryResult.completeIngredients && (
                         <div className="bg-gray-50 rounded-xl p-4">
-                          <h4 className="text-sm font-medium text-gray-800 mb-2">
-                            {discoveryResult.testMode ? 'Complete Analysis:' : 'Complete Ingredient List:'}
-                          </h4>
+                          <h4 className="text-sm font-medium text-gray-800 mb-2">Complete Ingredient List:</h4>
                           <pre className="components-list text-gray-700">{discoveryResult.completeIngredients}</pre>
                         </div>
                       )}
@@ -599,12 +524,7 @@ Examples:
                       <h2 className="text-lg font-semibold text-gray-900 mb-1">
                         ✏️ Your Modifications (Phase 3)
                       </h2>
-                      {discoveryResult.testMode && (
-                        <p className="text-xs text-yellow-600">Rule-based Modification Detection</p>
-                      )}
-                      {usePerplexityAPI && !discoveryResult.testMode && (
-                        <p className="text-xs text-purple-600">AI-Powered Modification Analysis</p>
-                      )}
+                      <p className="text-xs text-purple-600">AI-Powered Modification Analysis</p>
                     </div>
 
                     <div className="space-y-4">
@@ -617,11 +537,7 @@ Examples:
                         <>
                           <div className="bg-yellow-50 rounded-xl p-4">
                             <h4 className="text-sm font-medium text-yellow-800 mb-2">Calorie Adjustments:</h4>
-                            {discoveryResult.testMode ? (
-                              <p className="text-yellow-700 text-sm">{discoveryResult.calorieAdjustments}</p>
-                            ) : (
-                              <pre className="adjustments-list text-yellow-700">{discoveryResult.calorieAdjustments}</pre>
-                            )}
+                            <pre className="adjustments-list text-yellow-700">{discoveryResult.calorieAdjustments}</pre>
                           </div>
 
                           <div className="bg-gray-50 rounded-xl p-4">
@@ -660,11 +576,8 @@ Examples:
                     <XCircle className="w-6 h-6 text-red-600" />
                   </div>
                   <h2 className="text-lg font-semibold text-gray-900 mb-1">
-                    {usePerplexityAPI ? '❌ AI Analysis Failed' : '❌ Restaurant Not Found'}
+                    ❌ AI Analysis Failed
                   </h2>
-                  {discoveryResult.testMode && (
-                    <p className="text-xs text-yellow-600">Google Search returned {discoveryResult.googleResultsCount} results</p>
-                  )}
                 </div>
 
                 <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-4">
@@ -684,31 +597,25 @@ Examples:
             {(discoveryResult.rawResponse || discoveryResult.rawResponses) && (
               <details className="debug-section bg-white rounded-2xl shadow-lg p-6 mb-6">
                 <summary className="text-xs text-gray-500 cursor-pointer hover:text-gray-700 mb-2">
-                  {usePerplexityAPI ? 'Show AI Responses (Debug)' : 'Show Test Mode Responses (Debug)'}
+                  Show AI Responses (Debug)
                 </summary>
                 {discoveryResult.rawResponses ? (
                   <div className="raw-responses space-y-4">
                     <div className="phase-response">
-                      <h4 className="text-sm font-medium text-gray-700 mb-2">
-                        {usePerplexityAPI ? 'Phase 1 (Restaurant Discovery):' : 'Phase 1 (Google Search Analysis):'}
-                      </h4>
+                      <h4 className="text-sm font-medium text-gray-700 mb-2">Phase 1 (Restaurant Discovery):</h4>
                       <pre className="bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs text-gray-700 whitespace-pre-wrap overflow-x-auto">
                         {discoveryResult.rawResponses.phase1}
                       </pre>
                     </div>
                     <div className="phase-response">
-                      <h4 className="text-sm font-medium text-gray-700 mb-2">
-                        {usePerplexityAPI ? 'Phase 2 (Dish Analysis):' : 'Phase 2 (Rule-based Analysis):'}
-                      </h4>
+                      <h4 className="text-sm font-medium text-gray-700 mb-2">Phase 2 (Dish Analysis):</h4>
                       <pre className="bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs text-gray-700 whitespace-pre-wrap overflow-x-auto">
                         {discoveryResult.rawResponses.phase2}
                       </pre>
                     </div>
                     {discoveryResult.rawResponses.phase3 && (
                       <div className="phase-response">
-                        <h4 className="text-sm font-medium text-gray-700 mb-2">
-                          {usePerplexityAPI ? 'Phase 3 (Modifications):' : 'Phase 3 (Modification Analysis):'}
-                        </h4>
+                        <h4 className="text-sm font-medium text-gray-700 mb-2">Phase 3 (Modifications):</h4>
                         <pre className="bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs text-gray-700 whitespace-pre-wrap overflow-x-auto">
                           {discoveryResult.rawResponses.phase3}
                         </pre>
@@ -738,10 +645,7 @@ Examples:
         {/* Footer */}
         <div className="text-center mt-8 pb-8">
           <p className="text-xs text-gray-500">
-            {usePerplexityAPI 
-              ? "Complete AI-powered 3-phase analysis: Restaurant research + dish analysis + modifications"
-              : "🧪 Test Mode: Google Search + Rule-based estimation (Perplexity API bypassed)"
-            }
+            Complete AI-powered 3-phase analysis: Restaurant research + dish analysis + modifications
           </p>
         </div>
       </div>
