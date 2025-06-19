@@ -1,5 +1,6 @@
 import { CalorieEstimate } from '../types';
 import { callPerplexityAPI } from './perplexityApi';
+import { callGoogleCustomSearch, formatSearchResultsForAI } from './googleSearchApi';
 import { supabase } from '../lib/supabase';
 
 interface FoodKeyword {
@@ -43,6 +44,10 @@ interface RestaurantDiscoveryResult {
   timestamp?: string;
   saved?: boolean;
   saveError?: string;
+  
+  // Google Search metadata
+  googleSearchQuery?: string;
+  googleResultsCount?: number;
 }
 
 const foodDatabase: FoodKeyword[] = [
@@ -243,49 +248,104 @@ function estimateCaloriesFallback(mealDescription: string): CalorieEstimate {
   };
 }
 
+function createGoogleSearchQuery(userInput: string): string {
+  // Extract restaurant and dish from user input
+  const lowerInput = userInput.toLowerCase();
+  
+  // Try to parse "dish from/at restaurant" format
+  let dishPart = '';
+  let restaurantPart = '';
+  
+  if (lowerInput.includes(' from ')) {
+    const parts = userInput.split(/ from /i);
+    dishPart = parts[0]?.trim() || '';
+    restaurantPart = parts[1]?.trim() || '';
+  } else if (lowerInput.includes(' at ')) {
+    const parts = userInput.split(/ at /i);
+    dishPart = parts[0]?.trim() || '';
+    restaurantPart = parts[1]?.trim() || '';
+  }
+  
+  if (dishPart && restaurantPart) {
+    // Create multiple search variations for better results
+    return `"${dishPart}" "${restaurantPart}" menu ingredients`;
+  }
+  
+  // Fallback: use the entire input
+  return `${userInput} menu ingredients restaurant`;
+}
+
 export async function estimateCalories(userInput: string): Promise<RestaurantDiscoveryResult> {
   try {
-    // Phase 1: Restaurant Discovery - Enhanced with comprehensive search strategy
+    // Phase 1: Google Custom Search + Perplexity Analysis
+    console.log('Starting Phase 1: Google Custom Search for restaurant discovery');
+    
+    // Create optimized search query
+    const searchQuery = createGoogleSearchQuery(userInput);
+    console.log('Google search query:', searchQuery);
+    
+    // Perform Google Custom Search
+    const searchResults = await callGoogleCustomSearch(searchQuery, 8);
+    
+    if (searchResults.length === 0) {
+      return {
+        restaurant: 'Unknown',
+        menuItem: 'Unknown', 
+        description: 'None listed',
+        found: false,
+        error: 'No search results found',
+        suggestion: 'Try being more specific with restaurant name and location',
+        rawResponse: 'No Google search results found',
+        estimatedCalories: 'Search failed',
+        googleSearchQuery: searchQuery,
+        googleResultsCount: 0
+      };
+    }
+    
+    // Format search results for AI analysis
+    const formattedResults = formatSearchResultsForAI(searchResults, searchQuery);
+    
+    // Use Perplexity to analyze the Google search results
     const restaurantResponse = await callPerplexityAPI(
-      `Find this specific menu item with complete ingredients: "${userInput}"
+      `Analyze these Google search results to find the specific menu item with complete ingredients: "${userInput}"
 
-SEARCH REQUIREMENTS:
-1. Extract restaurant name and food item from format: "[food] from/at [restaurant name]"
-2. Perform CASE-INSENSITIVE search for restaurant name (ignore capitalization differences)
-3. Search variations: exact name, partial matches, common abbreviations
-4. Look for restaurant's menu pages, PDF menus, online ordering systems
-5. Find the EXACT menu item and its complete ingredient description
-6. If found, include the full ingredient list from the menu
-7. If restaurant found but item not on menu, note "ITEM NOT ON MENU"
-8. If restaurant not found after trying variations, respond "RESTAURANT NOT FOUND"
+GOOGLE SEARCH RESULTS:
+${formattedResults}
 
-COMPREHENSIVE SEARCH STRATEGY:
-- Primary sources: "[restaurant name] menu", "[restaurant name] PDF menu", "[restaurant name] online ordering"
-- PDF menu extraction: Look specifically for PDF menus on restaurant websites and extract text content
-- Review sites: Search Yelp, TripAdvisor, Google Maps reviews for dish descriptions and ingredients
-- Social media: Check Instagram, Facebook posts for menu photos and dish descriptions
-- Food blogs: Look for restaurant reviews mentioning specific dishes and their components
-- Delivery apps: Check UberEats, DoorDash, Grubhub for detailed menu descriptions
-- Search combinations: "[dish name] [restaurant name]", "[restaurant name] [dish name] ingredients"
-- Location context: if location mentioned, include in all searches for better accuracy
-- Variations: try different capitalizations, abbreviations, common misspellings of restaurant name
+ANALYSIS REQUIREMENTS:
+1. Extract restaurant name and food item from user input format: "[food] from/at [restaurant name]"
+2. Look through the search results for:
+   - Restaurant's official website or menu pages
+   - PDF menus or online ordering systems
+   - Review sites with dish descriptions
+   - Food blogs or social media posts with ingredient details
+3. Find the EXACT menu item and its complete ingredient description
+4. If found in search results, extract the full ingredient list
+5. If restaurant found but item not in search results, note "ITEM NOT FOUND IN SEARCH RESULTS"
+6. If restaurant not found in search results, respond "RESTAURANT NOT FOUND IN SEARCH RESULTS"
+
+SEARCH RESULT ANALYSIS:
+- Prioritize official restaurant websites and menu PDFs
+- Look for exact dish name matches in titles and content snippets
+- Extract ingredient information from menu descriptions
+- Note which specific search result provided the information
 
 STRICT OUTPUT FORMAT:
-RESTAURANT: [name and location if found, or "RESTAURANT NOT FOUND"]
-MENU ITEM: [exact item name from menu, or "ITEM NOT FOUND"]  
-MENU DESCRIPTION: [complete ingredient list from menu, or "ITEM NOT ON MENU" or "INGREDIENTS NOT LISTED"]
-INGREDIENT SOURCE: [where ingredients were found - menu PDF, website, review site, social media, etc., or "NOT FOUND"]
-FOUND: [YES if restaurant AND menu item found, NO otherwise]`
+RESTAURANT: [name and location if found, or "RESTAURANT NOT FOUND IN SEARCH RESULTS"]
+MENU ITEM: [exact item name from search results, or "ITEM NOT FOUND IN SEARCH RESULTS"]  
+MENU DESCRIPTION: [complete ingredient list from search results, or "ITEM NOT FOUND IN SEARCH RESULTS" or "INGREDIENTS NOT LISTED"]
+INGREDIENT SOURCE: [which search result provided ingredients - website URL, PDF menu, review site, etc., or "NOT FOUND IN SEARCH RESULTS"]
+FOUND: [YES if restaurant AND menu item found in search results, NO otherwise]`
     );
     
-    // NEW LOGIC: Check if restaurant was actually found by parsing the response
+    // Parse the restaurant discovery response
     const restaurantInfo = parseRestaurantInfo(restaurantResponse);
     
-    // Determine if restaurant was found based on parsed content, not just "FOUND: YES"
+    // Determine if restaurant was found based on parsed content
     const restaurantFound = restaurantInfo.restaurant !== 'Unknown' && 
                            restaurantInfo.menuItem !== 'Unknown' &&
                            !restaurantResponse.includes('RESTAURANT NOT FOUND') &&
-                           !restaurantResponse.includes('NOT FOUND');
+                           !restaurantResponse.includes('NOT FOUND IN SEARCH RESULTS');
 
     if (!restaurantFound) {
       return { 
@@ -293,14 +353,19 @@ FOUND: [YES if restaurant AND menu item found, NO otherwise]`
         menuItem: restaurantInfo.menuItem,
         description: restaurantInfo.description,
         found: false,
-        error: 'Restaurant not found', 
-        suggestion: 'Try including restaurant name + location',
+        error: 'Restaurant or menu item not found in search results', 
+        suggestion: 'Try including more specific restaurant name + location, or check if the dish name is correct',
         rawResponse: restaurantResponse,
-        estimatedCalories: 'Restaurant discovery failed'
+        estimatedCalories: 'Restaurant discovery failed',
+        googleSearchQuery: searchQuery,
+        googleResultsCount: searchResults.length
       };
     }
 
+    console.log('Phase 1 successful - Restaurant found:', restaurantInfo.restaurant);
+
     // PHASE 2: Complete Dish Analysis - Enhanced with strict calorie formatting
+    console.log('Starting Phase 2: Complete dish analysis');
     const dishResponse = await callPerplexityAPI(
       `Analyze this dish and calculate total calories with precise formatting:
 
@@ -336,8 +401,10 @@ CONFIDENCE: HIGH`
 
     // Parse Phase 2 response
     const dishAnalysis = parseDishAnalysis(dishResponse);
+    console.log('Phase 2 successful - Standard calories:', dishAnalysis.calories);
 
     // PHASE 3: User Modification Analysis - Enhanced with strict calculation format
+    console.log('Starting Phase 3: User modification analysis');
     const modificationResponse = await callPerplexityAPI(
       `Calculate final calories after user modifications with precise formatting:
 
@@ -377,6 +444,7 @@ FINAL CALORIES: ${dishAnalysis.calories}`
 
     // Parse Phase 3 response
     const modificationAnalysis = parseModificationAnalysis(modificationResponse);
+    console.log('Phase 3 successful - Final calories:', modificationAnalysis.finalCalories);
 
     // Ensure we have valid calorie numbers
     const standardCalories = parseInt(dishAnalysis.calories) || 0;
@@ -414,14 +482,20 @@ FINAL CALORIES: ${dishAnalysis.calories}`
         phase3: modificationResponse
       },
       rawResponse: restaurantResponse, // Keep for backward compatibility
-      estimatedCalories: `${finalCalories} calories (final estimate)`
+      estimatedCalories: `${finalCalories} calories (final estimate)`,
+      
+      // Google Search metadata
+      googleSearchQuery: searchQuery,
+      googleResultsCount: searchResults.length
     };
 
     // Save to database
+    console.log('Saving to database...');
     const saveResult = await saveToDatabase(finalResult);
     finalResult.saved = saveResult.success;
     finalResult.saveError = saveResult.error;
 
+    console.log('Three-phase analysis complete!');
     return finalResult;
 
   } catch (error) {
