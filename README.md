@@ -1,4 +1,4 @@
-# [Name tbd] Restaurant Nutrition Estimator
+# **canøpy** Restaurant Nutrition Estimator
 
 AI-powered conversational tool for estimating nutritional values at restaurants, especially independent and ethnic establishments.
 
