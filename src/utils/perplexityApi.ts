@@ -10,10 +10,15 @@ export async function callPerplexityAPI(prompt: string): Promise<string> {
   const apiKey = import.meta.env.VITE_PERPLEXITY_API_KEY;
   
   if (!apiKey) {
-    throw new Error('Perplexity API key not configured');
+    throw new Error('Perplexity API key not configured. Please check your .env file and ensure VITE_PERPLEXITY_API_KEY is set.');
   }
 
+  // Log API key status for debugging (without exposing the actual key)
+  console.log('Perplexity API Key status:', apiKey ? `Present (${apiKey.length} chars)` : 'Missing');
+
   try {
+    console.log('Making request to Perplexity API...');
+    
     const response = await fetch('https://api.perplexity.ai/chat/completions', {
       method: 'POST',
       headers: {
@@ -32,24 +37,53 @@ export async function callPerplexityAPI(prompt: string): Promise<string> {
       })
     });
 
+    console.log('Response status:', response.status, response.statusText);
+
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(`Perplexity API error: ${response.status} ${response.statusText}. ${errorData.error?.message || ''}`);
+      let errorMessage = `Perplexity API error: ${response.status} ${response.statusText}`;
+      
+      try {
+        const errorData = await response.json();
+        if (errorData.error?.message) {
+          errorMessage += `. ${errorData.error.message}`;
+        }
+        console.error('API Error Details:', errorData);
+      } catch (parseError) {
+        console.error('Could not parse error response:', parseError);
+      }
+      
+      throw new Error(errorMessage);
     }
 
     const data: PerplexityResponse = await response.json();
     const responseText = data.choices[0]?.message?.content;
 
     if (!responseText) {
-      throw new Error('No response from Perplexity API');
+      throw new Error('No response content from Perplexity API');
     }
 
+    console.log('Perplexity API call successful');
     return responseText;
 
   } catch (error) {
+    console.error('Perplexity API call failed:', error);
+    
+    // Enhanced error handling for common network issues
+    if (error instanceof TypeError && error.message === 'Failed to fetch') {
+      throw new Error(
+        'Network error: Unable to connect to Perplexity API. This could be due to:\n' +
+        '• Network connectivity issues\n' +
+        '• CORS restrictions (check browser console for CORS errors)\n' +
+        '• Browser extensions blocking the request\n' +
+        '• Invalid API endpoint or configuration\n\n' +
+        'Please check your internet connection and browser console for more details.'
+      );
+    }
+    
     if (error instanceof Error) {
       throw error;
     }
+    
     throw new Error('Unknown error occurred while calling Perplexity API');
   }
 }

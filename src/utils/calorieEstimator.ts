@@ -277,6 +277,8 @@ function createGoogleSearchQuery(userInput: string): string {
 
 export async function estimateCalories(userInput: string): Promise<RestaurantDiscoveryResult> {
   try {
+    console.log('Starting calorie estimation for:', userInput);
+    
     // Phase 1: Google Custom Search + Perplexity Analysis
     console.log('Starting Phase 1: Google Custom Search for restaurant discovery');
     
@@ -288,6 +290,7 @@ export async function estimateCalories(userInput: string): Promise<RestaurantDis
     const searchResults = await callGoogleCustomSearch(searchQuery, 8);
     
     if (searchResults.length === 0) {
+      console.warn('No Google search results found');
       return {
         restaurant: 'Unknown',
         menuItem: 'Unknown', 
@@ -306,6 +309,7 @@ export async function estimateCalories(userInput: string): Promise<RestaurantDis
     const formattedResults = formatSearchResultsForAI(searchResults, searchQuery);
     
     // Use Perplexity to analyze the Google search results
+    console.log('Calling Perplexity API for Phase 1...');
     const restaurantResponse = await callPerplexityAPI(
       `Analyze these Google search results to find the specific menu item with complete ingredients: "${userInput}"
 
@@ -348,6 +352,7 @@ FOUND: [YES if restaurant AND menu item found in search results, NO otherwise]`
                            !restaurantResponse.includes('NOT FOUND IN SEARCH RESULTS');
 
     if (!restaurantFound) {
+      console.warn('Restaurant not found in Phase 1');
       return { 
         restaurant: restaurantInfo.restaurant,
         menuItem: restaurantInfo.menuItem,
@@ -366,6 +371,7 @@ FOUND: [YES if restaurant AND menu item found in search results, NO otherwise]`
 
     // PHASE 2: Complete Dish Analysis - Enhanced with strict calorie formatting
     console.log('Starting Phase 2: Complete dish analysis');
+    console.log('Calling Perplexity API for Phase 2...');
     const dishResponse = await callPerplexityAPI(
       `Analyze this dish and calculate total calories with precise formatting:
 
@@ -405,6 +411,7 @@ CONFIDENCE: HIGH`
 
     // PHASE 3: User Modification Analysis - Enhanced with strict calculation format
     console.log('Starting Phase 3: User modification analysis');
+    console.log('Calling Perplexity API for Phase 3...');
     const modificationResponse = await callPerplexityAPI(
       `Calculate final calories after user modifications with precise formatting:
 
@@ -500,13 +507,31 @@ FINAL CALORIES: ${dishAnalysis.calories}`
 
   } catch (error) {
     console.error('Three-phase estimation error:', error);
+    
+    // Enhanced error handling with fallback option
+    let errorMessage = 'Estimation failed';
+    let suggestion = 'Please try again';
+    
+    if (error instanceof Error) {
+      errorMessage = error.message;
+      
+      // Provide specific suggestions based on error type
+      if (error.message.includes('Network error') || error.message.includes('Failed to fetch')) {
+        suggestion = 'Network connection issue. Please check your internet connection and try again. If the problem persists, check browser console for CORS errors.';
+      } else if (error.message.includes('API key')) {
+        suggestion = 'API configuration issue. Please ensure your Perplexity API key is properly set in the .env file.';
+      } else if (error.message.includes('Google')) {
+        suggestion = 'Google Search API issue. The system will attempt to continue with available data.';
+      }
+    }
+    
     return { 
       restaurant: 'Unknown',
       menuItem: 'Unknown',
       description: 'None listed',
       found: false,
-      error: 'Estimation failed', 
-      suggestion: error instanceof Error ? error.message : 'Unknown error occurred',
+      error: errorMessage, 
+      suggestion: suggestion,
       rawResponse: '',
       estimatedCalories: 'Estimation failed'
     };
