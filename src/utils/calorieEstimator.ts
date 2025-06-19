@@ -1,6 +1,7 @@
 import { CalorieEstimate, RestaurantDiscoveryResult } from '../types';
 import { callPerplexityAPI } from './perplexityApi';
 import { supabase } from '../lib/supabase';
+import { getUserId } from './userUtils';
 
 function parseRestaurantInfo(response: string) {
   // Extract restaurant name, menu item, description, and ingredient source from restaurant discovery
@@ -65,16 +66,6 @@ function parseModificationAnalysis(response: string) {
     calculation: calculationMatch?.[1]?.trim() || 'No calculation shown',
     finalCalories: finalCaloriesMatch?.[1]?.trim() || '0'
   };
-}
-
-// Simple user ID generator for now
-function getUserId() {
-  let userId = localStorage.getItem('userId');
-  if (!userId) {
-    userId = 'user_' + Math.random().toString(36).substr(2, 9);
-    localStorage.setItem('userId', userId);
-  }
-  return userId;
 }
 
 // Enhanced database save function with new schema fields

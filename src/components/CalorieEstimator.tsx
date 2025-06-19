@@ -5,6 +5,7 @@ import { estimateCalories } from '../utils/calorieEstimator';
 import { testSupabaseConnection, supabase } from '../lib/supabase';
 import { testGoogleSearch } from '../utils/googleSearchApi';
 import { testPerplexityAPI } from '../utils/perplexityApi';
+import { getUserId } from '../utils/userUtils';
 import { RestaurantDiscoveryResult } from '../types';
 import FoodHistory from './FoodHistory';
 
@@ -31,16 +32,6 @@ export default function CalorieEstimator() {
     
     testConnection();
   }, []);
-
-  // Simple user ID generator for now
-  function getUserId() {
-    let userId = localStorage.getItem('userId');
-    if (!userId) {
-      userId = 'user_' + Math.random().toString(36).substr(2, 9);
-      localStorage.setItem('userId', userId);
-    }
-    return userId;
-  }
 
   // Updated input validation function - now more flexible
   function validateMealInput(input: string) {
@@ -219,6 +210,11 @@ export default function CalorieEstimator() {
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
             Restaurant Nutrition Estimator
           </h1>
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-2 mt-4">
+            <p className="text-xs text-yellow-700">
+              🔧 Debug Mode - <a href="/" className="underline hover:text-yellow-800">Switch to Customer UI</a>
+            </p>
+          </div>
         </div>
 
         {/* API Testing Section */}

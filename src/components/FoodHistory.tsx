@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { History, Clock, MapPin, Zap, RefreshCw, Trash2, TrendingUp, Calendar, ChevronDown, ChevronUp, Eye } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { getUserId } from '../utils/userUtils';
 
 interface FoodEntry {
   id: string;
@@ -22,7 +23,7 @@ interface WeeklyStats {
 }
 
 interface FoodHistoryProps {
-  userId: string;
+  userId?: string;
   refreshTrigger?: number;
 }
 
@@ -35,10 +36,13 @@ export default function FoodHistory({ userId, refreshTrigger }: FoodHistoryProps
   const [statsLoading, setStatsLoading] = useState(true);
   const [expandedEntries, setExpandedEntries] = useState<Set<string>>(new Set());
 
+  // Use the centralized getUserId if no userId prop is provided
+  const effectiveUserId = userId || getUserId();
+
   useEffect(() => {
     loadEntries();
     loadWeeklyStats();
-  }, [userId, refreshTrigger]);
+  }, [effectiveUserId, refreshTrigger]);
 
   async function loadEntries() {
     try {
@@ -52,7 +56,7 @@ export default function FoodHistory({ userId, refreshTrigger }: FoodHistoryProps
       const { data, error: fetchError } = await supabase
         .from('food_entries')
         .select('*')
-        .eq('user_id', userId)
+        .eq('user_id', effectiveUserId)
         .gte('created_at', sevenDaysAgo.toISOString())
         .order('created_at', { ascending: false });
       
@@ -80,7 +84,7 @@ export default function FoodHistory({ userId, refreshTrigger }: FoodHistoryProps
       const { data, error: fetchError } = await supabase
         .from('food_entries')
         .select('*')
-        .eq('user_id', userId)
+        .eq('user_id', effectiveUserId)
         .gte('created_at', sevenDaysAgo.toISOString())
         .order('created_at', { ascending: false });
       
@@ -147,7 +151,7 @@ export default function FoodHistory({ userId, refreshTrigger }: FoodHistoryProps
         .from('food_entries')
         .delete()
         .eq('id', entryId)
-        .eq('user_id', userId);
+        .eq('user_id', effectiveUserId);
       
       if (deleteError) {
         throw deleteError;
