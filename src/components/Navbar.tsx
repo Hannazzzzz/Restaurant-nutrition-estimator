@@ -19,10 +19,10 @@ export default function Navbar({ onMenuClick }: NavbarProps) {
           <Menu className="w-6 h-6" />
         </button>
 
-        {/* Logo/Title */}
+        {/* Logo/Title - Changed to light yellow */}
         <Link 
           to="/" 
-          className="text-2xl font-playfair font-semibold text-white hover:text-yellow-200 transition-colors duration-200"
+          className="text-2xl font-playfair font-semibold text-yellow-200 hover:text-yellow-100 transition-colors duration-200"
         >
           canøpy
         </Link>

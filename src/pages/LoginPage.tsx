@@ -33,26 +33,26 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50 flex items-center justify-center p-4">
+    <div className="canopy-theme min-h-screen flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-emerald-100 rounded-full mb-4">
-            <User className="w-8 h-8 text-emerald-600" />
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-white/10 rounded-full mb-4 border border-white/20">
+            <User className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-playfair font-semibold text-gray-900 mb-2">
+          <h1 className="text-3xl font-playfair font-semibold text-white mb-2">
             Welcome to canøpy
           </h1>
-          <p className="text-gray-600">
+          <p className="text-gray-300">
             Enter your username to start tracking your restaurant meals
           </p>
         </div>
 
         {/* Login Form */}
-        <div className="bg-white rounded-2xl shadow-lg p-6">
+        <div className="canopy-content rounded-2xl p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="username" className="block text-sm font-medium text-gray-200 mb-2">
                 Username
               </label>
               <input
@@ -61,7 +61,7 @@ export default function LoginPage() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Enter your username"
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors duration-200"
+                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:ring-2 focus:ring-yellow-200 focus:border-yellow-200 transition-colors duration-200"
                 disabled={isLoading}
                 autoFocus
               />
@@ -71,7 +71,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={!username.trim() || isLoading}
-                className="w-full bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2"
+                className="w-full bg-white/10 hover:bg-white/20 disabled:bg-gray-500/20 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 border border-white/20"
               >
                 {isLoading ? (
                   <>
@@ -90,15 +90,15 @@ export default function LoginPage() {
                 type="button"
                 onClick={handleFindExisting}
                 disabled={!username.trim() || isLoading}
-                className="w-full bg-gray-100 hover:bg-gray-200 disabled:bg-gray-50 disabled:cursor-not-allowed text-gray-700 font-medium py-3 px-4 rounded-xl transition-all duration-200"
+                className="w-full bg-white/10 hover:bg-white/20 disabled:bg-gray-500/20 disabled:cursor-not-allowed text-gray-300 font-medium py-3 px-4 rounded-xl transition-all duration-200 border border-white/20"
               >
                 Find Existing Account
               </button>
             </div>
           </form>
 
-          <div className="mt-6 p-4 bg-blue-50 rounded-xl">
-            <p className="text-sm text-blue-700">
+          <div className="mt-6 p-4 bg-white/10 rounded-xl border border-white/20">
+            <p className="text-sm text-gray-300">
               <strong>Note:</strong> Your username is stored locally on this device. 
               You can use any username you like - no password required for this demo.
             </p>
@@ -107,7 +107,7 @@ export default function LoginPage() {
 
         {/* Footer */}
         <div className="text-center mt-8">
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-400">
             AI-powered restaurant nutrition analysis
           </p>
         </div>

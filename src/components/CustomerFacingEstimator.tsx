@@ -918,19 +918,9 @@ export default function CustomerFacingEstimator() {
       <div className="light-beam beam-3"></div>
       <div className="light-beam beam-4"></div>
 
-      {/* Main Content - Moved up and reduced subtitle size */}
-      <div className="flex items-center justify-center min-h-screen p-4 relative z-10" style={{ paddingTop: '2rem' }}>
+      {/* Main Content - Centered without scrolling */}
+      <div className="flex items-center justify-center h-full p-4 relative z-10">
         <div className="w-full max-w-md">
-          {/* Title - Clear area, no elements behind */}
-          <div className="text-center mb-8">
-            <h1 className="canopy-title text-5xl md:text-6xl mb-3">
-              canøpy
-            </h1>
-            <p className="font-montserrat text-white/80 text-base font-light">
-              Your restaurant nutrition estimator
-            </p>
-          </div>
-
           {/* Input Form */}
           <form onSubmit={handleSubmit} className="relative">
             <div className="input-jungle-wrapper">

@@ -205,8 +205,8 @@ export default function FoodHistory({ userId, refreshTrigger }: FoodHistoryProps
 
   if (loading) {
     return (
-      <div className="bg-white rounded-2xl shadow-lg p-6">
-        <div className="flex items-center justify-center gap-2 text-gray-500">
+      <div className="canopy-content rounded-2xl p-6">
+        <div className="flex items-center justify-center gap-2 text-gray-300">
           <RefreshCw className="w-4 h-4 animate-spin" />
           <span className="text-sm">Loading your weekly insights...</span>
         </div>
@@ -216,21 +216,21 @@ export default function FoodHistory({ userId, refreshTrigger }: FoodHistoryProps
 
   if (error) {
     return (
-      <div className="bg-white rounded-2xl shadow-lg p-6">
+      <div className="canopy-content rounded-2xl p-6">
         <div className="text-center">
-          <div className="inline-flex items-center justify-center w-12 h-12 bg-red-100 rounded-full mb-3">
-            <TrendingUp className="w-6 h-6 text-red-600" />
+          <div className="inline-flex items-center justify-center w-12 h-12 bg-red-900/20 rounded-full mb-3">
+            <TrendingUp className="w-6 h-6 text-red-400" />
           </div>
-          <h3 className="text-sm font-medium text-gray-900 mb-2">
+          <h3 className="text-sm font-medium text-white mb-2">
             Failed to Load Weekly Insights
           </h3>
-          <p className="text-xs text-red-600 mb-4">{error}</p>
+          <p className="text-xs text-red-400 mb-4">{error}</p>
           <button
             onClick={() => {
               loadEntries();
               loadWeeklyStats();
             }}
-            className="text-xs bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200"
+            className="text-xs bg-red-700 hover:bg-red-800 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200"
           >
             Try Again
           </button>
@@ -241,15 +241,15 @@ export default function FoodHistory({ userId, refreshTrigger }: FoodHistoryProps
 
   if (entries.length === 0) {
     return (
-      <div className="bg-white rounded-2xl shadow-lg p-6">
+      <div className="canopy-content rounded-2xl p-6">
         <div className="text-center">
-          <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full mb-3">
-            <TrendingUp className="w-6 h-6 text-blue-600" />
+          <div className="inline-flex items-center justify-center w-12 h-12 bg-white/10 rounded-full mb-3">
+            <TrendingUp className="w-6 h-6 text-blue-300" />
           </div>
-          <h3 className="text-sm font-medium text-gray-900 mb-2">
+          <h3 className="text-sm font-medium text-white mb-2">
             Weekly Insights
           </h3>
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-gray-300">
             Start logging meals to see your weekly patterns and insights for the past 7 days.
           </p>
         </div>
@@ -258,19 +258,19 @@ export default function FoodHistory({ userId, refreshTrigger }: FoodHistoryProps
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-6">
+    <div className="canopy-content rounded-2xl p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
-          <div className="inline-flex items-center justify-center w-8 h-8 bg-blue-100 rounded-full">
-            <TrendingUp className="w-4 h-4 text-blue-600" />
+          <div className="inline-flex items-center justify-center w-8 h-8 bg-white/10 rounded-full">
+            <TrendingUp className="w-4 h-4 text-blue-300" />
           </div>
-          <h2 className="text-lg font-semibold text-gray-900">
+          <h2 className="text-lg font-semibold text-white">
             Weekly Insights
           </h2>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1 text-xs text-gray-500">
+          <div className="flex items-center gap-1 text-xs text-gray-400">
             <Calendar className="w-3 h-3" />
             <span>Past 7 days</span>
           </div>
@@ -279,7 +279,7 @@ export default function FoodHistory({ userId, refreshTrigger }: FoodHistoryProps
               loadEntries();
               loadWeeklyStats();
             }}
-            className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 font-medium py-1 px-3 rounded-lg transition-colors duration-200 flex items-center gap-1"
+            className="text-xs bg-white/10 hover:bg-white/20 text-gray-300 font-medium py-1 px-3 rounded-lg transition-colors duration-200 flex items-center gap-1"
           >
             <RefreshCw className="w-3 h-3" />
             Refresh
@@ -289,25 +289,25 @@ export default function FoodHistory({ userId, refreshTrigger }: FoodHistoryProps
 
       {/* Weekly Analytics */}
       {statsLoading ? (
-        <div className="flex items-center justify-center gap-2 text-gray-500 py-4 mb-6">
+        <div className="flex items-center justify-center gap-2 text-gray-300 py-4 mb-6">
           <RefreshCw className="w-4 h-4 animate-spin" />
           <span className="text-sm">Loading weekly insights...</span>
         </div>
       ) : weeklyStats ? (
         <div className="grid grid-cols-2 gap-4 mb-6">
-          <div className="bg-emerald-50 rounded-xl p-3">
-            <div className="text-xs text-emerald-600 font-medium mb-1">Meals Logged</div>
-            <div className="text-lg font-bold text-emerald-700">{weeklyStats.totalMeals}</div>
+          <div className="bg-white/10 rounded-xl p-3 border border-white/20">
+            <div className="text-xs text-emerald-300 font-medium mb-1">Meals Logged</div>
+            <div className="text-lg font-bold text-emerald-200">{weeklyStats.totalMeals}</div>
           </div>
-          <div className="bg-blue-50 rounded-xl p-3">
-            <div className="text-xs text-blue-600 font-medium mb-1">Avg Cal/Day</div>
-            <div className="text-lg font-bold text-blue-700">
+          <div className="bg-white/10 rounded-xl p-3 border border-white/20">
+            <div className="text-xs text-blue-300 font-medium mb-1">Avg Cal/Day</div>
+            <div className="text-lg font-bold text-blue-200">
               {weeklyStats.averageCaloriesPerDay}
             </div>
           </div>
-          <div className="bg-purple-50 rounded-xl p-3 col-span-2">
-            <div className="text-xs text-purple-600 font-medium mb-1">Top Restaurant</div>
-            <div className="text-sm font-bold text-purple-700 truncate">
+          <div className="bg-white/10 rounded-xl p-3 col-span-2 border border-white/20">
+            <div className="text-xs text-purple-300 font-medium mb-1">Top Restaurant</div>
+            <div className="text-sm font-bold text-purple-200 truncate">
               {weeklyStats.mostFrequentRestaurant}
               {weeklyStats.mostFrequentRestaurantCount > 1 && (
                 <span className="text-xs font-normal ml-1">
@@ -319,14 +319,14 @@ export default function FoodHistory({ userId, refreshTrigger }: FoodHistoryProps
         </div>
       ) : (
         <div className="text-center py-4 mb-6">
-          <p className="text-xs text-red-600">Failed to load weekly insights</p>
+          <p className="text-xs text-red-400">Failed to load weekly insights</p>
         </div>
       )}
 
       {/* Recent Meals Section */}
-      <div className="border-t border-gray-100 pt-6">
-        <h3 className="text-sm font-medium text-gray-700 mb-4 flex items-center gap-2">
-          <History className="w-4 h-4 text-gray-500" />
+      <div className="border-t border-white/20 pt-6">
+        <h3 className="text-sm font-medium text-gray-200 mb-4 flex items-center gap-2">
+          <History className="w-4 h-4 text-gray-400" />
           Recent Meals (Past 7 Days)
         </h3>
 
@@ -348,41 +348,41 @@ export default function FoodHistory({ userId, refreshTrigger }: FoodHistoryProps
             return (
               <div
                 key={entry.id}
-                className="border border-gray-200 rounded-xl p-4 hover:bg-gray-50 transition-colors duration-200"
+                className="border border-white/20 rounded-xl p-4 hover:bg-white/10 transition-colors duration-200"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
                     {/* Food Description */}
-                    <div className="font-medium text-gray-900 text-sm mb-2 line-clamp-2">
+                    <div className="font-medium text-white text-sm mb-2 line-clamp-2">
                       {entry.food_description}
                     </div>
                     
                     {/* Restaurant and Calories */}
                     <div className="flex items-center gap-4 mb-2">
-                      <div className="flex items-center gap-1 text-xs text-gray-600">
+                      <div className="flex items-center gap-1 text-xs text-gray-300">
                         <MapPin className="w-3 h-3 flex-shrink-0" />
                         <span className="truncate">{entry.restaurant_name}</span>
                       </div>
-                      <div className="flex items-center gap-1 text-xs font-medium text-emerald-600">
+                      <div className="flex items-center gap-1 text-xs font-medium text-emerald-300">
                         <Zap className="w-3 h-3 flex-shrink-0" />
                         <span>{entry.estimated_calories} cal</span>
                       </div>
                     </div>
                     
                     {/* Timestamp */}
-                    <div className="flex items-center gap-1 text-xs text-gray-400">
+                    <div className="flex items-center gap-1 text-xs text-gray-500">
                       <Clock className="w-3 h-3 flex-shrink-0" />
                       <span>{formatDate(entry.created_at)}</span>
                     </div>
 
                     {/* Expanded Details */}
                     {isExpanded && rawApiResponse && (
-                      <div className="mt-4 p-3 bg-gray-50 rounded-lg border">
-                        <h4 className="text-xs font-medium text-gray-700 mb-2 flex items-center gap-1">
+                      <div className="mt-4 p-3 bg-white/10 rounded-lg border border-white/20">
+                        <h4 className="text-xs font-medium text-gray-200 mb-2 flex items-center gap-1">
                           <Eye className="w-3 h-3" />
                           AI Analysis Details
                         </h4>
-                        <div className="text-xs text-gray-600 leading-relaxed max-h-32 overflow-y-auto">
+                        <div className="text-xs text-gray-300 leading-relaxed max-h-32 overflow-y-auto">
                           <div className="whitespace-pre-wrap">{rawApiResponse}</div>
                         </div>
                       </div>
@@ -395,7 +395,7 @@ export default function FoodHistory({ userId, refreshTrigger }: FoodHistoryProps
                     {rawApiResponse && (
                       <button
                         onClick={() => toggleEntryExpansion(entry.id)}
-                        className="flex-shrink-0 p-1 text-gray-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-colors duration-200"
+                        className="flex-shrink-0 p-1 text-gray-500 hover:text-blue-300 hover:bg-blue-900/20 rounded-lg transition-colors duration-200"
                         title={isExpanded ? "Hide details" : "Show details"}
                       >
                         {isExpanded ? (
@@ -410,7 +410,7 @@ export default function FoodHistory({ userId, refreshTrigger }: FoodHistoryProps
                     <button
                       onClick={() => deleteEntry(entry.id)}
                       disabled={deletingId === entry.id}
-                      className="flex-shrink-0 p-1 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="flex-shrink-0 p-1 text-gray-500 hover:text-red-400 hover:bg-red-900/20 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                       title="Delete entry"
                     >
                       {deletingId === entry.id ? (
@@ -427,8 +427,8 @@ export default function FoodHistory({ userId, refreshTrigger }: FoodHistoryProps
         </div>
 
         {/* Footer */}
-        <div className="mt-4 pt-4 border-t border-gray-100">
-          <p className="text-xs text-gray-500 text-center">
+        <div className="mt-4 pt-4 border-t border-white/20">
+          <p className="text-xs text-gray-400 text-center">
             Showing {entries.length} meal{entries.length !== 1 ? 's' : ''} from the past 7 days
           </p>
         </div>
