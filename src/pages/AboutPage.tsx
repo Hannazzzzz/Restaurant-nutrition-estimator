@@ -1,5 +1,5 @@
 import React from 'react';
-import { Heart, Target, Zap } from 'lucide-react';
+import { Heart, Target, Zap, ExternalLink } from 'lucide-react';
 
 export default function AboutPage() {
   return (
@@ -15,30 +15,42 @@ export default function AboutPage() {
           </p>
         </div>
 
-        {/* Content */}
+        {/* Personal Story */}
         <div className="canopy-content rounded-2xl p-8 mb-8">
           <div className="prose prose-lg max-w-none">
             <h2 className="text-2xl font-semibold text-white mb-4 flex items-center gap-2">
               <Heart className="w-6 h-6 text-emerald-300" />
-              Why I Built This
+              Hey! I'm Hanna
             </h2>
             
             <p className="text-gray-200 mb-6">
-              Traditional calorie tracking apps work great for packaged foods and chain restaurants, 
-              but they fall short when it comes to independent restaurants, ethnic cuisines, and 
-              local establishments. I found myself constantly frustrated trying to estimate calories 
-              for my favorite local spots.
+              I built this as a fun experiment for the{' '}
+              <a 
+                href="https://worldslargesthackathon.devpost.com/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-emerald-300 hover:text-emerald-200 underline inline-flex items-center gap-1"
+              >
+                World's Largest Hackathon
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            </p>
+
+            <p className="text-gray-200 mb-6">
+              I kept hearing people say they wanted to be aware of restaurant calories but hated traditional tracking apps - they felt too obsessive and medical. So I wondered: what if nutrition awareness could feel more like pushing through a jungle to find clarity?
+            </p>
+
+            <p className="text-gray-200 mb-6">
+              Canøpy uses AI to estimate restaurant calories conversationally, with a psychology-first approach. It's not perfect (restaurant data is surprisingly tricky!), but it's designed for people who want mindful eating without the app anxiety.
             </p>
 
             <h2 className="text-2xl font-semibold text-white mb-4 flex items-center gap-2">
               <Target className="w-6 h-6 text-emerald-300" />
-              The Solution
+              The Psychology-First Approach
             </h2>
             
             <p className="text-gray-200 mb-6">
-              canøpy uses AI to analyze restaurant dishes by researching actual menus, ingredients, 
-              and preparation methods. Instead of generic estimates, you get informed calculations 
-              based on real restaurant data and typical portion sizes.
+              Traditional nutrition apps look like medical software and often trigger obsessive behaviors. Canøpy feels organic and calming - like discovering hidden insights in a magical jungle canopy. The goal is mindful awareness, not anxious tracking.
             </p>
 
             <h2 className="text-2xl font-semibold text-white mb-4 flex items-center gap-2">
@@ -54,22 +66,41 @@ export default function AboutPage() {
             </ul>
 
             <div className="bg-white/10 rounded-xl p-6 mt-8 border border-white/20">
-              <p className="text-emerald-300 text-center font-medium">
-                Built during a 25-day hackathon challenge using Bolt.new, React, and AI APIs
+              <h3 className="text-lg font-semibold text-white mb-3">Want to follow the journey?</h3>
+              <p className="text-gray-200 mb-4">
+                I've documented the whole process at:
+              </p>
+              <div className="space-y-2">
+                <a 
+                  href="https://github.com/Hannazzzzz/Restaurant-nutrition-estimator/blob/main/README.md" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-emerald-300 hover:text-emerald-200 underline inline-flex items-center gap-1 block"
+                >
+                  GitHub Repository & Development Log
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+                <a 
+                  href="https://hannazoon.wordpress.com" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-emerald-300 hover:text-emerald-200 underline inline-flex items-center gap-1 block"
+                >
+                  hannazoon.wordpress.com
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              </div>
+            </div>
+
+            <div className="bg-emerald-900/20 rounded-xl p-6 mt-8 border border-emerald-500/30">
+              <p className="text-emerald-200 text-center font-medium">
+                Built with 🌿 in Copenhagen during June 2025
+              </p>
+              <p className="text-emerald-300 text-center text-sm mt-2">
+                30-day hackathon challenge using Bolt.new, React, and AI APIs
               </p>
             </div>
           </div>
-        </div>
-
-        {/* Placeholder for your personal text */}
-        <div className="canopy-content rounded-2xl p-8">
-          <h2 className="text-2xl font-semibold text-white mb-4">
-            About the Creator
-          </h2>
-          <p className="text-gray-200 italic">
-            [Your personal background text will go here - please provide the final text 
-            you'd like to include about yourself and your motivation for building this project]
-          </p>
         </div>
       </div>
     </div>
