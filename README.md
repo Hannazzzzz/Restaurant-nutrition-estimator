@@ -1,26 +1,77 @@
-# **canøpy** 
-Your Restaurant Nutrition Estimator
+# Canøpy 🌿
+**Your mindful guide through the restaurant jungle**
 
-AI-powered conversational tool for estimating nutritional values at restaurants, especially independent and ethnic establishments.
+Psychology-conscious restaurant nutrition estimator built during World's Largest Hackathon 2025.
 
-## The Problem
-- 62% of users complain about missing local restaurants in calorie apps
-- 35-50% estimation errors for independent/ethnic restaurants
-- Current apps create food obsession (71% develop disordered eating patterns)
+## 🎯 The Problem We Didn't Know We Needed To Solve
 
-## The Solution
-Conversational calorie estimation focused on restaurants with mindful logging approach.
+**62% of nutrition app users** complain about missing restaurant data, but the real issue runs deeper. **71% develop disordered eating patterns** from obsessive calorie tracking. I discovered three user types completely abandoned by existing apps:
 
-## Tech Stack
-- Bolt.new + React/Next.js
-- Claude Sonnet 4 - conversational project management and engineering coaching
-- USDA FoodData Central API
-- Perplexity Sonar API - conversational restaurant calorie estimation. Upgraded to 750 max_tokens for comprehensive restaurant research
-- Environment variables - Secure API key management in Bolt.new
-- Raw response debugging - Quality control and transparency features
-- Markdown rendering - For proper formatting of AI responses
-- Supabase - database for food entries
+- **ED Recovery users**: *"Since my eating disorder I try to avoid everything that has to do with food tracking... But I think it has potential!"*
+- **Insight Seekers**: *"Some insights would be nice... it is sometimes very surprising what things make or break your diet"*  
+- **Diet Philosophy followers**: Want restaurant guidance without calorie obsession
 
+## 🌱 What I Built
+
+Conversational restaurant calorie estimation with a psychology-first approach:
+
+- **Natural input**: "pad thai with chicken from the place downtown"
+- **3-phase AI system**: Restaurant discovery → Dish analysis → Modifications  
+- **Jungle aesthetic**: Nature-inspired UI reducing app anxiety
+- **Dual interface**: Beautiful customer UI vs debug mode (?debug=true)
+
+## 🛠 Technical Reality
+
+**AI Integration Journey**: Started wanting perfect accuracy, learned that "good enough" builds trust better than black-box precision. Struggled with LLM API reliability - Perplexity sometimes misses obvious Copenhagen restaurants that Google finds instantly. The 3-phase approach works but isn't as smooth as I'd wish.
+
+**Current Stack**:
+- **Frontend**: React/Tailwind on Bolt.new  
+- **Database**: Supabase with comprehensive tracking
+- **AI**: Perplexity + Google Custom Search hybrid
+- **Design**: Pure CSS jungle with glassmorphism
+- **Domain**: Custom IONOS domain via Entri integration
+
+## 🎨 Design Philosophy
+
+**"We Didn't Know We Needed This"**: Nutrition apps look like medical software. Canøpy feels like pushing through jungle foliage to find clarity - organic, calming, with hidden fireflies and light beams. The Danish ø connects to Copenhagen's restaurant scene.
+
+## 👥 User Validation
+
+Three distinct archetypes all confirmed the restaurant estimation gap, but each needs different psychology-conscious approaches. Traditional apps actively drive these users away - we're serving the abandoned market.
+
+## 🚀 Live Demos
+
+- **Customer Interface**: https://splendorous-manatee-3eb978.netlify.app/
+- **Debug Interface**: https://splendorous-manatee-3eb978.netlify.app/?debug=true  
+- **Custom Domain**: [Coming after Entri setup]
+
+## 🏆 Hackathon Categories
+
+- **Uniquely Useful Tool**: Psychology-conscious users no competitor serves
+- **Creative Use of AI**: 3-phase conversational analysis  
+- **Most Beautiful UI**: Jungle aesthetic vs sterile nutrition apps
+- **Future Unicorn**: $6B+ market with validated underserved archetypes
+- **We Didn't Know We Needed This**: Anti-obsession nutrition awareness
+- **Custom Domain Challenge**: IONOS domain via Entri integration
+- **Deploy Challenge**: Netlify deployment
+- **Top Build-in-Public Journey**: Daily logs below, and blog on hannazoon.wordpress.com
+
+## 📊 The Opportunity
+
+**Global nutrition app market**: $6.05B → $17.4B by 2035  
+**Psychology-conscious gap**: 71% abandon traditional apps  
+**Restaurant accuracy problem**: 35-50% errors for independent restaurants
+
+## 🌿 Built in Copenhagen
+
+Created with systematic user validation, evidence-based decisions, and honest assessment of limitations. Sometimes shipping something real beats perfecting something imaginary.
+
+---
+
+**Built with Bolt** ⚡ [bolt.new](https://bolt.new/)
+
+*Canøpy - Where mindful eating meets jungle aesthetics*
+---
 ## Daily Progress
 - **Day 1: Market research and strategic positioning** - Dove deep into the calorie tracking market and discovered the restaurant estimation gap is huge (see research files in repo). Found that 62% of users complain about missing local restaurants while existing apps focus on packaged foods and chains. Tested USDA FoodData Central API - 1,000 free requests/hour should be plenty for MVP testing. Also set up project voice guidelines and hackathon strategy docs to keep the 25-day timeline realistic. Main insight: positioning as "restaurant calorie estimator" rather than "another MyFitnessPal clone" gives us actual differentiation in a crowded market.
 - **Day 2: Technical foundation and reality check** - Got the Bolt.new app working and deployed to Netlify (https://splendorous-manatee-3eb978.netlify.app/). Hit a wall with Claude API integration, but the fallback data-based estimation system actually proved the thesis: recognizes McDonald's fries easily but struggles with more exotic restaurant items. No LLM API sponsors found in hackathon docs, so we'll stick with validation using the current system and add real AI later. 
