@@ -19,11 +19,6 @@ function AppContent() {
   const isDebugMode = urlParams.get('debug') === 'true';
   const isDarkMode = urlParams.get('dark') === 'true';
 
-  // If user is not logged in, show login page
-  if (!isLoggedIn) {
-    return <LoginPage />;
-  }
-
   return (
     <div className="min-h-screen">
       <Navbar onMenuClick={() => setSidebarOpen(true)} />
@@ -31,9 +26,20 @@ function AppContent() {
       
       <main className="pt-16">
         <Routes>
-          <Route path="/login" element={<Navigate to="/" replace />} />
-          <Route path="/weekly-analysis" element={<WeeklyAnalysisPage />} />
+          {/* Login page - only accessible when not logged in */}
+          <Route path="/login" element={
+            isLoggedIn ? <Navigate to="/" replace /> : <LoginPage />
+          } />
+          
+          {/* Protected routes - require login */}
+          <Route path="/weekly-analysis" element={
+            isLoggedIn ? <WeeklyAnalysisPage /> : <Navigate to="/login" replace />
+          } />
+          
+          {/* Public routes */}
           <Route path="/about" element={<AboutPage />} />
+          
+          {/* Main food input page - accessible to everyone */}
           <Route path="/" element={
             isDarkMode ? <SciFiEstimator /> : 
             isDebugMode ? <CalorieEstimator /> : 

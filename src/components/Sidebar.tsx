@@ -21,22 +21,22 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       {/* Backdrop */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-black/50 z-40"
+          className="fixed inset-0 bg-black/60 z-40 backdrop-blur-sm"
           onClick={onClose}
         />
       )}
 
       {/* Sidebar */}
-      <div className={`fixed top-0 left-0 h-full w-80 bg-white shadow-xl z-50 transform transition-transform duration-300 ease-in-out ${
+      <div className={`fixed top-0 left-0 h-full w-80 bg-gradient-to-b from-emerald-900/95 to-teal-900/95 backdrop-blur-xl shadow-2xl z-50 transform transition-transform duration-300 ease-in-out border-r border-white/10 ${
         isOpen ? 'translate-x-0' : '-translate-x-full'
       }`}>
         <div className="flex flex-col h-full">
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-900">Menu</h2>
+          <div className="flex items-center justify-between p-6 border-b border-white/20">
+            <h2 className="text-xl font-playfair font-semibold text-white">Menu</h2>
             <button
               onClick={onClose}
-              className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+              className="p-2 text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors duration-200"
               aria-label="Close menu"
             >
               <X className="w-5 h-5" />
@@ -45,31 +45,31 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
           {/* User Info */}
           {isLoggedIn && (
-            <div className="p-4 bg-emerald-50 border-b border-gray-200">
+            <div className="p-6 bg-white/10 border-b border-white/20">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
-                  <User className="w-5 h-5 text-emerald-600" />
+                <div className="w-12 h-12 bg-emerald-600/30 rounded-full flex items-center justify-center border border-emerald-400/30">
+                  <User className="w-6 h-6 text-emerald-300" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Logged in as</p>
-                  <p className="font-medium text-gray-900">{username}</p>
+                  <p className="text-sm text-gray-300">Logged in as</p>
+                  <p className="font-medium text-white">{username}</p>
                 </div>
               </div>
             </div>
           )}
 
           {/* Navigation Links */}
-          <nav className="flex-1 p-4">
-            <ul className="space-y-2">
+          <nav className="flex-1 p-6">
+            <ul className="space-y-3">
               {/* Login/Logout */}
               {isLoggedIn ? (
                 <li>
                   <button
                     onClick={handleLogout}
-                    className="w-full flex items-center gap-3 px-3 py-2 text-left text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+                    className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-200 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-200 border border-transparent hover:border-white/20"
                   >
                     <LogOut className="w-5 h-5" />
-                    Log Out
+                    <span className="font-medium">Log Out</span>
                   </button>
                 </li>
               ) : (
@@ -77,10 +77,10 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                   <Link
                     to="/login"
                     onClick={onClose}
-                    className="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+                    className="flex items-center gap-3 px-4 py-3 text-gray-200 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-200 border border-transparent hover:border-white/20"
                   >
                     <LogIn className="w-5 h-5" />
-                    Log In
+                    <span className="font-medium">Log In</span>
                   </Link>
                 </li>
               )}
@@ -91,10 +91,10 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                   <Link
                     to="/weekly-analysis"
                     onClick={onClose}
-                    className="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+                    className="flex items-center gap-3 px-4 py-3 text-gray-200 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-200 border border-transparent hover:border-white/20"
                   >
                     <TrendingUp className="w-5 h-5" />
-                    Weekly Analysis
+                    <span className="font-medium">Weekly Analysis</span>
                   </Link>
                 </li>
               )}
@@ -104,20 +104,33 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                 <Link
                   to="/about"
                   onClick={onClose}
-                  className="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+                  className="flex items-center gap-3 px-4 py-3 text-gray-200 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-200 border border-transparent hover:border-white/20"
                 >
                   <Info className="w-5 h-5" />
-                  About
+                  <span className="font-medium">About</span>
                 </Link>
               </li>
             </ul>
           </nav>
 
+          {/* Decorative Elements */}
+          <div className="relative px-6 py-4">
+            {/* Small decorative leaves */}
+            <div className="absolute top-2 left-8 w-4 h-3 bg-emerald-400/30 rounded-full transform rotate-12"></div>
+            <div className="absolute top-6 right-12 w-3 h-2 bg-teal-400/30 rounded-full transform -rotate-6"></div>
+            <div className="absolute bottom-8 left-12 w-5 h-3 bg-emerald-500/20 rounded-full transform rotate-45"></div>
+          </div>
+
           {/* Footer */}
-          <div className="p-4 border-t border-gray-200">
-            <p className="text-xs text-gray-500 text-center">
-              canøpy - Restaurant Nutrition Estimator
-            </p>
+          <div className="p-6 border-t border-white/20 bg-white/5">
+            <div className="text-center">
+              <p className="text-sm font-playfair text-emerald-200 mb-1">
+                canøpy
+              </p>
+              <p className="text-xs text-gray-400">
+                Restaurant Nutrition Estimator
+              </p>
+            </div>
           </div>
         </div>
       </div>
