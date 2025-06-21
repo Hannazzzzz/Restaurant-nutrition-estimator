@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Check, Loader2 } from 'lucide-react';
 import { estimateCalories } from '../utils/calorieEstimator';
-import { getUserId } from '../utils/userUtils';
 
 export default function CustomerFacingEstimator() {
   const [userInput, setUserInput] = useState('');
@@ -918,20 +917,6 @@ export default function CustomerFacingEstimator() {
       <div className="light-beam beam-2"></div>
       <div className="light-beam beam-3"></div>
       <div className="light-beam beam-4"></div>
-
-      {/* Built with Bolt Badge */}
-      <a
-        href="https://bolt.new/"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="absolute top-4 right-4 z-20 hover:scale-105 transition-transform duration-200"
-      >
-        <img
-          src="/black_circle_360x360.png"
-          alt="Built with Bolt"
-          className="w-12 h-12 md:w-16 md:h-16"
-        />
-      </a>
 
       {/* Main Content - Moved up and reduced subtitle size */}
       <div className="flex items-center justify-center min-h-screen p-4 relative z-10" style={{ paddingTop: '2rem' }}>

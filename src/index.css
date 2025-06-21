@@ -22,6 +22,21 @@ body {
   font-family: var(--font-montserrat);
 }
 
+/* Navbar Styles */
+.navbar-gradient {
+  background: linear-gradient(135deg, #065f46 0%, #047857 50%, #059669 100%);
+}
+
+/* Sidebar Styles */
+.sidebar-backdrop {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.sidebar-panel {
+  background: white;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
 /* Canopy Theme Base - Darker with Blue Tones */
 .canopy-theme {
   position: relative;
@@ -76,7 +91,7 @@ body {
 }
 
 .leaf-color-2 {
-  background: linear-gradient(45deg, #0f3d26 0%, #1e5631 50%, #3d7c47 100%);
+  background: linear-gradient(45deg, #0f3d26 0%, #1e5631 50%, #3d7c47  100%);
 }
 
 .leaf-color-3 {

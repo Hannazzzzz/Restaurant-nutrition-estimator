@@ -5,11 +5,12 @@ import { estimateCalories } from '../utils/calorieEstimator';
 import { testSupabaseConnection, supabase } from '../lib/supabase';
 import { testGoogleSearch } from '../utils/googleSearchApi';
 import { testPerplexityAPI } from '../utils/perplexityApi';
-import { getUserId } from '../utils/userUtils';
+import { useAuth } from '../context/AuthContext';
 import { RestaurantDiscoveryResult } from '../types';
 import FoodHistory from './FoodHistory';
 
 export default function CalorieEstimator() {
+  const { username } = useAuth();
   const [userInput, setUserInput] = useState('');
   const [discoveryResult, setDiscoveryResult] = useState<RestaurantDiscoveryResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -187,20 +188,6 @@ export default function CalorieEstimator() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50 p-4 relative">
-      {/* Built with Bolt Badge */}
-      <a
-        href="https://bolt.new/"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="absolute top-4 right-4 z-10 hover:scale-105 transition-transform duration-200"
-      >
-        <img
-          src="/black_circle_360x360.png"
-          alt="Built with Bolt"
-          className="w-12 h-12 md:w-16 md:h-16"
-        />
-      </a>
-
       <div className="max-w-md mx-auto">
         {/* Header */}
         <div className="text-center mb-8 pt-8">
@@ -538,7 +525,7 @@ Examples:
         {/* Food History Section */}
         <div className="mb-6">
           <FoodHistory 
-            userId={getUserId()} 
+            userId={username || undefined} 
             refreshTrigger={historyRefreshTrigger}
           />
         </div>

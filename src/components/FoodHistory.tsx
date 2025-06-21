@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { History, Clock, MapPin, Zap, RefreshCw, Trash2, TrendingUp, Calendar, ChevronDown, ChevronUp, Eye } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import { getUserId } from '../utils/userUtils';
+import { useAuth } from '../context/AuthContext';
 
 interface FoodEntry {
   id: string;
@@ -28,6 +28,7 @@ interface FoodHistoryProps {
 }
 
 export default function FoodHistory({ userId, refreshTrigger }: FoodHistoryProps) {
+  const { username } = useAuth();
   const [entries, setEntries] = useState<FoodEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -36,15 +37,19 @@ export default function FoodHistory({ userId, refreshTrigger }: FoodHistoryProps
   const [statsLoading, setStatsLoading] = useState(true);
   const [expandedEntries, setExpandedEntries] = useState<Set<string>>(new Set());
 
-  // Use the centralized getUserId if no userId prop is provided
-  const effectiveUserId = userId || getUserId();
+  // Use the username from auth context, fallback to userId prop
+  const effectiveUserId = username || userId;
 
   useEffect(() => {
-    loadEntries();
-    loadWeeklyStats();
+    if (effectiveUserId) {
+      loadEntries();
+      loadWeeklyStats();
+    }
   }, [effectiveUserId, refreshTrigger]);
 
   async function loadEntries() {
+    if (!effectiveUserId) return;
+    
     try {
       setLoading(true);
       setError(null);
@@ -74,6 +79,8 @@ export default function FoodHistory({ userId, refreshTrigger }: FoodHistoryProps
   }
 
   async function loadWeeklyStats() {
+    if (!effectiveUserId) return;
+    
     try {
       setStatsLoading(true);
       
@@ -144,6 +151,8 @@ export default function FoodHistory({ userId, refreshTrigger }: FoodHistoryProps
   }
 
   async function deleteEntry(entryId: string) {
+    if (!effectiveUserId) return;
+    
     try {
       setDeletingId(entryId);
       

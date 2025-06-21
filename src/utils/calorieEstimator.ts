@@ -1,7 +1,8 @@
 import { CalorieEstimate, RestaurantDiscoveryResult } from '../types';
 import { callPerplexityAPI } from './perplexityApi';
 import { supabase } from '../lib/supabase';
-import { getUserId } from './userUtils';
+import { useAuth } from '../context/AuthContext';
+import { getUsername } from './userUtils';
 
 function parseRestaurantInfo(response: string) {
   // Extract restaurant name, menu item, description, and ingredient source from restaurant discovery
@@ -71,13 +72,18 @@ function parseModificationAnalysis(response: string) {
 // Enhanced database save function with new schema fields
 async function saveToDatabase(result: RestaurantDiscoveryResult) {
   try {
+    const username = getUsername();
+    if (!username) {
+      throw new Error('No username found - user must be logged in');
+    }
+
     const finalCalories = result.finalCalories || parseInt(result.standardCalories || '0') || 0;
     
     const { data, error } = await supabase
       .from('food_entries')
       .insert([
         {
-          user_id: getUserId(),
+          user_id: username,
           restaurant_name: result.restaurant,
           food_description: result.originalInput,
           estimated_calories: finalCalories,
