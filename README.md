@@ -29,7 +29,6 @@ Conversational restaurant calorie estimation with a psychology-first approach:
 - **Database**: Supabase with comprehensive tracking
 - **AI**: Perplexity + Google Custom Search hybrid
 - **Design**: Pure CSS jungle with glassmorphism
-- **Domain**: Custom IONOS domain via Entri integration
 
 ## 🎨 Design Philosophy
 
@@ -43,7 +42,6 @@ Three distinct archetypes all confirmed the restaurant estimation gap, but each 
 
 - **Customer Interface**: https://splendorous-manatee-3eb978.netlify.app/
 - **Debug Interface**: https://splendorous-manatee-3eb978.netlify.app/?debug=true  
-- **Custom Domain**: [Coming after Entri setup]
 
 ## 🏆 Hackathon Categories
 
@@ -52,7 +50,6 @@ Three distinct archetypes all confirmed the restaurant estimation gap, but each 
 - **Most Beautiful UI**: Jungle aesthetic vs sterile nutrition apps
 - **Future Unicorn**: $6B+ market with validated underserved archetypes
 - **We Didn't Know We Needed This**: Anti-obsession nutrition awareness
-- **Custom Domain Challenge**: IONOS domain via Entri integration
 - **Deploy Challenge**: Netlify deployment
 - **Top Build-in-Public Journey**: Daily logs below, and blog on [hannazoon.wordpress.com](hannazoon.wordpress.com)
 
