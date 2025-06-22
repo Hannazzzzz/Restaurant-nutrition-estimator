@@ -101,6 +101,7 @@ export default function LoginPage() {
             <p className="text-sm text-gray-300">
               <strong>Note:</strong> Your username is stored locally on this device. 
               You can use any username you like - no password required for this demo.
+              "Find Existing Account\" will log you in with the username you've entered if it was previously used on this device.
             </p>
           </div>
         </div>
