@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { Calculator, Utensils, TrendingUp, AlertCircle, Database, MapPin, CheckCircle, XCircle, Edit3, Zap, Search, Brain } from 'lucide-react';
+import { Calculator, Utensils, TrendingUp, AlertCircle, Database, MapPin, CheckCircle, XCircle, Edit3, Zap, Search, Brain, User, Trash2 } from 'lucide-react';
 import { estimateCalories } from '../utils/calorieEstimator';
 import { testSupabaseConnection, supabase } from '../lib/supabase';
 import { testGoogleSearch } from '../utils/googleSearchApi';
 import { testPerplexityAPI } from '../utils/perplexityApi';
+import { insertDemoData, clearUserData, DemoDataResult } from '../utils/demoDataUtils';
 import { useAuth } from '../context/AuthContext';
 import { RestaurantDiscoveryResult } from '../types';
-import FoodHistory from './FoodHistory';
+import RecentMealsList from './RecentMealsList';
 
 export default function CalorieEstimator() {
-  const { username } = useAuth();
+  const { username, login } = useAuth();
   const [userInput, setUserInput] = useState('');
   const [discoveryResult, setDiscoveryResult] = useState<RestaurantDiscoveryResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -23,6 +24,15 @@ export default function CalorieEstimator() {
   const [isTestingGoogle, setIsTestingGoogle] = useState(false);
   const [perplexityTestResult, setPerplexityTestResult] = useState<{ success: boolean; message: string; response?: string } | null>(null);
   const [isTestingPerplexity, setIsTestingPerplexity] = useState(false);
+
+  // Demo data states
+  const [demoUsername, setDemoUsername] = useState('');
+  const [isSettingUsername, setIsSettingUsername] = useState(false);
+  const [usernameSetResult, setUsernameSetResult] = useState<{ success: boolean; message: string } | null>(null);
+  const [isInsertingDemoData, setIsInsertingDemoData] = useState(false);
+  const [demoDataResult, setDemoDataResult] = useState<DemoDataResult | null>(null);
+  const [isClearingData, setIsClearingData] = useState(false);
+  const [clearDataResult, setClearDataResult] = useState<DemoDataResult | null>(null);
 
   // Test database connection on component mount
   useEffect(() => {
@@ -137,6 +147,97 @@ export default function CalorieEstimator() {
     }
   };
 
+  // Username setting function
+  const handleSetUsername = async () => {
+    if (!demoUsername.trim()) {
+      setUsernameSetResult({
+        success: false,
+        message: 'Please enter a username'
+      });
+      return;
+    }
+
+    setIsSettingUsername(true);
+    setUsernameSetResult(null);
+
+    try {
+      // Simulate a brief loading state
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      login(demoUsername.trim());
+      
+      setUsernameSetResult({
+        success: true,
+        message: `Username set to: ${demoUsername.trim()}`
+      });
+      
+      setDemoUsername(''); // Clear input
+    } catch (err) {
+      setUsernameSetResult({
+        success: false,
+        message: 'Failed to set username'
+      });
+    } finally {
+      setIsSettingUsername(false);
+    }
+  };
+
+  // Demo data insertion function
+  const handleInsertDemoData = async () => {
+    const targetUserId = username || 'demo-user';
+    
+    setIsInsertingDemoData(true);
+    setDemoDataResult(null);
+    
+    try {
+      const result = await insertDemoData(targetUserId);
+      setDemoDataResult(result);
+      
+      if (result.success) {
+        // Refresh the recent meals list
+        setHistoryRefreshTrigger(prev => prev + 1);
+      }
+    } catch (err) {
+      setDemoDataResult({
+        success: false,
+        message: 'Failed to insert demo data',
+        error: err instanceof Error ? err.message : 'Unknown error'
+      });
+    } finally {
+      setIsInsertingDemoData(false);
+    }
+  };
+
+  // Clear user data function
+  const handleClearUserData = async () => {
+    const targetUserId = username || 'demo-user';
+    
+    if (!confirm(`Are you sure you want to clear all data for user "${targetUserId}"? This action cannot be undone.`)) {
+      return;
+    }
+    
+    setIsClearingData(true);
+    setClearDataResult(null);
+    
+    try {
+      const result = await clearUserData(targetUserId);
+      setClearDataResult(result);
+      
+      if (result.success) {
+        // Refresh the recent meals list
+        setHistoryRefreshTrigger(prev => prev + 1);
+      }
+    } catch (err) {
+      setClearDataResult({
+        success: false,
+        message: 'Failed to clear user data',
+        error: err instanceof Error ? err.message : 'Unknown error'
+      });
+    } finally {
+      setIsClearingData(false);
+    }
+  };
+
   const handleEstimate = async () => {
     if (!userInput.trim()) return;
     
@@ -187,10 +288,10 @@ export default function CalorieEstimator() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50 p-4 relative">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50 p-4 relative pt-20">
       <div className="max-w-md mx-auto">
         {/* Header */}
-        <div className="text-center mb-8 pt-8">
+        <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-emerald-100 rounded-full mb-4">
             <Utensils className="w-8 h-8 text-emerald-600" />
           </div>
@@ -201,6 +302,151 @@ export default function CalorieEstimator() {
             <p className="text-xs text-yellow-700">
               🔧 Debug Mode - <a href="/" className="underline hover:text-yellow-800">Switch to Customer UI</a>
             </p>
+          </div>
+        </div>
+
+        {/* Demo Data Management Section */}
+        <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+          <h3 className="text-sm font-medium text-gray-700 mb-3">
+            Demo Data Management
+          </h3>
+          
+          <div className="space-y-4">
+            {/* Current User Display */}
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-3">
+              <div className="flex items-center gap-2 text-blue-700 mb-1">
+                <User className="w-4 h-4" />
+                <span className="text-xs font-medium">Current User</span>
+              </div>
+              <p className="text-sm font-semibold text-blue-800">
+                {username || 'No user set'}
+              </p>
+            </div>
+
+            {/* Username Setting */}
+            <div>
+              <div className="flex gap-2 mb-2">
+                <input
+                  type="text"
+                  value={demoUsername}
+                  onChange={(e) => setDemoUsername(e.target.value)}
+                  placeholder="Enter username (e.g., demo-user)"
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                  disabled={isSettingUsername}
+                />
+                <button
+                  onClick={handleSetUsername}
+                  disabled={isSettingUsername || !demoUsername.trim()}
+                  className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 flex items-center gap-2"
+                >
+                  {isSettingUsername ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      Setting...
+                    </>
+                  ) : (
+                    <>
+                      <User className="w-4 h-4" />
+                      Set Username
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {usernameSetResult && (
+                <div className={`p-2 rounded-lg border text-xs ${
+                  usernameSetResult.success 
+                    ? 'bg-green-50 border-green-200 text-green-700' 
+                    : 'bg-red-50 border-red-200 text-red-700'
+                }`}>
+                  {usernameSetResult.success ? '✅' : '❌'} {usernameSetResult.message}
+                </div>
+              )}
+            </div>
+
+            {/* Demo Data Actions */}
+            <div className="flex gap-2">
+              <button
+                onClick={handleInsertDemoData}
+                disabled={isInsertingDemoData}
+                className="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
+              >
+                {isInsertingDemoData ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    Inserting...
+                  </>
+                ) : (
+                  <>
+                    <Database className="w-4 h-4" />
+                    Populate Demo Data
+                  </>
+                )}
+              </button>
+
+              <button
+                onClick={handleClearUserData}
+                disabled={isClearingData}
+                className="flex-1 bg-red-600 hover:bg-red-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
+              >
+                {isClearingData ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    Clearing...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="w-4 h-4" />
+                    Clear Data
+                  </>
+                )}
+              </button>
+            </div>
+
+            {/* Demo Data Results */}
+            {demoDataResult && (
+              <div className={`p-3 rounded-xl border ${
+                demoDataResult.success 
+                  ? 'bg-green-50 border-green-200 text-green-700' 
+                  : 'bg-red-50 border-red-200 text-red-700'
+              }`}>
+                <div className="flex items-center gap-2">
+                  <Database className="w-4 h-4" />
+                  <span className="text-xs font-medium">
+                    {demoDataResult.success ? '✅ Demo Data Inserted' : '❌ Demo Data Failed'}
+                  </span>
+                </div>
+                <p className="text-xs mt-1">{demoDataResult.message}</p>
+                {demoDataResult.error && (
+                  <p className="text-xs mt-1 opacity-75">{demoDataResult.error}</p>
+                )}
+                {demoDataResult.entriesInserted && (
+                  <p className="text-xs mt-1 font-medium">
+                    Inserted {demoDataResult.entriesInserted} entries
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* Clear Data Results */}
+            {clearDataResult && (
+              <div className={`p-3 rounded-xl border ${
+                clearDataResult.success 
+                  ? 'bg-green-50 border-green-200 text-green-700' 
+                  : 'bg-red-50 border-red-200 text-red-700'
+              }`}>
+                <div className="flex items-center gap-2">
+                  <Trash2 className="w-4 h-4" />
+                  <span className="text-xs font-medium">
+                    {clearDataResult.success ? '✅ Data Cleared' : '❌ Clear Failed'}
+                  </span>
+                </div>
+                <p className="text-xs mt-1">{clearDataResult.message}</p>
+                {clearDataResult.error && (
+                  <p className="text-xs mt-1 opacity-75">{clearDataResult.error}</p>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
@@ -522,13 +768,8 @@ Examples:
           </div>
         )}
 
-        {/* Food History Section */}
-        <div className="mb-6">
-          <FoodHistory 
-            userId={username || undefined} 
-            refreshTrigger={historyRefreshTrigger}
-          />
-        </div>
+        {/* Recent Meals List */}
+        <RecentMealsList refreshTrigger={historyRefreshTrigger} />
 
         {/* Footer */}
         <div className="text-center mt-8 pb-8">
