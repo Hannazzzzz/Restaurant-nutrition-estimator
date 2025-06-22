@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { History, Clock, MapPin, Zap, RefreshCw, Trash2, TrendingUp, Calendar, ChevronDown, ChevronUp, Eye } from 'lucide-react';
+import { History, Clock, MapPin, Zap, RefreshCw, Trash2, TrendingUp, Calendar, ChevronDown, ChevronUp, Eye, ArrowRight } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import { sampleFoodEntries } from '../data/sampleData';
@@ -392,13 +392,8 @@ export default function FoodHistory({ userId, refreshTrigger }: FoodHistoryProps
         </div>
       )}
 
-      {/* Recent Meals Section */}
+      {/* Meals Section - Simplified Layout */}
       <div className="border-t border-white/20 pt-6">
-        <h3 className="text-sm font-medium text-gray-200 mb-4 flex items-center gap-2">
-          <History className="w-4 h-4 text-gray-400" />
-          Recent Meals (Past 7 Days)
-        </h3>
-
         {/* Entries List */}
         <div className="space-y-3 max-h-80 overflow-y-auto">
           {entries.map((entry) => {
@@ -419,47 +414,32 @@ export default function FoodHistory({ userId, refreshTrigger }: FoodHistoryProps
                 key={entry.id}
                 className="border border-white/20 rounded-xl p-4 hover:bg-white/10 transition-colors duration-200"
               >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between gap-3">
+                  {/* Single line with all info */}
+                  <div className="flex-1 min-w-0 flex items-center gap-3">
                     {/* Food Description */}
-                    <div className="font-medium text-white text-sm mb-2 line-clamp-2">
+                    <div className="font-medium text-white text-sm truncate">
                       {entry.food_description}
                     </div>
                     
-                    {/* Restaurant and Calories */}
-                    <div className="flex items-center gap-4 mb-2">
-                      <div className="flex items-center gap-1 text-xs text-gray-300">
-                        <MapPin className="w-3 h-3 flex-shrink-0" />
-                        <span className="truncate">{entry.restaurant_name}</span>
-                      </div>
-                      <div className="flex items-center gap-1 text-xs font-medium text-emerald-300">
-                        <Zap className="w-3 h-3 flex-shrink-0" />
-                        <span>{entry.estimated_calories} cal</span>
-                      </div>
+                    {/* Restaurant */}
+                    <div className="text-xs text-gray-300 truncate">
+                      {entry.restaurant_name}
+                    </div>
+                    
+                    {/* Calories */}
+                    <div className="text-xs font-medium text-emerald-300 flex-shrink-0">
+                      {entry.estimated_calories} cal
                     </div>
                     
                     {/* Timestamp */}
-                    <div className="flex items-center gap-1 text-xs text-gray-500">
-                      <Clock className="w-3 h-3 flex-shrink-0" />
-                      <span>{formatDate(entry.created_at)}</span>
+                    <div className="text-xs text-gray-500 flex-shrink-0">
+                      {formatDate(entry.created_at)}
                     </div>
-
-                    {/* Expanded Details */}
-                    {isExpanded && rawApiResponse && (
-                      <div className="mt-4 p-3 bg-white/10 rounded-lg border border-white/20">
-                        <h4 className="text-xs font-medium text-gray-200 mb-2 flex items-center gap-1">
-                          <Eye className="w-3 h-3" />
-                          AI Analysis Details
-                        </h4>
-                        <div className="text-xs text-gray-300 leading-relaxed max-h-32 overflow-y-auto">
-                          <div className="whitespace-pre-wrap">{rawApiResponse}</div>
-                        </div>
-                      </div>
-                    )}
                   </div>
                   
                   {/* Action Buttons */}
-                  <div className="flex flex-col gap-1">
+                  <div className="flex items-center gap-1">
                     {/* Expand/Collapse Button */}
                     {rawApiResponse && (
                       <button
@@ -490,8 +470,24 @@ export default function FoodHistory({ userId, refreshTrigger }: FoodHistoryProps
                         )}
                       </button>
                     )}
+                    
+                    {/* Arrow - Always last */}
+                    <ArrowRight className="w-4 h-4 text-gray-500 flex-shrink-0" />
                   </div>
                 </div>
+
+                {/* Expanded Details */}
+                {isExpanded && rawApiResponse && (
+                  <div className="mt-4 p-3 bg-white/10 rounded-lg border border-white/20">
+                    <h4 className="text-xs font-medium text-gray-200 mb-2 flex items-center gap-1">
+                      <Eye className="w-3 h-3" />
+                      AI Analysis Details
+                    </h4>
+                    <div className="text-xs text-gray-300 leading-relaxed max-h-32 overflow-y-auto">
+                      <div className="whitespace-pre-wrap">{rawApiResponse}</div>
+                    </div>
+                  </div>
+                )}
               </div>
             );
           })}
