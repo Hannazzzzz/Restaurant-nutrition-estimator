@@ -108,17 +108,14 @@ export default function RecentMealsList({ refreshTrigger }: RecentMealsListProps
 
   return (
     <div className="mt-6">
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="text-sm font-medium text-white/70 flex items-center gap-2">
-          <Clock className="w-4 h-4" />
-          Recent Meals
-        </h3>
-        {isDemoMode && (
+      {/* Demo mode indicator only */}
+      {isDemoMode && (
+        <div className="flex justify-end mb-3">
           <span className="text-xs text-yellow-300/80 bg-yellow-500/20 px-2 py-1 rounded-full">
             Demo Mode
           </span>
-        )}
-      </div>
+        </div>
+      )}
       
       <div className="space-y-2">
         {entries.map((entry) => (
@@ -127,27 +124,28 @@ export default function RecentMealsList({ refreshTrigger }: RecentMealsListProps
             onClick={handleEntryClick}
             className="group cursor-pointer transition-all duration-200 hover:bg-white/5 rounded-lg p-3"
           >
-            <div className="flex items-center justify-between">
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <p className="text-white/80 text-sm font-medium truncate">
-                    {entry.food_description}
-                  </p>
-                  <ArrowRight className="w-3 h-3 text-white/40 group-hover:text-white/60 transition-colors duration-200 flex-shrink-0" />
+            {/* Single line with all info and arrow at the end */}
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3 flex-1 min-w-0">
+                {/* Food Description */}
+                <p className="text-white/80 text-sm font-medium truncate">
+                  {entry.food_description}
+                </p>
+                
+                {/* Calories */}
+                <div className="flex items-center gap-1 text-xs text-white/60 flex-shrink-0">
+                  <Zap className="w-3 h-3" />
+                  <span>{entry.estimated_calories} cal</span>
                 </div>
                 
-                <div className="flex items-center gap-3 text-xs text-white/50">
-                  <div className="flex items-center gap-1">
-                    <MapPin className="w-3 h-3" />
-                    <span className="truncate">{entry.restaurant_name}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Zap className="w-3 h-3" />
-                    <span>{entry.estimated_calories} cal</span>
-                  </div>
-                  <span>{formatTimeAgo(entry.created_at)}</span>
-                </div>
+                {/* Time ago */}
+                <span className="text-xs text-white/50 flex-shrink-0">
+                  {formatTimeAgo(entry.created_at)}
+                </span>
               </div>
+              
+              {/* Arrow - always last */}
+              <ArrowRight className="w-3 h-3 text-white/40 group-hover:text-white/60 transition-colors duration-200 flex-shrink-0" />
             </div>
           </div>
         ))}
