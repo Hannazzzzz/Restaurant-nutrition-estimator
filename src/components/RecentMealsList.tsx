@@ -149,18 +149,6 @@ export default function RecentMealsList({ refreshTrigger }: RecentMealsListProps
             </div>
           </div>
         ))}
-        
-        {/* View All Button */}
-        <div
-          onClick={handleEntryClick}
-          className="group cursor-pointer transition-all duration-200 hover:bg-white/5 rounded-lg p-3 border-t border-white/10 mt-3"
-        >
-          <div className="flex items-center justify-center gap-2 text-white/60 group-hover:text-white/80 transition-colors duration-200">
-            <TrendingUp className="w-4 h-4" />
-            <span className="text-sm font-medium">View Weekly Analysis</span>
-            <ArrowRight className="w-3 h-3" />
-          </div>
-        </div>
       </div>
     </div>
   );
