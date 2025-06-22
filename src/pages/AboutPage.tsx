@@ -1,7 +1,10 @@
 import React from 'react';
-import { Heart, Target, Zap, ExternalLink } from 'lucide-react';
+import { Heart, Target, Zap, ExternalLink, Play } from 'lucide-react';
 
 export default function AboutPage() {
+  // Check for demo mode
+  const isDemoMode = window.location.search.includes('demo=true');
+
   return (
     <div className="canopy-theme min-h-screen pt-20 p-4">
       <div className="max-w-3xl mx-auto">
@@ -13,7 +16,41 @@ export default function AboutPage() {
           <p className="text-xl text-gray-300">
             Your AI-powered restaurant nutrition estimator
           </p>
+          {isDemoMode && (
+            <div className="mt-4 inline-flex items-center gap-2 bg-yellow-500/20 text-yellow-300 px-4 py-2 rounded-full">
+              <Play className="w-4 h-4" />
+              <span className="text-sm font-medium">You're viewing the demo version</span>
+            </div>
+          )}
         </div>
+
+        {/* Demo Mode Notice */}
+        {isDemoMode && (
+          <div className="canopy-content rounded-2xl p-6 mb-8 border-l-4 border-yellow-400">
+            <h2 className="text-xl font-semibold text-yellow-300 mb-3 flex items-center gap-2">
+              <Play className="w-5 h-5" />
+              Demo Mode Active
+            </h2>
+            <p className="text-gray-200 mb-4">
+              You're currently viewing canøpy with sample data from Copenhagen restaurants. This demonstrates how the app works with realistic food entries and weekly analytics.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <a 
+                href="/" 
+                className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg transition-colors duration-200"
+              >
+                Try Live Version
+              </a>
+              <a 
+                href="/?demo=true" 
+                className="inline-flex items-center gap-2 bg-yellow-600/20 hover:bg-yellow-600/30 text-yellow-300 px-4 py-2 rounded-lg transition-colors duration-200"
+              >
+                <Play className="w-4 h-4" />
+                Continue Demo
+              </a>
+            </div>
+          </div>
+        )}
 
         {/* Personal Story */}
         <div className="canopy-content rounded-2xl p-8 mb-8">
@@ -102,6 +139,26 @@ export default function AboutPage() {
             </div>
           </div>
         </div>
+
+        {/* Demo Mode Links */}
+        {!isDemoMode && (
+          <div className="canopy-content rounded-2xl p-6 mb-8">
+            <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+              <Play className="w-5 h-5 text-blue-300" />
+              Try the Demo
+            </h3>
+            <p className="text-gray-200 mb-4">
+              Want to see canøpy in action with sample data? Check out the demo version with realistic Copenhagen restaurant entries.
+            </p>
+            <a 
+              href="/?demo=true" 
+              className="inline-flex items-center gap-2 bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 px-4 py-2 rounded-lg transition-colors duration-200"
+            >
+              <Play className="w-4 h-4" />
+              View Demo Mode
+            </a>
+          </div>
+        )}
       </div>
     </div>
   );

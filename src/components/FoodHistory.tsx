@@ -3,6 +3,7 @@ import ReactMarkdown from 'react-markdown';
 import { History, Clock, MapPin, Zap, RefreshCw, Trash2, TrendingUp, Calendar, ChevronDown, ChevronUp, Eye } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
+import { sampleFoodEntries } from '../data/sampleData';
 
 interface FoodEntry {
   id: string;
@@ -37,15 +38,72 @@ export default function FoodHistory({ userId, refreshTrigger }: FoodHistoryProps
   const [statsLoading, setStatsLoading] = useState(true);
   const [expandedEntries, setExpandedEntries] = useState<Set<string>>(new Set());
 
+  // Check for demo mode
+  const isDemoMode = window.location.search.includes('demo=true');
+
   // Use the username from auth context, fallback to userId prop
   const effectiveUserId = username || userId;
 
   useEffect(() => {
-    if (effectiveUserId) {
+    if (isDemoMode) {
+      loadDemoData();
+    } else if (effectiveUserId) {
       loadEntries();
       loadWeeklyStats();
     }
-  }, [effectiveUserId, refreshTrigger]);
+  }, [effectiveUserId, refreshTrigger, isDemoMode]);
+
+  function loadDemoData() {
+    try {
+      setLoading(true);
+      setStatsLoading(true);
+      setError(null);
+      
+      // Use sample data for demo mode
+      const demoEntries = sampleFoodEntries.map(entry => ({
+        id: entry.id,
+        user_id: entry.user_id,
+        restaurant_name: entry.restaurant_name,
+        food_description: entry.food_description,
+        estimated_calories: entry.estimated_calories,
+        raw_ai_response: entry.raw_ai_response,
+        created_at: entry.created_at
+      }));
+      
+      setEntries(demoEntries);
+      
+      // Calculate demo stats
+      const totalMeals = demoEntries.length;
+      const totalCalories = demoEntries.reduce((sum, entry) => sum + entry.estimated_calories, 0);
+      const averageCaloriesPerDay = Math.round(totalCalories / 7);
+      
+      // Find most frequent restaurant
+      const restaurantCounts: { [key: string]: number } = {};
+      demoEntries.forEach(entry => {
+        const restaurant = entry.restaurant_name;
+        restaurantCounts[restaurant] = (restaurantCounts[restaurant] || 0) + 1;
+      });
+      
+      const mostFrequentRestaurant = Object.keys(restaurantCounts).reduce((a, b) => 
+        restaurantCounts[a] > restaurantCounts[b] ? a : b
+      );
+      
+      setWeeklyStats({
+        totalMeals,
+        totalCalories,
+        averageCaloriesPerDay,
+        mostFrequentRestaurant,
+        mostFrequentRestaurantCount: restaurantCounts[mostFrequentRestaurant]
+      });
+      
+    } catch (err) {
+      console.error('Failed to load demo data:', err);
+      setError('Failed to load demo data');
+    } finally {
+      setLoading(false);
+      setStatsLoading(false);
+    }
+  }
 
   async function loadEntries() {
     if (!effectiveUserId) return;
@@ -151,7 +209,7 @@ export default function FoodHistory({ userId, refreshTrigger }: FoodHistoryProps
   }
 
   async function deleteEntry(entryId: string) {
-    if (!effectiveUserId) return;
+    if (!effectiveUserId || isDemoMode) return;
     
     try {
       setDeletingId(entryId);
@@ -227,8 +285,12 @@ export default function FoodHistory({ userId, refreshTrigger }: FoodHistoryProps
           <p className="text-xs text-red-400 mb-4">{error}</p>
           <button
             onClick={() => {
-              loadEntries();
-              loadWeeklyStats();
+              if (isDemoMode) {
+                loadDemoData();
+              } else {
+                loadEntries();
+                loadWeeklyStats();
+              }
             }}
             className="text-xs bg-red-700 hover:bg-red-800 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200"
           >
@@ -268,22 +330,29 @@ export default function FoodHistory({ userId, refreshTrigger }: FoodHistoryProps
           <h2 className="text-lg font-semibold text-white">
             Weekly Insights
           </h2>
+          {isDemoMode && (
+            <span className="text-xs text-yellow-300/80 bg-yellow-500/20 px-2 py-1 rounded-full ml-2">
+              Demo Mode
+            </span>
+          )}
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1 text-xs text-gray-400">
             <Calendar className="w-3 h-3" />
             <span>Past 7 days</span>
           </div>
-          <button
-            onClick={() => {
-              loadEntries();
-              loadWeeklyStats();
-            }}
-            className="text-xs bg-white/10 hover:bg-white/20 text-gray-300 font-medium py-1 px-3 rounded-lg transition-colors duration-200 flex items-center gap-1"
-          >
-            <RefreshCw className="w-3 h-3" />
-            Refresh
-          </button>
+          {!isDemoMode && (
+            <button
+              onClick={() => {
+                loadEntries();
+                loadWeeklyStats();
+              }}
+              className="text-xs bg-white/10 hover:bg-white/20 text-gray-300 font-medium py-1 px-3 rounded-lg transition-colors duration-200 flex items-center gap-1"
+            >
+              <RefreshCw className="w-3 h-3" />
+              Refresh
+            </button>
+          )}
         </div>
       </div>
 
@@ -406,19 +475,21 @@ export default function FoodHistory({ userId, refreshTrigger }: FoodHistoryProps
                       </button>
                     )}
                     
-                    {/* Delete Button */}
-                    <button
-                      onClick={() => deleteEntry(entry.id)}
-                      disabled={deletingId === entry.id}
-                      className="flex-shrink-0 p-1 text-gray-500 hover:text-red-400 hover:bg-red-900/20 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                      title="Delete entry"
-                    >
-                      {deletingId === entry.id ? (
-                        <RefreshCw className="w-4 h-4 animate-spin" />
-                      ) : (
-                        <Trash2 className="w-4 h-4" />
-                      )}
-                    </button>
+                    {/* Delete Button - Only show in non-demo mode */}
+                    {!isDemoMode && (
+                      <button
+                        onClick={() => deleteEntry(entry.id)}
+                        disabled={deletingId === entry.id}
+                        className="flex-shrink-0 p-1 text-gray-500 hover:text-red-400 hover:bg-red-900/20 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                        title="Delete entry"
+                      >
+                        {deletingId === entry.id ? (
+                          <RefreshCw className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Trash2 className="w-4 h-4" />
+                        )}
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -430,6 +501,11 @@ export default function FoodHistory({ userId, refreshTrigger }: FoodHistoryProps
         <div className="mt-4 pt-4 border-t border-white/20">
           <p className="text-xs text-gray-400 text-center">
             Showing {entries.length} meal{entries.length !== 1 ? 's' : ''} from the past 7 days
+            {isDemoMode && (
+              <span className="block mt-1 text-yellow-300/60">
+                This is sample data for demonstration purposes
+              </span>
+            )}
           </p>
         </div>
       </div>
