@@ -1,10 +1,7 @@
 import React from 'react';
-import { useAuth } from '../context/AuthContext';
 import FoodHistory from '../components/FoodHistory';
 
 export default function WeeklyAnalysisPage() {
-  const { username } = useAuth();
-
   return (
     <div className="canopy-theme min-h-screen pt-20 p-4">
       <div className="max-w-2xl mx-auto">
@@ -19,7 +16,7 @@ export default function WeeklyAnalysisPage() {
         </div>
 
         {/* Food History Component */}
-        <FoodHistory userId={username || undefined} />
+        <FoodHistory />
       </div>
     </div>
   );

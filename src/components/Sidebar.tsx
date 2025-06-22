@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { X, User, TrendingUp, Info, LogOut, LogIn } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+import { X, TrendingUp, Info, Play } from 'lucide-react';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -9,12 +8,8 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
-  const { username, isLoggedIn, logout } = useAuth();
-
-  const handleLogout = () => {
-    logout();
-    onClose();
-  };
+  // Check for demo mode
+  const isDemoMode = window.location.search.includes('demo=true');
 
   return (
     <>
@@ -43,16 +38,16 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             </button>
           </div>
 
-          {/* User Info */}
-          {isLoggedIn && (
-            <div className="p-6 bg-white/10 border-b border-white/20">
+          {/* Demo Mode Notice */}
+          {isDemoMode && (
+            <div className="p-6 bg-yellow-500/20 border-b border-yellow-400/30">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-emerald-600/30 rounded-full flex items-center justify-center border border-emerald-400/30">
-                  <User className="w-6 h-6 text-emerald-300" />
+                <div className="w-12 h-12 bg-yellow-600/30 rounded-full flex items-center justify-center border border-yellow-400/30">
+                  <Play className="w-6 h-6 text-yellow-300" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-300">Logged in as</p>
-                  <p className="font-medium text-white">{username}</p>
+                  <p className="text-sm text-yellow-200">Demo Mode Active</p>
+                  <p className="font-medium text-yellow-100">Viewing sample data</p>
                 </div>
               </div>
             </div>
@@ -61,43 +56,17 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           {/* Navigation Links */}
           <nav className="flex-1 p-6">
             <ul className="space-y-3">
-              {/* Login/Logout */}
-              {isLoggedIn ? (
-                <li>
-                  <button
-                    onClick={handleLogout}
-                    className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-200 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-200 border border-transparent hover:border-white/20"
-                  >
-                    <LogOut className="w-5 h-5" />
-                    <span className="font-medium">Log Out</span>
-                  </button>
-                </li>
-              ) : (
-                <li>
-                  <Link
-                    to="/login"
-                    onClick={onClose}
-                    className="flex items-center gap-3 px-4 py-3 text-gray-200 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-200 border border-transparent hover:border-white/20"
-                  >
-                    <LogIn className="w-5 h-5" />
-                    <span className="font-medium">Log In</span>
-                  </Link>
-                </li>
-              )}
-
-              {/* Weekly Analysis - Only show if logged in */}
-              {isLoggedIn && (
-                <li>
-                  <Link
-                    to="/weekly-analysis"
-                    onClick={onClose}
-                    className="flex items-center gap-3 px-4 py-3 text-gray-200 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-200 border border-transparent hover:border-white/20"
-                  >
-                    <TrendingUp className="w-5 h-5" />
-                    <span className="font-medium">Weekly Analysis</span>
-                  </Link>
-                </li>
-              )}
+              {/* Weekly Analysis */}
+              <li>
+                <Link
+                  to="/weekly-analysis"
+                  onClick={onClose}
+                  className="flex items-center gap-3 px-4 py-3 text-gray-200 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-200 border border-transparent hover:border-white/20"
+                >
+                  <TrendingUp className="w-5 h-5" />
+                  <span className="font-medium">Weekly Analysis</span>
+                </Link>
+              </li>
 
               {/* About */}
               <li>
@@ -109,6 +78,20 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                   <Info className="w-5 h-5" />
                   <span className="font-medium">About</span>
                 </Link>
+              </li>
+
+              {/* Demo Mode Toggle */}
+              <li>
+                <a
+                  href={isDemoMode ? "/" : "/?demo=true"}
+                  onClick={onClose}
+                  className="flex items-center gap-3 px-4 py-3 text-gray-200 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-200 border border-transparent hover:border-white/20"
+                >
+                  <Play className="w-5 h-5" />
+                  <span className="font-medium">
+                    {isDemoMode ? 'Exit Demo Mode' : 'Try Demo Mode'}
+                  </span>
+                </a>
               </li>
             </ul>
           </nav>
