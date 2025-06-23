@@ -80,7 +80,6 @@ async function saveToDatabase(result: RestaurantDiscoveryResult) {
       .from('food_entries')
       .insert([
         {
-          user_id: username,
           restaurant_name: result.restaurant,
           food_description: result.originalInput,
           estimated_calories: finalCalories,
