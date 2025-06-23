@@ -72,10 +72,7 @@ function parseModificationAnalysis(response: string) {
 // Enhanced database save function with new schema fields
 async function saveToDatabase(result: RestaurantDiscoveryResult) {
   try {
-    const username = getUsername();
-    if (!username) {
-      throw new Error('No username found - user must be logged in');
-    }
+
 
     const finalCalories = result.finalCalories || parseInt(result.standardCalories || '0') || 0;
     
