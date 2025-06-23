@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { Calculator, Utensils, TrendingUp, AlertCircle, Database, MapPin, CheckCircle, XCircle, Edit3, Zap, Search, Brain, User, Trash2 } from 'lucide-react';
+import { Calculator, Utensils, TrendingUp, AlertCircle, Database, MapPin, CheckCircle, XCircle, Edit3, Zap, Brain, User, Trash2 } from 'lucide-react';
 import { estimateCalories } from '../utils/calorieEstimator';
 import { testSupabaseConnection, supabase } from '../lib/supabase';
-import { testGoogleSearch } from '../utils/googleSearchApi';
 import { testPerplexityAPI } from '../utils/perplexityApi';
 import { insertDemoData, clearUserData, DemoDataResult } from '../utils/demoDataUtils';
 import { useAuth } from '../context/AuthContext';
@@ -20,8 +19,6 @@ export default function CalorieEstimator() {
   const [foodEntriesTestResult, setFoodEntriesTestResult] = useState<{ success: boolean; message?: string; error?: string; data?: any } | null>(null);
   const [isTestingFoodEntries, setIsTestingFoodEntries] = useState(false);
   const [historyRefreshTrigger, setHistoryRefreshTrigger] = useState(0);
-  const [googleTestResult, setGoogleTestResult] = useState<{ success: boolean; message: string; results?: any[] } | null>(null);
-  const [isTestingGoogle, setIsTestingGoogle] = useState(false);
   const [perplexityTestResult, setPerplexityTestResult] = useState<{ success: boolean; message: string; response?: string } | null>(null);
   const [isTestingPerplexity, setIsTestingPerplexity] = useState(false);
 
@@ -104,26 +101,6 @@ export default function CalorieEstimator() {
       });
     } finally {
       setIsTestingFoodEntries(false);
-    }
-  };
-
-  // Test function for Google Search API
-  const runGoogleSearchTest = async () => {
-    setIsTestingGoogle(true);
-    setGoogleTestResult(null);
-    
-    try {
-      console.log('Testing Google Custom Search API...');
-      const result = await testGoogleSearch();
-      setGoogleTestResult(result);
-    } catch (err) {
-      console.error('Google Search test failed:', err);
-      setGoogleTestResult({
-        success: false,
-        message: err instanceof Error ? err.message : 'Unknown error occurred'
-      });
-    } finally {
-      setIsTestingGoogle(false);
     }
   };
 
@@ -535,48 +512,6 @@ export default function CalorieEstimator() {
                   {perplexityTestResult.response && (
                     <div className="text-xs mt-2 bg-white bg-opacity-50 p-2 rounded">
                       <strong>Sample response:</strong> {perplexityTestResult.response.substring(0, 100)}...
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* Google Search Test */}
-            <div>
-              <button
-                onClick={runGoogleSearchTest}
-                disabled={isTestingGoogle}
-                className="w-full bg-orange-600 hover:bg-orange-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium py-2 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 mb-2"
-              >
-                {isTestingGoogle ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    Testing Google Search...
-                  </>
-                ) : (
-                  <>
-                    <Search className="w-4 h-4" />
-                    Test Google Search API
-                  </>
-                )}
-              </button>
-
-              {googleTestResult && (
-                <div className={`p-3 rounded-xl border ${
-                  googleTestResult.success 
-                    ? 'bg-green-50 border-green-200 text-green-700' 
-                    : 'bg-red-50 border-red-200 text-red-700'
-                }`}>
-                  <div className="flex items-center gap-2">
-                    <Search className="w-4 h-4" />
-                    <span className="text-xs font-medium">
-                      {googleTestResult.success ? '✅ Google Search Test Passed' : '❌ Google Search Test Failed'}
-                    </span>
-                  </div>
-                  <p className="text-xs mt-1">{googleTestResult.message}</p>
-                  {googleTestResult.results && googleTestResult.results.length > 0 && (
-                    <div className="text-xs mt-2 bg-white bg-opacity-50 p-2 rounded">
-                      <strong>Sample result:</strong> {googleTestResult.results[0].title}
                     </div>
                   )}
                 </div>
