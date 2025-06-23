@@ -4,6 +4,7 @@ import { History, Clock, MapPin, Zap, RefreshCw, Trash2, TrendingUp, Calendar, C
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import { sampleFoodEntries } from '../data/sampleData';
+import { getUserId } from '../utils/userUtils';
 
 interface FoodEntry {
   id: string;
@@ -29,7 +30,6 @@ interface FoodHistoryProps {
 }
 
 export default function FoodHistory({ userId, refreshTrigger }: FoodHistoryProps) {
-  const { username } = useAuth();
   const [entries, setEntries] = useState<FoodEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -42,7 +42,7 @@ export default function FoodHistory({ userId, refreshTrigger }: FoodHistoryProps
   const isDemoMode = window.location.search.includes('demo=true');
 
   // Use the username from auth context, fallback to userId prop
-  const effectiveUserId = username || userId;
+  const effectiveUserId = getUserId() || userId;
 
   useEffect(() => {
     if (isDemoMode) {
