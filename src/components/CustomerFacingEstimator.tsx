@@ -930,7 +930,6 @@ export default function CustomerFacingEstimator() {
               {/* Plant Decorations - Only slight overlap */}
               <div className="plant-decoration vine-left"></div>
               <div className="plant-decoration vine-right"></div>
-              <div className="plant-decoration moss-bottom"></div>
               <div className="plant-decoration small-leaf-1"></div>
               <div className="plant-decoration small-leaf-2"></div>
               
