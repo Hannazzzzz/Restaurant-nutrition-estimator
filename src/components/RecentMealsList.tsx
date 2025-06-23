@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Clock, MapPin, Zap, TrendingUp } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
+import { getUserId } from '../utils/userUtils';
 import { sampleFoodEntries } from '../data/sampleData';
 
 interface FoodEntry {
@@ -41,14 +42,12 @@ export default function RecentMealsList({ refreshTrigger }: RecentMealsListProps
           created_at: entry.created_at
         }));
       setEntries(recentSampleEntries);
-    } else if (isLoggedIn && username) {
+    } else {
       loadRecentEntries();
     }
   }, [username, isLoggedIn, refreshTrigger, isDemoMode]);
 
   async function loadRecentEntries() {
-    if (!username) return;
-    
     try {
       setLoading(true);
       
@@ -59,7 +58,7 @@ export default function RecentMealsList({ refreshTrigger }: RecentMealsListProps
       const { data, error } = await supabase
         .from('food_entries')
         .select('id, user_id, restaurant_name, food_description, estimated_calories, created_at')
-        .eq('user_id', username)
+        .eq('user_id', getUserId())
         .gte('created_at', sevenDaysAgo.toISOString())
         .order('created_at', { ascending: false })
         .limit(5); // Show only the 5 most recent entries
