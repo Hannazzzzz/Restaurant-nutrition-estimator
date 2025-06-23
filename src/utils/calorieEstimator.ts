@@ -2,7 +2,7 @@ import { CalorieEstimate, RestaurantDiscoveryResult } from '../types';
 import { callPerplexityAPI } from './perplexityApi';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
-import { getUsername } from './userUtils';
+import { getUserId, getUsername } from './userUtils';
 
 function parseRestaurantInfo(response: string) {
   // Extract restaurant name, menu item, description, and ingredient source from restaurant discovery
@@ -80,6 +80,7 @@ async function saveToDatabase(result: RestaurantDiscoveryResult) {
       .from('food_entries')
       .insert([
         {
+          user_id: getUserId(),
           restaurant_name: result.restaurant,
           food_description: result.originalInput,
           estimated_calories: finalCalories,
