@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Check, Loader2 } from 'lucide-react';
 import { estimateCalories } from '../utils/calorieEstimator';
+import RecentMealsList from './RecentMealsList';
 
 export default function CustomerFacingEstimator() {
   const [userInput, setUserInput] = useState('');
+  const [historyRefreshTrigger, setHistoryRefreshTrigger] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
@@ -21,6 +23,7 @@ export default function CustomerFacingEstimator() {
       // Show success state
       setShowSuccess(true);
       setUserInput('');
+      setHistoryRefreshTrigger(historyRefreshTrigger + 1)
       
       // Hide success state after 2 seconds
       setTimeout(() => {
@@ -980,6 +983,9 @@ export default function CustomerFacingEstimator() {
                   </div>
                 </div>
               )}
+
+              {/* Recent Meals List */}
+              <RecentMealsList refreshTrigger={historyRefreshTrigger} />
             </div>
           </form>
         </div>
