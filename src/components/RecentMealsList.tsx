@@ -20,7 +20,6 @@ interface RecentMealsListProps {
 }
 
 export default function RecentMealsList({ refreshTrigger }: RecentMealsListProps) {
-  const { username, isLoggedIn } = useAuth();
   const navigate = useNavigate();
   const [entries, setEntries] = useState<FoodEntry[]>([]);
   const [loading, setLoading] = useState(false);
@@ -45,7 +44,7 @@ export default function RecentMealsList({ refreshTrigger }: RecentMealsListProps
     } else {
       loadRecentEntries();
     }
-  }, [username, isLoggedIn, refreshTrigger, isDemoMode]);
+  }, [, refreshTrigger, isDemoMode]);
 
   async function loadRecentEntries() {
     try {
@@ -95,13 +94,8 @@ export default function RecentMealsList({ refreshTrigger }: RecentMealsListProps
     }
   };
 
-  // Don't show anything if user is not logged in and not in demo mode
-  if (!isDemoMode && !isLoggedIn) {
-    return null;
-  }
-
   // Don't show anything if loading or no entries (except in demo mode)
-  if (!isDemoMode && (loading || entries.length === 0)) {
+  if ((loading || entries.length === 0)) {
     return null;
   }
 
